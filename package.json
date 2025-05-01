@@ -1,15 +1,22 @@
 {
-  "dependencies": {
-    "pino": "^9.6.0"
-  },
+  "name": "api-epi-core",
+  "version": "0.0.1",
   "scripts": {
+    "clear": "rimraf dist",
+    "clear:prod": "rm -rf dist",
     "build": "npm run clear:prod && tsc",
-    "start": "node dist/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/server.ts",
     "test": "npm run clear && tsc && node --test tests/index.test.mjs"
   },
   "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.3",
     "@types/pino": "^7.0.5",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "pino": "^9.6.0"
   }
 }
