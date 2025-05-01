@@ -35,7 +35,7 @@ const apiV1Router = express.Router();
 app.use('/v1', apiV1Router);
 
 // Rotas
-apiV1Router.use('/companies', CompanyRouter);
+apiV1Router.use('/company', CompanyRouter);
 
 // Erros
 // app.use(ErrorMiddleware);

@@ -6,7 +6,8 @@ import RequestHandler from '../Helpers/RequestHandler';
 
 const router = Router();
 
-// POST /v1/companies
+/// v1/company
+
 router.post(
   '/',
   // verifyToken,
