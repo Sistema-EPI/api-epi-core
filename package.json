@@ -2,7 +2,14 @@
   "dependencies": {
     "pino": "^9.6.0"
   },
+  "scripts": {
+    "build": "npm run clear:prod && tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/server.ts",
+    "test": "npm run clear && tsc && node --test tests/index.test.mjs"
+  },
   "devDependencies": {
-    "@types/pino": "^7.0.5"
+    "@types/pino": "^7.0.5",
+    "typescript": "^5.8.3"
   }
 }
