@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../Config/db';
 
-export const Company = sequelize.define('Company', {
+export const Company = sequelize.define('companies', {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,

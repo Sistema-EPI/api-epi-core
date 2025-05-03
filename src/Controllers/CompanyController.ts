@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { createCompanySchema } from '../Schemas/CompanySchema';
-import { Company } from '../Models/Company';
+import { Company } from '../Models/CompanyModel';
 
 export async function createCompany(req: Request, res: Response, next: NextFunction) {
     try {

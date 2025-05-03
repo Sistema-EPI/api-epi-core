@@ -5,10 +5,10 @@ const EnvSchema = z
         //PROD
         // CORS_ORIGIN: z.string(),
         DB_NAME: z.string(),
-        DB_USER: z.string(),
-        DB_PASSWORD: z.string(),
         DB_HOST: z.string(),
         DB_PORT: z.string(),
+        DB_USER: z.string(),
+        DB_PASSWORD: z.string(),
         //DEV
         NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
         PORT: z
