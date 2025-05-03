@@ -6,6 +6,7 @@ export const Company = sequelize.define('companies', {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,
+    defaultValue: DataTypes.UUIDV4,
   },
   name: {
     type: DataTypes.STRING,
