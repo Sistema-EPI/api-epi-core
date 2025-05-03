@@ -10,6 +10,7 @@ export const ENV = EnvSchema.parse(process.env);
 // import { db } from './Services/MySQLService';
 // import { ErrorMiddleware } from './Helpers/RequestHandler';
 import logger from './Helpers/Logger';
+import { sequelize } from './Config/db';
 
 // Rotas
 import CompanyRouter from './Routers/CompanyRouter';
@@ -41,8 +42,8 @@ apiV1Router.use('/company', CompanyRouter);
 // app.use(ErrorMiddleware);
 
 
-const server = app.listen(ENV.PORT, () => {
-  logger.info(`API is running on port ${ENV.PORT}`);
+sequelize.sync({ alter: true }).then(() => {
+  app.listen(ENV.PORT, () => {
+    logger.info(`API is running on port ${ENV.PORT}`);
+  });
 });
-
-export default server;

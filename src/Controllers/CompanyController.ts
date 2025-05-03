@@ -1,14 +1,21 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { createCompanySchema } from '../Schemas/CompanySchema';
+import { Company } from '../Models/Company';
 
-export async function createCompany(req: Request, res: Response, next: NextFunction){
-    const {body} = await createCompanySchema.parseAsync(req);
+export async function createCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+        const body = createCompanySchema.parse(req.body);
 
-    console.log(body);
+        console.log('body', body);
 
-    res.status(200).send({
-        status: 'ok',
-        message: 'Company created successfully (not really - testing)',
-        data: body,
-    });
+        const company = await Company.create(body);
+
+        res.status(201).json({
+            status: 'Created',
+            message: 'Company created successfully',
+            data: company,
+        });
+    } catch (err) {
+        next(err);
+    }
 }

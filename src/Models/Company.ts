@@ -1,0 +1,19 @@
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../Config/db';
+
+export const Company = sequelize.define('Company', {
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  cnpj: {
+    type: DataTypes.STRING(14),
+    allowNull: false,
+    unique: true,
+  },
+});
