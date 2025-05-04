@@ -27,9 +27,9 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
 }
 
 export async function updateCompany(req: Request, res: Response) {
-    const updateData = UpdateCompanySchema.parse(req.body);
+    const { body, params } = UpdateCompanySchema.parse(req);
     
-    const companyId = req.params.id;
+    const companyId = params.id;
 
     const existingCompany = await Company.findByPk(companyId);
 
@@ -39,11 +39,11 @@ export async function updateCompany(req: Request, res: Response) {
 
     console.log('Valores anteriores:', existingCompany.toJSON());
 
-    const updatedCompany = await existingCompany.update(updateData);
+    const updatedCompany = await existingCompany.update(body);
     const newValues = updatedCompany.toJSON();
 
     const changes: Record<string, { before: any; after: any }> = {};
-    for (const key in updateData) {
+    for (const key in body) {
         if (previousValues[key] !== newValues[key]) {
             changes[key] = {
                 before: previousValues[key],
@@ -65,3 +65,6 @@ export async function updateCompany(req: Request, res: Response) {
 
     return res.status(response.statusCode).json(response.payload);
 }
+
+// export async function deleteCompany(req: Request, res: Response) {
+// }

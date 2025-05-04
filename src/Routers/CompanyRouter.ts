@@ -22,4 +22,11 @@ router.put(
   RequestHandler(CompanyController.updateCompany),
 )
 
+// router.delete(
+//   '/delete/:id',
+//   // verifyToken,
+//   // verifyPermission(['companies:delete']),
+//   RequestHandler(CompanyController.deleteCompany),
+// )
+
 export default router;
