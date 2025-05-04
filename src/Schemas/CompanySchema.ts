@@ -10,8 +10,3 @@ export const createCompanySchema = z.object({
     email: z.string().email(),
     telefone: z.string().optional(),
 });
-
-
-//todo: adicionar validacao 
-//todo: adicionar tratamento de erro 
-//todo: ver model para pegar erro certinho

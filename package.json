@@ -9,6 +9,8 @@
     "test": "npm run clear && tsc && node --test tests/index.test.mjs"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.3",
     "@types/pino": "^7.0.5",
@@ -18,6 +20,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",

@@ -3,7 +3,7 @@ import { z } from 'zod';
 const EnvSchema = z
     .object({
         //PROD
-        // CORS_ORIGIN: z.string(),
+        CORS_ORIGIN: z.string(),
         DB_NAME: z.string(),
         DB_HOST: z.string(),
         DB_PORT: z.string(),

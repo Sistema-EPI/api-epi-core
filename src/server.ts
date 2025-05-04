@@ -2,23 +2,41 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-// import cookieParser from 'cookie-parser';
 
 import EnvSchema from './Schemas/EnvSchema';
 export const ENV = EnvSchema.parse(process.env);
 import logger from './Helpers/Logger';
 import { sequelize } from './Config/db';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Rotas
 import CompanyRouter from './Routers/CompanyRouter';
 import { ErrorMiddleware } from './Helpers/RequestHandler';
 
-
 const app = express();
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
+
+const ALLOWED_ORIGINS = ENV.CORS_ORIGIN.split(',').map((origin) => origin.trim());
+
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            if (!origin) return callback(null, true);
+
+            if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
+                return callback(new Error('Not allowed by cors'), false);
+            }
+
+            return callback(null, true);
+        },
+        credentials: true,
+    }),
+);
+
+app.use(cookieParser());
 
 const apiV1Router = express.Router();
 app.use('/v1', apiV1Router);
@@ -28,7 +46,6 @@ apiV1Router.use('/company', CompanyRouter);
 
 // Erros
 app.use(ErrorMiddleware);
-
 
 sequelize.sync({ alter: true }).then(() => {
   app.listen(ENV.PORT, () => {
