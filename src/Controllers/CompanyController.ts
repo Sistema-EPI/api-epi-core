@@ -60,7 +60,7 @@ export async function updateCompany(req: Request, res: Response) {
 
     const response = HttpResponse.Created({
         message: 'Company updated successfully',
-        company: updateCompany,
+        company: updatedCompany,
     });
 
     return res.status(response.statusCode).json(response.payload);
