@@ -11,8 +11,15 @@ const router = Router();
 router.post(
   '/',
   // verifyToken,
-  // verifyPermission(['companies:write']),
+  // verifyPermission(['companies:create']),
   RequestHandler(CompanyController.createCompany),
 );
+
+router.put(
+  '/update/:id',
+  // verifyToken,
+  // verifyPermission(['companies:update']),
+  RequestHandler(CompanyController.updateCompany),
+)
 
 export default router;
