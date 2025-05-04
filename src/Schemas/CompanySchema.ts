@@ -28,5 +28,7 @@ export const UpdateCompanySchema = z.object({
 });
 
 export const DeleteCompanySchema = z.object({
-
+    params: z.object({
+        id: z.string(),
+    }),
 });

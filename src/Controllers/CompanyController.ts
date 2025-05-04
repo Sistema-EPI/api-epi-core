@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCompanySchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
+import { CreateCompanySchema, DeleteCompanySchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
 import { Company } from '../Models/CreateCompanyModel';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
@@ -28,7 +28,7 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
 
 export async function updateCompany(req: Request, res: Response) {
     const { body, params } = UpdateCompanySchema.parse(req);
-    
+
     const companyId = params.id;
 
     const existingCompany = await Company.findByPk(companyId);
@@ -60,11 +60,28 @@ export async function updateCompany(req: Request, res: Response) {
 
     const response = HttpResponse.Created({
         message: 'Company updated successfully',
-        company: updatedCompany,
+        id: companyId,
     });
 
     return res.status(response.statusCode).json(response.payload);
 }
 
-// export async function deleteCompany(req: Request, res: Response) {
-// }
+export async function deleteCompany(req: Request, res: Response) {
+    const { params } = DeleteCompanySchema.parse(req);
+    const companyId = params.id;
+
+    const existingCompany = await Company.findByPk(companyId);
+
+    if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
+
+    await existingCompany.destroy();
+
+    logger.info(`Empresa removida com sucesso (id: ${companyId})`);
+
+    const response = HttpResponse.Ok({
+        message: 'Empresa deletada com sucesso',
+        company: existingCompany,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+}
