@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+export const GetCompaniesSchema = z.object({
+    query: z.object({
+        page: z.string().optional(),
+        limit: z.string().optional(),
+    }),
+});
+
 export const CreateCompanySchema = z.object({
     nomeFantasia: z.string(),
     razaoSocial: z.string().optional(),

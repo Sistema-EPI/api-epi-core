@@ -1,9 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCompanySchema, DeleteCompanySchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
+import { CreateCompanySchema, DeleteCompanySchema, GetCompaniesSchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
 import { Company } from '../Models/CreateCompanyModel';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
+
+
+export async function getAllCompanies(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { query } = GetCompaniesSchema.parse(req);
+
+        const page = parseInt(query.page || '1', 10);
+        const limit = parseInt(query.limit || '10', 10);
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await Company.findAndCountAll({
+            offset,
+            limit,
+            order: [['createdAt', 'DESC']],
+        });
+
+        const response = HttpResponse.Ok({
+            message: 'Empresas recuperadas com sucesso',
+            pagination: {
+                total: count,
+                page,
+                limit,
+                totalPages: Math.ceil(count / limit),
+            },
+            data: rows,
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        next(err);
+    }
+}
 
 export async function createCompany(req: Request, res: Response, next: NextFunction) {
     try {

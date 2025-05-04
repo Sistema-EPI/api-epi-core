@@ -8,8 +8,15 @@ const router = Router();
 
 /// v1/company
 
+router.get(
+  '/get/all',
+  // verifyToken,
+  // verifyPermission(['companies:get']),
+  RequestHandler(CompanyController.getAllCompanies),
+)
+
 router.post(
-  '/',
+  '/create',
   // verifyToken,
   // verifyPermission(['companies:create']),
   RequestHandler(CompanyController.createCompany),
