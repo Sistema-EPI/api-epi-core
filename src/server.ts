@@ -6,13 +6,13 @@ import express from 'express';
 
 import EnvSchema from './Schemas/EnvSchema';
 export const ENV = EnvSchema.parse(process.env);
-
-// import { ErrorMiddleware } from './Helpers/RequestHandler';
 import logger from './Helpers/Logger';
 import { sequelize } from './Config/db';
 
 // Rotas
 import CompanyRouter from './Routers/CompanyRouter';
+import { ErrorMiddleware } from './Helpers/RequestHandler';
+
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use('/v1', apiV1Router);
 apiV1Router.use('/company', CompanyRouter);
 
 // Erros
-// app.use(ErrorMiddleware);
+app.use(ErrorMiddleware);
 
 
 sequelize.sync({ alter: true }).then(() => {
