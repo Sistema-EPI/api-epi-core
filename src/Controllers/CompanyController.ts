@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCompanySchema, DeleteCompanySchema, GetCompaniesSchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
+import { CreateCompanySchema, DeleteCompanySchema, GetCompaniesSchema, GetCompanyByIdSchema, UpdateCompanySchema } from '../Schemas/CompanySchema';
 import { Company } from '../Models/CreateCompanyModel';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
@@ -35,6 +35,25 @@ export async function getAllCompanies(req: Request, res: Response, next: NextFun
     } catch (err) {
         next(err);
     }
+}
+
+export async function getCompanyById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params } = GetCompanyByIdSchema.parse(req);
+        const companyId = params.id
+
+        const existingCompany = await Company.findByPk(companyId);
+
+        if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
+
+        const response = HttpResponse.Ok({
+            message: 'Empresa recuperada com sucesso',
+            data: existingCompany,
+        });
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        next(err);
+    };
 }
 
 export async function createCompany(req: Request, res: Response, next: NextFunction) {

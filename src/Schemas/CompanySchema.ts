@@ -7,6 +7,12 @@ export const GetCompaniesSchema = z.object({
     }),
 });
 
+export const GetCompanyByIdSchema = z.object({
+    params: z.object({
+        id: z.string(),
+    }),
+});
+
 export const CreateCompanySchema = z.object({
     nomeFantasia: z.string(),
     razaoSocial: z.string().optional(),

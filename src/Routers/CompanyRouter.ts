@@ -11,8 +11,15 @@ const router = Router();
 router.get(
   '/get/all',
   // verifyToken,
-  // verifyPermission(['companies:get']),
+  // verifyPermission(['companies:read']),
   RequestHandler(CompanyController.getAllCompanies),
+)
+
+router.get(
+  '/get/:id',
+  // verifyToken,
+  // verifyPermission(['companies:read']),
+  RequestHandler(CompanyController.getCompanyById),
 )
 
 router.post(
