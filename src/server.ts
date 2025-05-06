@@ -6,9 +6,10 @@ import express from 'express';
 import EnvSchema from './Schemas/EnvSchema';
 export const ENV = EnvSchema.parse(process.env);
 import logger from './Helpers/Logger';
-import { sequelize } from './Config/db';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { PrismaClient } from '@prisma/client';
+export const prisma = new PrismaClient();
 
 // Rotas
 import CompanyRouter from './Routers/CompanyRouter';
@@ -22,18 +23,18 @@ app.use(express.urlencoded({ extended: true }));
 const ALLOWED_ORIGINS = ENV.CORS_ORIGIN.split(',').map((origin) => origin.trim());
 
 app.use(
-    cors({
-        origin: function (origin, callback) {
-            if (!origin) return callback(null, true);
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-            if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
-                return callback(new Error('Not allowed by cors'), false);
-            }
+      if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
+        return callback(new Error('Not allowed by cors'), false);
+      }
 
-            return callback(null, true);
-        },
-        credentials: true,
-    }),
+      return callback(null, true);
+    },
+    credentials: true,
+  }),
 );
 
 app.use(cookieParser());
@@ -47,8 +48,18 @@ apiV1Router.use('/company', CompanyRouter);
 // Erros
 app.use(ErrorMiddleware);
 
-sequelize.sync({ alter: true }).then(() => {
-  app.listen(ENV.PORT, () => {
-    logger.info(`API is running on port ${ENV.PORT}`);
-  });
-});
+async function startServer() {
+  try {
+    await prisma.$connect();
+    logger.info('Conectado ao banco de dados com sucesso.');
+
+    app.listen(ENV.PORT, () => {
+      logger.info(`API is running on port ${ENV.PORT}`);
+    });
+  } catch (error) {
+    logger.error('Erro ao conectar com o banco de dados:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
