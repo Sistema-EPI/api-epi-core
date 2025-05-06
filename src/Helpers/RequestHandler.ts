@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import HttpError from './HttpError';
 import { randomUUID } from 'crypto';
-import { UniqueConstraintError, ValidationError as SequelizeValidationError } from 'sequelize';
 import logger from './Logger';
+import { Prisma } from '@prisma/client';
 
 export default function RequestHandler(
   controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
@@ -29,18 +29,25 @@ export function ErrorMiddleware(
     return;
   }
 
-  if (error instanceof UniqueConstraintError) {
-    res.status(409).json({
-      message: 'Duplicated entry',
-      errors: error.errors.map(e => e.message),
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === 'P2002') {
+      res.status(409).json({
+        message: 'Duplicated entry',
+        errors: error.meta?.target ? [`Unique constraint failed on: ${error.meta.target}`] : ['Duplicate entry detected'],
+      });
+      return;
+    }
+    res.status(400).json({
+      message: 'Database error',
+      errors: [error.message],
     });
     return;
   }
 
-  if (error instanceof SequelizeValidationError) {
+  if (error instanceof Prisma.PrismaClientValidationError) {
     res.status(400).json({
       message: 'Validation error',
-      errors: error.errors.map(e => e.message),
+      errors: [error.message],
     });
     return;
   }

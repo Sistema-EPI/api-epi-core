@@ -38,6 +38,7 @@ export async function getAllCompanies(req: Request, res: Response, next: NextFun
 
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
+        console.error('Error in getAllCompanies:', err);
         next(err);
     }
 }
@@ -81,6 +82,7 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
 
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
+        console.error('Error in createCompany:', err);
         next(err);
     }
 }
@@ -125,6 +127,7 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
 
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
+        console.error('Error in updateCompany:', err);
         next(err);
     }
 }
@@ -153,6 +156,7 @@ export async function deleteCompany(req: Request, res: Response, next: NextFunct
 
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
+        console.error('Error in deleteCompany:', err);
         next(err);
     }
 }
