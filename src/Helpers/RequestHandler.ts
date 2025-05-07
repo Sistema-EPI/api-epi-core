@@ -3,7 +3,12 @@ import { ZodError } from 'zod';
 import HttpError from './HttpError';
 import { randomUUID } from 'crypto';
 import logger from './Logger';
-import { Prisma } from '@prisma/client';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError
+} from '@prisma/client/runtime/library';
+
+
 
 export default function RequestHandler(
   controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
@@ -29,7 +34,7 @@ export function ErrorMiddleware(
     return;
   }
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       res.status(409).json({
         message: 'Duplicated entry',
@@ -44,7 +49,7 @@ export function ErrorMiddleware(
     return;
   }
 
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error instanceof PrismaClientValidationError) {
     res.status(400).json({
       message: 'Validation error',
       errors: [error.message],
