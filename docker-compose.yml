@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api-epi-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-8000}:80"
+    environment:
+      DATABASE_URL: "mysql://mysql:ggruRGLuLMNej5DmSkVVZ28rhiZ2r4M3pP2YKRmsZ02zlsPal4T0lMflvreJjcTS@85.31.62.75:5432/epi"
+      NODE_ENV: "development"
+      CORS_ORIGIN: "self"
+
+
+#   mysql-container:
+#     image: mysql:8.0
+#     ports:
+#       - "3306:3306"
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root_password
+#       MYSQL_DATABASE: epi
+#       MYSQL_USER: user
+#       MYSQL_PASSWORD: password
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+
+# volumes:
+#   mysql_data:

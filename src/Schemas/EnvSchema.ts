@@ -10,7 +10,6 @@ const EnvSchema = z
         PORT: z
             .string()
             .optional()
-            .default('8000')
             .transform((val) => Number(val)),
     })
     .refine((input) => {
