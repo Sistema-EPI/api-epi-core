@@ -10,7 +10,7 @@ services:
     environment:
       DATABASE_URL: "mysql://mysql:ggruRGLuLMNej5DmSkVVZ28rhiZ2r4M3pP2YKRmsZ02zlsPal4T0lMflvreJjcTS@85.31.62.75:5432/epi"
       NODE_ENV: "development"
-      CORS_ORIGIN: "self"
+      CORS_ORIGIN: "*"
 
 
 #   mysql-container:
