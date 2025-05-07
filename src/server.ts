@@ -57,6 +57,7 @@ async function startServer() {
       logger.info(`API is running on port ${ENV.PORT}`);
     });
   } catch (error) {
+    console.log(error)
     logger.error('Erro ao conectar com o banco de dados:', error);
     process.exit(1);
   }
