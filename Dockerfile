@@ -1,5 +1,5 @@
 # Use uma imagem base do Node.js
-FROM node:18
+FROM node:20
 
 # Defina o diretório de trabalho dentro do container
 WORKDIR /usr/src/app
@@ -19,7 +19,7 @@ RUN npm run build
 
 
 # Exponha a porta que a API REST usará
-EXPOSE 8000
+EXPOSE 8888
 
 # Comando para iniciar a aplicação
 CMD ["node", "dist/server.js"]
