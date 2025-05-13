@@ -49,7 +49,7 @@ export async function getCompanyById(req: Request, res: Response, next: NextFunc
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id: companyId },
+            where: { id_empresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
@@ -94,7 +94,7 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id: companyId },
+            where: { id_empresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
