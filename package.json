@@ -6,7 +6,6 @@
     "clear:prod": "rm -rf dist",
     "build": "npm run clear:prod && tsc",
     "build-local": "npm run clear && tsc",
-    "prisma:migrate-seed": "npx prisma migrate deploy && npx prisma db seed",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/server.ts",
     "test": "npm run clear && tsc && node --test tests/index.test.mjs"
   },
