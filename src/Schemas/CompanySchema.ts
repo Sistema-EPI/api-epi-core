@@ -15,13 +15,14 @@ export const GetCompanyByIdSchema = z.object({
 
 export const CreateCompanySchema = z.object({
     nomeFantasia: z.string(),
-    razaoSocial: z.string().optional(),
+    razao_social: z.string(),
     cnpj: z.string().length(14),
     uf: z.string().length(2).optional(),
     cep: z.string().length(8),
     logradouro: z.string().optional(),
     email: z.string().email(),
     telefone: z.string().min(10).max(20).optional(),
+    status_empresa: z.boolean(), 
 });
 
 export const UpdateCompanySchema = z.object({
@@ -30,13 +31,14 @@ export const UpdateCompanySchema = z.object({
     }),
     body: z.object({
         nomeFantasia: z.string().min(1).optional(),
-        razaoSocial: z.string().min(1).optional(),
+        razao_social: z.string().min(1).optional(),
         cnpj: z.string().length(14).optional(),
         uf: z.string().length(2).optional(),
         cep: z.string().length(8).optional(),
         logradouro: z.string().min(5).optional(),
         email: z.string().email().optional(),
         telefone: z.string().min(10).max(20).optional(),
+        status_empresa: z.boolean(), 
     }),
 });
 
