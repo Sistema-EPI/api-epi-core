@@ -7,19 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CompanyStatus {
+  ATIVO
+  INATIVO
+}
+
 model Companies {
   id_empresa      String     @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
   nomeFantasia String   @db.VarChar(255)
+  razaoSocial    String?     @db.VarChar(255)
   cnpj            String     @unique @db.VarChar(14)
-  createdAt       DateTime   @default(now()) @db.DateTime(0)
-  updatedAt       DateTime   @updatedAt @db.DateTime(0)
-  razao_social    String     @db.VarChar(255)
   uf           String?  @db.VarChar(2)
-  cep             String?
+  cep             String
   logradouro      String?    @db.VarChar(255)
   email           String?    @db.VarChar(255)
   telefone        String?    @db.VarChar(20)
-  status_empresa  Boolean
+  statusEmpresa CompanyStatus @default(ATIVO) @map("status_empresa")
+  createdAt       DateTime   @default(now()) @db.DateTime(0)
+  updatedAt       DateTime   @updatedAt @db.DateTime(0)
 
   colaboradores   Collaborator[] @relation("EmpresaColaboradores")
 
