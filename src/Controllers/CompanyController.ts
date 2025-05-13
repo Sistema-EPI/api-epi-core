@@ -49,7 +49,7 @@ export async function getCompanyById(req: Request, res: Response, next: NextFunc
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id_empresa: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
@@ -104,13 +104,13 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id_empresa: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
         const updatedCompany = await prisma.companies.update({
-            where: { id_empresa: companyId },
+            where: { idEmpresa: companyId },
             data: body,
         });
 
@@ -148,13 +148,13 @@ export async function deleteCompany(req: Request, res: Response, next: NextFunct
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id_empresa: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
         await prisma.companies.delete({
-            where: { id_empresa: companyId },
+            where: { idEmpresa: companyId },
         });
 
         logger.info(`Empresa removida com sucesso (id: ${companyId})`);
