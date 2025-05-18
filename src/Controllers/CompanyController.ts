@@ -97,7 +97,6 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
     }
 }
 
-
 export async function updateCompany(req: Request, res: Response, next: NextFunction) {
     try {
         const { body, params } = UpdateCompanySchema.parse(req);

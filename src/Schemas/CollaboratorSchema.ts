@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const GetCollaboratorSchema = z.object({
+    query: z.object({
+        page: z.string().optional(),
+        limit: z.string().optional(),
+    }),
+});
+
 export const CreateCollaboratorSchema = z.object({
     params: z.object({
         companyId: z.string(),

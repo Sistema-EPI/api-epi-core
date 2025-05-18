@@ -6,6 +6,13 @@ const collaborator = Router();
 
 //v1/collaborator
 
+collaborator.get(
+  '/get/all',
+  // verifyToken,
+  // verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getAllCollaborators),
+)
+
 collaborator.post(
     '/create/:companyId',
     // verifyToken,
