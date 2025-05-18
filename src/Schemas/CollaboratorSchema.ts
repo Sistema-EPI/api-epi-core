@@ -34,3 +34,9 @@ export const UpdateCollaboratorSchema = z.object({
         statusColaborador: z.enum(['ATIVO', 'INATIVO']),
     }),
 });
+
+export const DeleteCollaboratorSchema = z.object({
+    params: z.object({
+        id: z.string(),
+    }),
+});

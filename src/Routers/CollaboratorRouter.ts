@@ -34,5 +34,12 @@ collaborator.put(
     RequestHandler(CollaboratorController.updateCollaborator),
 )
 
+collaborator.delete(
+    '/delete/:id',
+    // verifyToken,
+    // verifyPermission(['companies:delete']),
+    RequestHandler(CollaboratorController.deleteCollaborator),
+)
+
 export default collaborator;
 

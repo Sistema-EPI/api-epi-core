@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema, UpdateCollaboratorSchema } from "../Schemas/CollaboratorSchema";
+import { CreateCollaboratorSchema, DeleteCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema, UpdateCollaboratorSchema } from "../Schemas/CollaboratorSchema";
 import { prisma } from "../server";
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
@@ -137,6 +137,37 @@ export async function updateCollaborator(req: Request, res: Response, next: Next
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
         console.error('Error in updateCollaborator:', err);
+        next(err);
+    }
+}
+
+export async function deleteCollaborator(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params } = DeleteCollaboratorSchema.parse(req);
+        const collaboratorId = params.id;
+
+        console.log('Deleting collaborator with ID:', collaboratorId);
+
+        const existingCollaborator = await prisma.collaborator.findUnique({
+            where: { idColaborador: collaboratorId },
+        });
+
+        if (!existingCollaborator) throw new HttpError('Colaborador não encontrado', 404);
+
+        await prisma.collaborator.delete({
+            where: { idColaborador: collaboratorId },
+        });
+
+        logger.info(`Colaborador removido com sucesso (id: ${collaboratorId})`);
+
+        const response = HttpResponse.Ok({
+            message: 'Colaborador deletado com sucesso',
+            company: existingCollaborator,
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in deleteCollaborator:', err);
         next(err);
     }
 }
