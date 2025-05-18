@@ -7,10 +7,17 @@ const collaborator = Router();
 //v1/collaborator
 
 collaborator.get(
-  '/get/all',
-  // verifyToken,
-  // verifyPermission(['collaborator:read']),
-  RequestHandler(CollaboratorController.getAllCollaborators),
+    '/get/all',
+    // verifyToken,
+    // verifyPermission(['collaborator:read']),
+    RequestHandler(CollaboratorController.getAllCollaborators),
+);
+
+collaborator.get(
+    '/get/:id',
+    // verifyToken,
+    // verifyPermission(['collaborator:read']),
+    RequestHandler(CollaboratorController.getCollaboratorById),
 )
 
 collaborator.post(

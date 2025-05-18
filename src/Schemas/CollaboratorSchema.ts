@@ -7,6 +7,12 @@ export const GetCollaboratorSchema = z.object({
     }),
 });
 
+export const GetCollaboratorByIdSchema = z.object({
+    params: z.object({
+        id: z.string(),
+    }),
+});
+
 export const CreateCollaboratorSchema = z.object({
     params: z.object({
         companyId: z.string(),

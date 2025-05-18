@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCollaboratorSchema, GetCollaboratorSchema } from "../Schemas/CollaboratorSchema";
+import { CreateCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema } from "../Schemas/CollaboratorSchema";
 import { prisma } from "../server";
 import HttpResponse from '../Helpers/HttpResponse';
+import HttpError from '../Helpers/HttpError';
 
 export async function getAllCollaborators(req: Request, res: Response, next: NextFunction) {
     try {
@@ -36,6 +37,30 @@ export async function getAllCollaborators(req: Request, res: Response, next: Nex
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
         console.error('Error in getAllCollaborator:', err);
+        next(err);
+    }
+}
+
+export async function getCollaboratorById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params } = GetCollaboratorByIdSchema.parse(req);
+        const collaboratorId = params.id;
+
+        console.log('collaboratorId:', collaboratorId);
+
+        const existingCollaborator = await prisma.collaborator.findUnique({
+            where: { idColaborador: collaboratorId },
+        });
+
+        if (!existingCollaborator) throw new HttpError('Colaborador não encontrado', 404);
+
+        const response = HttpResponse.Ok({
+            message: 'Colaborador recuperado com sucesso',
+            data: existingCollaborator,
+        });
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in getCollaboratorById:', err);
         next(err);
     }
 }
