@@ -27,5 +27,12 @@ collaborator.post(
     RequestHandler(CollaboratorController.createCollaborator),
 );
 
+collaborator.put(
+    '/update/:id',
+    // verifyToken,
+    // verifyPermission(['collaborator:update']),
+    RequestHandler(CollaboratorController.updateCollaborator),
+)
+
 export default collaborator;
 

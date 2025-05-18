@@ -23,3 +23,14 @@ export const CreateCollaboratorSchema = z.object({
         statusColaborador: z.enum(['ATIVO', 'INATIVO']),
     })
 });
+
+export const UpdateCollaboratorSchema = z.object({
+    params: z.object({
+        id: z.string(),
+    }),
+    body: z.object({
+        nomeColaborador: z.string(),
+        cpf: z.string().max(11).min(11),
+        statusColaborador: z.enum(['ATIVO', 'INATIVO']),
+    }),
+});
