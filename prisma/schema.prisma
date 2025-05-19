@@ -7,140 +7,144 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model epi {
-  ca                String    @id @db.VarChar(5)
-  id_empresa        String    @db.VarChar(36)
-  nome_epi          String    @db.VarChar(255)
-  validade          DateTime? @db.Date
-  quantidade        Int
-  quantidade_minima Int
-  data_compra       DateTime? @db.Date
-  createdAt         DateTime  @default(now()) @db.DateTime(0)
-  updatedAt         DateTime  @updatedAt @db.DateTime(0)
-  empresa           companies @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade)
-  processos         process[]
-  logs              log[]
+  ca               String    @id @db.VarChar(5)
+  idEmpresa        String    @db.VarChar(36)
+  nomeEpi          String    @db.VarChar(255)
+  validade         DateTime? @db.Date
+  quantidade       Int
+  quantidadeMinima Int
+  data_compra      DateTime? @db.Date
+  createdAt        DateTime  @default(now()) @db.DateTime(0)
+  updatedAt        DateTime  @updatedAt @db.DateTime(0)
+  empresa          Companies @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  processos        Process[]
+  logs             Log[]
 
   @@map("epi")
 }
 
-model process {
-  id_processo    String        @id @default(uuid()) @db.VarChar(36)
-  id_colaborador String?       @db.VarChar(36)
-  ca             String?       @db.VarChar(5)
-  data_agendada  DateTime      @db.Date
-  data_entrega   DateTime?     @db.Timestamp(0)
-  status_entrega Boolean       @default(false)
-  pdf_url        String?       @db.VarChar(255)
-  data_devolucao DateTime?     @db.Timestamp(0)
-  vida_util      DateTime?     @db.Date
-  createdAt      DateTime      @default(now()) @db.DateTime(0)
-  updatedAt      DateTime      @updatedAt @db.DateTime(0)
-  colaborador    collaborator? @relation(fields: [id_colaborador], references: [id_colaborador], onDelete: SetNull)
-  epi            epi?          @relation(fields: [ca], references: [ca], onDelete: SetNull)
-  logs           log[]
+model Process {
+  idProcesso    String        @id @default(uuid()) @db.VarChar(36)
+  idColaborador String?       @db.VarChar(36)
+  ca            String?       @db.VarChar(5)
+  dataAgendada  DateTime      @db.Date
+  dataEntrega   DateTime?     @db.Timestamp(0)
+  statusEntrega Boolean       @default(false)
+  pdfUrl        String?       @db.VarChar(255)
+  dataDevolucao DateTime?     @db.Timestamp(0)
+  vidaUtil      DateTime?     @db.Date
+  createdAt     DateTime      @default(now()) @db.DateTime(0)
+  updatedAt     DateTime      @updatedAt @db.DateTime(0)
+  colaborador   Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: SetNull)
+  epi           epi?          @relation(fields: [ca], references: [ca], onDelete: SetNull)
+  logs          Log[]
 
   @@map("processo")
 }
 
-model biometria {
-  id_biometria     String       @id @default(uuid()) @db.VarChar(36)
-  id_colaborador   String       @db.VarChar(36)
-  biometria_path   String?      @db.VarChar(255)
-  certificado_path String?      @db.VarChar(255)
-  createdAt        DateTime     @default(now()) @db.DateTime(0)
-  updatedAt        DateTime     @updatedAt @db.DateTime(0)
-  colaborador      collaborator @relation(fields: [id_colaborador], references: [id_colaborador], onDelete: Cascade)
+model Biometria {
+  idBiometria     String       @id @default(uuid()) @db.VarChar(36)
+  idColaborador   String       @db.VarChar(36)
+  biometriaPath   String?      @db.VarChar(255)
+  certificadoPath String?      @db.VarChar(255)
+  createdAt       DateTime     @default(now()) @db.DateTime(0)
+  updatedAt       DateTime     @updatedAt @db.DateTime(0)
+  colaborador     Collaborator @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
 
   @@map("biometria")
 }
 
-model users {
-  id_user      String          @id @default(uuid()) @db.VarChar(36)
+model Users {
+  idUser       String          @id @default(uuid()) @db.VarChar(36)
   email        String          @unique @db.VarChar(255)
   senha        String          @db.VarChar(255)
   status_user  Boolean
   createdAt    DateTime        @default(now()) @db.DateTime(0)
   updatedAt    DateTime        @updatedAt @db.DateTime(0)
-  logs         log[]
-  authEmpresas authCompanies[]
+  logs         Log[]
+  authEmpresas AuthCompanies[]
 
   @@map("usuario")
 }
 
-model log {
-  id_log         String    @id @default(uuid()) @db.VarChar(36)
-  id_user        String?   @db.VarChar(36)
-  id_colaborador String?   @db.VarChar(36)
-  id_processo    String?   @db.VarChar(36)
-  ca             String?   @db.VarChar(5)
-  body           Json
-  tipo           String    @db.VarChar(20)
-  timestamp      DateTime? @db.Timestamp(0)
+model Log {
+  idLog         String    @id @default(uuid()) @db.VarChar(36)
+  idUser        String?   @db.VarChar(36)
+  idColaborador String?   @db.VarChar(36)
+  idProcesso    String?   @db.VarChar(36)
+  ca            String?   @db.VarChar(5)
+  body          Json
+  tipo          String    @db.VarChar(20)
+  timestamp     DateTime? @db.Timestamp(0)
 
-  usuario     users?        @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
-  colaborador collaborator? @relation(fields: [id_colaborador], references: [id_colaborador], onDelete: Cascade)
-  processo    process?      @relation(fields: [id_processo], references: [id_processo], onDelete: Cascade)
+  usuario     Users?        @relation(fields: [idUser], references: [idUser], onDelete: Cascade)
+  colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
+  processo    Process?      @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
   epi         epi?          @relation(fields: [ca], references: [ca], onDelete: Cascade)
 
   @@map("log")
 }
 
-model authCompanies {
-  id_user    String @db.VarChar(36)
-  id_empresa String @db.VarChar(36)
-  cargo      String @db.VarChar(100)
+model AuthCompanies {
+  idUser    String @db.VarChar(36)
+  idEmpresa String @db.VarChar(36)
+  cargo     String @db.VarChar(100)
 
-  user    users     @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
-  empresa companies @relation(fields: [id_empresa], references: [id_empresa], onDelete: Cascade)
-  role    roles     @relation(fields: [cargo], references: [cargo], onDelete: Cascade)
+  user    Users     @relation(fields: [idUser], references: [idUser], onDelete: Cascade)
+  empresa Companies @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  role    Roles     @relation(fields: [cargo], references: [cargo], onDelete: Cascade)
 
-  @@id([id_user, id_empresa])
+  @@id([idUser, idEmpresa])
   @@map("auth_companies")
 }
 
-model roles {
+model Roles {
   cargo     String @id @db.VarChar(10)
   permissao Json
 
-  auths authCompanies[]
-
-  @@map("roles")
+  auths AuthCompanies[]
+}
 
 enum CompanyStatus {
   ATIVO
   INATIVO
 
+  @@map("roles")
 }
 
 model Companies {
-  idEmpresa      String        @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
-  nomeFantasia  String         @map("nome_fantasia") @db.VarChar(255)
-  razaoSocial   String?        @map("razao_social") @db.VarChar(255)
-  cnpj          String         @unique @map("cnpj") @db.VarChar(14)
-  uf            String?        @map("uf") @db.VarChar(2)
-  cep           String         @map("cep") @db.VarChar(8)
-  logradouro    String?        @map("logradouro") @db.VarChar(255)
-  email         String?        @map("email") @db.VarChar(255)
-  telefone      String?        @map("telefone") @db.VarChar(20)
-  statusEmpresa CompanyStatus  @default(ATIVO) @map("status_empresa")
-  createdAt     DateTime       @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime       @updatedAt @map("updated_at") @db.DateTime(0)
-  colaboradores Collaborator[] @relation("EmpresaColaboradores")
+  idEmpresa     String          @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
+  nomeFantasia  String          @map("nome_fantasia") @db.VarChar(255)
+  razaoSocial   String?         @map("razao_social") @db.VarChar(255)
+  cnpj          String          @unique @map("cnpj") @db.VarChar(14)
+  uf            String?         @map("uf") @db.VarChar(2)
+  cep           String          @map("cep") @db.VarChar(8)
+  logradouro    String?         @map("logradouro") @db.VarChar(255)
+  email         String?         @map("email") @db.VarChar(255)
+  telefone      String?         @map("telefone") @db.VarChar(20)
+  statusEmpresa CompanyStatus   @default(ATIVO) @map("status_empresa")
+  createdAt     DateTime        @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime        @updatedAt @map("updated_at") @db.DateTime(0)
+  colaboradores Collaborator[]  @relation("EmpresaColaboradores")
+  epi           epi[]
+  AuthCompanies AuthCompanies[]
 
   @@map("companies")
 }
 
 model Collaborator {
-  idColaborador     String   @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
-  idEmpresa         String   @map("id_empresa") @db.VarChar(36)
-  nomeColaborador   String   @map("nome_colaborador") @db.VarChar(255)
-  cpf               String   @unique @map("cpf") @db.VarChar(11)
-  statusColaborador String?  @map("status_colaborador") @db.VarChar(50)
-  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt         DateTime @updatedAt @map("updated_at") @db.DateTime(0)
-  empresa           Companies @relation("EmpresaColaboradores", fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
-  
+  idColaborador     String      @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
+  idEmpresa         String      @map("id_empresa") @db.VarChar(36)
+  nomeColaborador   String      @map("nome_colaborador") @db.VarChar(255)
+  cpf               String      @unique @map("cpf") @db.VarChar(11)
+  statusColaborador String?     @map("status_colaborador") @db.VarChar(50)
+  createdAt         DateTime    @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.DateTime(0)
+  empresa           Companies   @relation("EmpresaColaboradores", fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  process           Process[]
+  biometria         Biometria[]
+  log               Log[]
+
   @@map("collaborator")
 }
