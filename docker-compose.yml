@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  app-2:
+  api-epi-core:
     build:
       context: .
       dockerfile: Dockerfile

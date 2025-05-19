@@ -5,8 +5,12 @@
     "clear": "rimraf dist",
     "clear:prod": "rm -rf dist",
     "build": "npm run clear:prod && tsc",
+    "build-local": "npm run clear && tsc",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/server.ts",
     "test": "npm run clear && tsc && node --test tests/index.test.mjs"
+  },
+  "prisma": {
+  "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
