@@ -49,7 +49,7 @@ export async function getCompanyById(req: Request, res: Response, next: NextFunc
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
@@ -72,7 +72,17 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
         console.log('body', body);
 
         const company = await prisma.companies.create({
-            data: body,
+            data: {
+                nomeFantasia: body.nomeFantasia,
+                razaoSocial: body.razaoSocial, 
+                cnpj: body.cnpj,
+                cep: body.cep,
+                email: body.email,
+                uf: body.uf,
+                logradouro: body.logradouro,
+                telefone: body.telefone,
+                statusEmpresa: body.statusEmpresa,
+            },
         });
 
         const response = HttpResponse.Created({
@@ -87,20 +97,19 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
     }
 }
 
-
 export async function updateCompany(req: Request, res: Response, next: NextFunction) {
     try {
         const { body, params } = UpdateCompanySchema.parse(req);
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
         const updatedCompany = await prisma.companies.update({
-            where: { id: companyId },
+            where: { idEmpresa: companyId },
             data: body,
         });
 
@@ -138,13 +147,13 @@ export async function deleteCompany(req: Request, res: Response, next: NextFunct
         const companyId = params.id;
 
         const existingCompany = await prisma.companies.findUnique({
-            where: { id: companyId },
+            where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
         await prisma.companies.delete({
-            where: { id: companyId },
+            where: { idEmpresa: companyId },
         });
 
         logger.info(`Empresa removida com sucesso (id: ${companyId})`);

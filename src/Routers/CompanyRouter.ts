@@ -4,43 +4,43 @@ import RequestHandler from '../Helpers/RequestHandler';
 // import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
-const router = Router();
+const company = Router();
 
 /// v1/company
 
-router.get(
+company.get(
   '/get/all',
   // verifyToken,
   // verifyPermission(['companies:read']),
   RequestHandler(CompanyController.getAllCompanies),
 )
 
-router.get(
+company.get(
   '/get/:id',
   // verifyToken,
   // verifyPermission(['companies:read']),
   RequestHandler(CompanyController.getCompanyById),
 )
 
-router.post(
+company.post(
   '/create',
   // verifyToken,
   // verifyPermission(['companies:create']),
   RequestHandler(CompanyController.createCompany),
 );
 
-router.put(
+company.put(
   '/update/:id',
   // verifyToken,
   // verifyPermission(['companies:update']),
   RequestHandler(CompanyController.updateCompany),
 )
 
-router.delete(
+company.delete(
   '/delete/:id',
   // verifyToken,
   // verifyPermission(['companies:delete']),
   RequestHandler(CompanyController.deleteCompany),
 )
 
-export default router;
+export default company;
