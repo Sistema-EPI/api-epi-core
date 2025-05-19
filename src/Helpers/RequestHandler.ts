@@ -9,7 +9,6 @@ import {
 } from '@prisma/client/runtime/library';
 
 
-
 export default function RequestHandler(
   controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
 ) {

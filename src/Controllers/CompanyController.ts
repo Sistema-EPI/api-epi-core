@@ -47,56 +47,46 @@ export async function getAllCompanies(req: Request, res: Response, next: NextFun
 }
 
 export async function getCompanyById(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { params } = GetCompanyByIdSchema.parse(req);
-    const companyId = params.id;
+    try {
+        const { params } = GetCompanyByIdSchema.parse(req);
+        const companyId = params.id;
 
-    const existingCompany = await prisma.companies.findUnique({
-      where: { id_empresa: companyId },
-    });
+        const existingCompany = await prisma.companies.findUnique({
+            where: { idEmpresa: companyId },
+        });
 
-    if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
+        if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
-    const response = HttpResponse.Ok({
-      message: 'Empresa recuperada com sucesso',
-      data: existingCompany,
-    });
-    return res.status(response.statusCode).json(response.payload);
-  } catch (err) {
-    console.error('Error in getCompanyById:', err);
-    next(err);
-  }
+        const response = HttpResponse.Ok({
+            message: 'Empresa recuperada com sucesso',
+            data: existingCompany,
+        });
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in getCompanyById:', err);
+        next(err);
+    }
 }
 
 export async function createCompany(req: Request, res: Response, next: NextFunction) {
-  try {
-    const body = CreateCompanySchema.parse(req.body);
+    try {
+        const body = CreateCompanySchema.parse(req.body);
 
-    const company = await prisma.companies.create({
-      data: {
-        nomeFantasia: body.nomeFantasia,
-        cnpj: body.cnpj,
-        cep: body.cep,
-        email: body.email,
-        razao_social: body.razao_social,
-        uf: body.uf,
-        logradouro: body.logradouro,
-        telefone: body.telefone,
-        status_empresa: body.status_empresa,
-      },
-    });
+        console.log('body', body);
 
-    const response = HttpResponse.Created({
-      message: 'Empresa criada com sucesso',
-      company,
-    });
-
-    return res.status(response.statusCode).json(response.payload);
-  } catch (err) {
-    console.error('Error in createCompany:', err);
-    next(err);
-  }
-}
+        const company = await prisma.companies.create({
+            data: {
+                nomeFantasia: body.nomeFantasia,
+                razaoSocial: body.razaoSocial, 
+                cnpj: body.cnpj,
+                cep: body.cep,
+                email: body.email,
+                uf: body.uf,
+                logradouro: body.logradouro,
+                telefone: body.telefone,
+                statusEmpresa: body.statusEmpresa,
+            },
+        });
 
 export async function updateCompany(req: Request, res: Response, next: NextFunction) {
   try {
@@ -134,16 +124,48 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
       logger.info(`Empresa (id: ${companyId}) recebeu uma requisição de update, mas nenhum dado foi alterado.`);
     }
 
-    const response = HttpResponse.Created({
-      message: 'Empresa atualizada com sucesso',
-      id: companyId,
-    });
+export async function updateCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { body, params } = UpdateCompanySchema.parse(req);
+        const companyId = params.id;
 
-    return res.status(response.statusCode).json(response.payload);
-  } catch (err) {
-    console.error('Error in updateCompany:', err);
-    next(err);
-  }
+        const existingCompany = await prisma.companies.findUnique({
+            where: { idEmpresa: companyId },
+        });
+
+        if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
+
+        const updatedCompany = await prisma.companies.update({
+            where: { idEmpresa: companyId },
+            data: body,
+        });
+
+        const changes: Record<string, { before: any; after: any }> = {};
+        for (const key in body) {
+            if ((existingCompany as any)[key] !== (updatedCompany as any)[key]) {
+                changes[key] = {
+                    before: (existingCompany as any)[key],
+                    after: (updatedCompany as any)[key],
+                };
+            }
+        }
+
+        if (Object.keys(changes).length > 0) {
+            logger.info(`Empresa atualizada (id: ${companyId}) com as mudanças: ${JSON.stringify(changes)}`);
+        } else {
+            logger.info(`Empresa (id: ${companyId}) recebeu uma requisição de update, mas nenhum dado foi alterado.`);
+        }
+
+        const response = HttpResponse.Created({
+            message: 'Company updated successfully',
+            id: companyId,
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in updateCompany:', err);
+        next(err);
+    }
 }
 
 export async function deleteCompany(req: Request, res: Response, next: NextFunction) {
@@ -151,15 +173,16 @@ export async function deleteCompany(req: Request, res: Response, next: NextFunct
     const { params } = DeleteCompanySchema.parse(req);
     const companyId = params.id;
 
-    const existingCompany = await prisma.companies.findUnique({
-      where: { id_empresa: companyId },
-    });
+        const existingCompany = await prisma.companies.findUnique({
+            where: { idEmpresa: companyId },
+        });
 
     if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
-    await prisma.companies.delete({
-      where: { id_empresa: companyId },
-    });
+
+        await prisma.companies.delete({
+            where: { idEmpresa: companyId },
+        });
 
     logger.info(`Empresa removida com sucesso (id: ${companyId})`);
 
