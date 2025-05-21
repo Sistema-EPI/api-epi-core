@@ -10,6 +10,8 @@ import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import { prisma } from '../server';
+// Importando os tipos necessários do Prisma
+import { CompanyStatus } from '@prisma/client';
 
 export async function getAllCompanies(req: Request, res: Response, next: NextFunction) {
   try {
@@ -20,8 +22,8 @@ export async function getAllCompanies(req: Request, res: Response, next: NextFun
     const skip = (page - 1) * limit;
 
     const [total, data] = await Promise.all([
-      prisma.companies.count(),
-      prisma.companies.findMany({
+      prisma.company.count(),
+      prisma.company.findMany({
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -51,7 +53,7 @@ export async function getCompanyById(req: Request, res: Response, next: NextFunc
         const { params } = GetCompanyByIdSchema.parse(req);
         const companyId = params.id;
 
-        const existingCompany = await prisma.companies.findUnique({
+        const existingCompany = await prisma.company.findUnique({
             where: { idEmpresa: companyId },
         });
 
@@ -70,78 +72,78 @@ export async function getCompanyById(req: Request, res: Response, next: NextFunc
 
 export async function createCompany(req: Request, res: Response, next: NextFunction) {
     try {
+        // Usamos CreateCompanySchema para validar os dados recebidos em snake_case
         const body = CreateCompanySchema.parse(req.body);
 
         console.log('body', body);
 
-        const company = await prisma.companies.create({
+        // Mapeamos do formato snake_case do schema para camelCase do Prisma
+        const company = await prisma.company.create({
             data: {
-                nomeFantasia: body.nomeFantasia,
-                razaoSocial: body.razaoSocial, 
+                nomeFantasia: body.nome_fantasia,
+                razaoSocial: body.razao_social,
                 cnpj: body.cnpj,
                 cep: body.cep,
                 email: body.email,
                 uf: body.uf,
                 logradouro: body.logradouro,
                 telefone: body.telefone,
-                statusEmpresa: body.statusEmpresa,
+                statusEmpresa: body.status_empresa as CompanyStatus, // Utilizando o tipo adequado
             },
         });
+        
+        logger.info(`Nova empresa criada (id: ${company.idEmpresa})`);
 
-export async function updateCompany(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { body, params } = UpdateCompanySchema.parse(req);
-    const companyId = params.id;
+        const response = HttpResponse.Created({
+            message: 'Empresa criada com sucesso',
+            id: company.idEmpresa,
+        });
 
-    const existingCompany = await prisma.companies.findUnique({
-      where: { id_empresa: companyId },
-    });
-
-    if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
-
-    const updatedCompany = await prisma.companies.update({
-      where: { id_empresa: companyId },
-      data: {
-        ...body,
-        razao_social: body.razao_social,
-        status_empresa: body.status_empresa,
-      },
-    });
-
-    const changes: Record<string, { before: any; after: any }> = {};
-    for (const key in body) {
-      if ((existingCompany as any)[key] !== (updatedCompany as any)[key]) {
-        changes[key] = {
-          before: (existingCompany as any)[key],
-          after: (updatedCompany as any)[key],
-        };
-      }
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in createCompany:', err);
+        next(err);
     }
-
-    if (Object.keys(changes).length > 0) {
-      logger.info(`Empresa atualizada (id: ${companyId}) com as mudanças: ${JSON.stringify(changes)}`);
-    } else {
-      logger.info(`Empresa (id: ${companyId}) recebeu uma requisição de update, mas nenhum dado foi alterado.`);
-    }
+}
 
 export async function updateCompany(req: Request, res: Response, next: NextFunction) {
     try {
         const { body, params } = UpdateCompanySchema.parse(req);
         const companyId = params.id;
 
-        const existingCompany = await prisma.companies.findUnique({
+        const existingCompany = await prisma.company.findUnique({
             where: { idEmpresa: companyId },
         });
 
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
-        const updatedCompany = await prisma.companies.update({
+        // Importamos o enum do Prisma para garantir compatibilidade de tipo
+        // Se necessário, você pode importar o enum do Prisma no topo do arquivo
+        // import { CompanyStatus } from '@prisma/client';
+
+        // Mapeamento entre snake_case do schema para camelCase do Prisma
+        const dataToUpdate = {
+            ...(body.nome_fantasia !== undefined && { nomeFantasia: body.nome_fantasia }),
+            ...(body.razao_social !== undefined && { razaoSocial: body.razao_social }),
+            ...(body.cnpj !== undefined && { cnpj: body.cnpj }),
+            ...(body.cep !== undefined && { cep: body.cep }),
+            ...(body.email !== undefined && { email: body.email }),
+            ...(body.uf !== undefined && { uf: body.uf }),
+            ...(body.logradouro !== undefined && { logradouro: body.logradouro }),
+            ...(body.telefone !== undefined && { telefone: body.telefone }),
+            // Utilizando o enum para garantir compatibilidade de tipo
+            ...(body.status_empresa !== undefined && { 
+                statusEmpresa: (body.status_empresa ? 'ATIVO' : 'INATIVO') as CompanyStatus 
+            }),
+        };
+
+        const updatedCompany = await prisma.company.update({
             where: { idEmpresa: companyId },
-            data: body,
+            data: dataToUpdate,
         });
 
         const changes: Record<string, { before: any; after: any }> = {};
-        for (const key in body) {
+        for (const key in dataToUpdate) {
             if ((existingCompany as any)[key] !== (updatedCompany as any)[key]) {
                 changes[key] = {
                     before: (existingCompany as any)[key],
@@ -156,8 +158,8 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
             logger.info(`Empresa (id: ${companyId}) recebeu uma requisição de update, mas nenhum dado foi alterado.`);
         }
 
-        const response = HttpResponse.Created({
-            message: 'Company updated successfully',
+        const response = HttpResponse.Ok({
+            message: 'Empresa atualizada com sucesso',
             id: companyId,
         });
 
@@ -169,31 +171,30 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
 }
 
 export async function deleteCompany(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { params } = DeleteCompanySchema.parse(req);
-    const companyId = params.id;
+    try {
+        const { params } = DeleteCompanySchema.parse(req);
+        const companyId = params.id;
 
-        const existingCompany = await prisma.companies.findUnique({
+        const existingCompany = await prisma.company.findUnique({
             where: { idEmpresa: companyId },
         });
 
-    if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
+        if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
-
-        await prisma.companies.delete({
+        await prisma.company.delete({
             where: { idEmpresa: companyId },
         });
 
-    logger.info(`Empresa removida com sucesso (id: ${companyId})`);
+        logger.info(`Empresa removida com sucesso (id: ${companyId})`);
 
-    const response = HttpResponse.Ok({
-      message: 'Empresa deletada com sucesso',
-      company: existingCompany,
-    });
+        const response = HttpResponse.Ok({
+            message: 'Empresa deletada com sucesso',
+            company: existingCompany,
+        });
 
-    return res.status(response.statusCode).json(response.payload);
-  } catch (err) {
-    console.error('Error in deleteCompany:', err);
-    next(err);
-  }
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in deleteCompany:', err);
+        next(err);
+    }
 }

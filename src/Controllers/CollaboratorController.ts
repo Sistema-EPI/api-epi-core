@@ -77,9 +77,9 @@ export async function createCollaborator(req: Request, res: Response, next: Next
         const collaborator = await prisma.collaborator.create({
             data: {
                 idEmpresa: params.companyId,
-                nomeColaborador: body.nomeColaborador,
+                nomeColaborador: body.nome_colaborador,
                 cpf: body.cpf,
-                statusColaborador: body.statusColaborador,
+                statusColaborador: body.status_colaborador,
             },
         });
 

@@ -18,9 +18,9 @@ export const CreateCollaboratorSchema = z.object({
         companyId: z.string(),
     }),
     body: z.object({
-        nomeColaborador: z.string(),
+        nome_colaborador: z.string(),
         cpf: z.string().max(11).min(11),
-        statusColaborador: z.enum(['ATIVO', 'INATIVO']),
+        status_colaborador: z.enum(['ATIVO', 'INATIVO']),
     })
 });
 
@@ -29,9 +29,9 @@ export const UpdateCollaboratorSchema = z.object({
         id: z.string(),
     }),
     body: z.object({
-        nomeColaborador: z.string(),
+        nome_colaborador: z.string(),
         cpf: z.string().max(11).min(11),
-        statusColaborador: z.enum(['ATIVO', 'INATIVO']),
+        status_colaborador: z.enum(['ATIVO', 'INATIVO']),
     }),
 });
 
