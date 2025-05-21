@@ -16,11 +16,12 @@ COPY . .
 # Compile o código TypeScript
 RUN npx prisma generate
 RUN npm run build
+RUN chmod +x wait-for-it.sh entrypoint.sh
 
 
 # Exponha a porta que a API REST usará
 # EXPOSE 8888
 
 # Comando para iniciar a aplicação
-CMD ["node", "dist/server.js"]
+ENTRYPOINT ["./entrypoint-local.sh"]
 

@@ -16,7 +16,7 @@ COPY . .
 
 RUN npx prisma generate
 RUN npm run build-local
-RUN chmod +x wait-for-it.sh entrypoint.sh
+RUN chmod +x wait-for-it.sh entrypoint-local.sh
 
 # Exponha a porta que a API REST usará
 EXPOSE 8081
