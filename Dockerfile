@@ -23,5 +23,5 @@ RUN chmod +x wait-for-it.sh entrypoint.sh
 # EXPOSE 8888
 
 # Comando para iniciar a aplicação
-ENTRYPOINT ["./entrypoint-local.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 
