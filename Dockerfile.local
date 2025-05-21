@@ -22,5 +22,5 @@ RUN chmod +x wait-for-it.sh entrypoint.sh
 EXPOSE 8081
 
 # Comando para iniciar o Prisma e a aplicação
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./entrypoint-local.sh"]
 

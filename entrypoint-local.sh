@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Aguardando MySQL..."
-./wait-for-it.sh mysql:3306 --timeout=30 --strict -- echo "MySQL está pronto"
+./wait-for-it.sh api-epi-core-mysql-1:3306 --timeout=30 --strict -- echo "MySQL está pronto"
 
 echo "Gerando migration (caso necessário)..."
 npx prisma migrate reset --force --skip-seed || true
