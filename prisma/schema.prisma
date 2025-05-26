@@ -115,6 +115,11 @@ model User {
   @@map("usuario")
 }
 
+enum UserStatus {
+  ATIVO
+  INATIVO
+}
+
 model Log {
   idLog         String        @id @default(uuid()) @map("id_log") @db.VarChar(36)
   idUser        String?       @map("id_user") @db.VarChar(36)
@@ -154,3 +159,4 @@ model Role {
 
   @@map("roles")
 }
+
