@@ -3,9 +3,9 @@ import { LoginSchema, SelectCompanySchema } from "../Schemas/UserSchema";
 import { prisma } from '../server';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
-import { generateToken } from '../Helpers/jwt';
+// import { generateToken } from '../Helpers/jwt';
 
-
+//export async function createUser(req: Request, res: Response, next: NextFunction) {}
 export async function login(req: Request, res: Response, next: NextFunction) {
     const body = LoginSchema.parse(req.body);
     const { email, senha } = body;
@@ -66,12 +66,12 @@ export async function selectCompany(req: Request, res: Response, next: NextFunct
 
     if (!auth) throw HttpError.Unauthorized('Usuário não autorizado a acessar esta empresa');
 
-    const token = generateToken({
-        sub: params.id_usuario,
-        empresaId: params.id_empresa,
-        cargo: auth.cargo,
-        permissoes: auth.role.permissao
-    }, '1h');
+    // const token = generateToken({
+    //     sub: params.id_usuario,
+    //     empresaId: params.id_empresa,
+    //     cargo: auth.cargo,
+    //     permissoes: auth.role.permissao
+    // }, '1h');
 
     return res.status(200).json({
         message: 'Empresa selecionada com sucesso',
@@ -79,7 +79,7 @@ export async function selectCompany(req: Request, res: Response, next: NextFunct
             idEmpresa: auth.idEmpresa,
             nomeFantasia: auth.empresa.nomeFantasia,
             idUsuario: auth.idUser,
-            token,
+            // token,
         }
     });
 }
