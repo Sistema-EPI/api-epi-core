@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { LoginSchema, SelectCompanySchema } from "../Schemas/UserSchema";
+import { LoginSchema, SelectCompanySchema } from "../Schemas/LoginSchema";
 import { prisma } from '../server';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';

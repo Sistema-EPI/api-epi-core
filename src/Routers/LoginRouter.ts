@@ -1,25 +1,25 @@
 import { Router } from 'express';
-import * as UserController from '../Controllers/UserController'
+import * as LoginController from '../Controllers/LoginController'
 import RequestHandler from '../Helpers/RequestHandler';
 // import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
-//v1/user 
+//v1/login
 
-const user = Router();
+const login = Router();
 
-user.post(
-  '/login',
+login.post(
+  '/attempt',
   // verifyToken,
   // verifyPermission(['user:write']),
-  RequestHandler(UserController.login),
+  RequestHandler(LoginController.login),
 );
 
-user.post(
+login.post(
   '/select/company/:id_usuario/:id_empresa',
   // verifyToken,
   // verifyPermission(['user:write']),
-  RequestHandler(UserController.selectCompany),
+  RequestHandler(LoginController.selectCompany),
 );
 
-export default user;
+export default login;
