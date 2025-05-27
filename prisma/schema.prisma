@@ -25,7 +25,7 @@ model Company {
   epis           Epi[] 
   authCompanies AuthCompany[]
 
-  @@map("companies")
+  @@map("company")
 }
 
 enum CompanyStatus {
@@ -85,7 +85,7 @@ model Process {
   epi           Epi?          @relation(fields: [ca], references: [ca], onDelete: SetNull)
   logs          Log[]
 
-  @@map("processo")
+  @@map("process")
 }
 
 model Biometria {
@@ -112,7 +112,7 @@ model User {
   logs         Log[]
   authCompanies AuthCompany[]
 
-  @@map("usuario")
+  @@map("user")
 }
 
 enum UserStatus {
@@ -148,7 +148,7 @@ model AuthCompany {
   role      Role     @relation(fields: [cargo], references: [cargo], onDelete: Cascade)
 
   @@id([idUser, idEmpresa])
-  @@map("auth_companies")
+  @@map("auth_company")
 }
 
 model Role {
@@ -157,6 +157,6 @@ model Role {
 
   authCompanies AuthCompany[]
 
-  @@map("roles")
+  @@map("role")
 }
 
