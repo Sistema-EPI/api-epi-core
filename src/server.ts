@@ -14,6 +14,7 @@ export const prisma = new PrismaClient();
 // Rotas
 import CompanyRouter from './Routers/CompanyRouter';
 import CollaboratorRouter from './Routers/CollaboratorRouter';
+import LoginRouter from './Routers/LoginRouter';
 import UserRouter from './Routers/UserRouter';
 import { ErrorMiddleware } from './Helpers/RequestHandler';
 
@@ -47,6 +48,7 @@ app.use('/v1', apiV1Router);
 // Rotas
 apiV1Router.use('/company', CompanyRouter);
 apiV1Router.use('/collaborator', CollaboratorRouter);
+apiV1Router.use('/login', LoginRouter);
 apiV1Router.use('/user', UserRouter);
 
 // Erros

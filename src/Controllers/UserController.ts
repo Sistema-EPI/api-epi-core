@@ -1,86 +1,90 @@
 import { Request, Response, NextFunction } from 'express';
-import { LoginSchema, SelectCompanySchema } from "../Schemas/UserSchema";
-import { prisma } from '../server';
+import { CreateUserSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
-// import { generateToken } from '../Helpers/jwt';
+import HttpResponse from '../Helpers/HttpResponse';
+import { randomUUID } from 'crypto';
+import { prisma } from '../server';
 
-//export async function createUser(req: Request, res: Response, next: NextFunction) {}
-export async function login(req: Request, res: Response, next: NextFunction) {
-    const body = LoginSchema.parse(req.body);
-    const { email, senha } = body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+export async function createUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const { email, senha, cargo, status_user } = req.body;
 
-    if (!user) throw HttpError.Unauthorized('Usuário não encontrado');
+    console.log(req.params);
 
-    const isPasswordValid = await bcrypt.compare(senha, user.senha);
-    if (!isPasswordValid) throw HttpError.Unauthorized('Credenciais inválidas');
-
-    const empresas = await prisma.authCompany.findMany({
-        where: { idUser: user.idUser },
-        select: {
-            idEmpresa: true,
-            cargo: true,
-            empresa: {
-                select: {
-                    nomeFantasia: true,
-                    statusEmpresa: true,
-                },
-            },
-        },
+    // Valide com Zod usando os dados extraídos
+    CreateUserSchema.parse({
+      params: { id },
+      body: { email, senha, cargo, status_user }
     });
 
-    if (empresas.length === 0) throw HttpError.Unauthorized('Usuário inválido');
+    const idEmpresa = id;
 
-    return res.status(200).json({
-        message: 'Login realizado com sucesso',
-        user: {
-            idUsuario: user.idUser,
-            email: user.email,
-            statusUser: user.statusUser,
-            empresas: empresas.map((empresa: { idEmpresa: any; empresa: { nomeFantasia: any; }; }) => ({
-                idEmpresa: empresa.idEmpresa,
-                nomeFantasia: empresa.empresa.nomeFantasia,
-            })),
-        },
+    const empresa = await prisma.company.findUnique({
+      where: { idEmpresa }
     });
+
+    if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+    const isEmailAlreadyInUse = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (isEmailAlreadyInUse) throw HttpError.BadRequest('Email inválido');
+
+    const userId = await insertUserInTable(email, senha, status_user);
+
+    await conectUserToCompany(userId, idEmpresa, cargo);
+
+    return HttpResponse.Ok({
+      message: 'Usuário criado com sucesso',
+      data: {
+        idUsuario: userId,
+        email,
+        statusUser: status_user,
+        cargo,
+      }
+    });
+  } catch (err) {
+    console.error('Error in createUser:', err);
+    return res.status(400).json({ error: err });
+  }
 }
 
+export async function insertUserInTable(email: string, senha: string, statusUser: boolean) {
+    const userId = randomUUID();
 
-export async function selectCompany(req: Request, res: Response, next: NextFunction) {
-    const { params } = SelectCompanySchema.parse(req);
+    const hashedPassword = await bcrypt.hash(senha, 10);
 
-    const auth = await prisma.authCompany.findUnique({
-        where: {
-            idUser_idEmpresa: {
-                idUser: params.id_usuario,
-                idEmpresa: params.id_empresa
-            }
-        },
-        include: {
-            empresa: true,
-            role: true
+    const newUser = await prisma.user.create({
+        data: {
+            idUser: userId,
+            email,
+            senha: hashedPassword,
+            statusUser
         }
     });
 
-    if (!auth) throw HttpError.Unauthorized('Usuário não autorizado a acessar esta empresa');
+    console.log(`Usuário criado com sucesso: ${newUser.idUser}`);
+    console.log(JSON.stringify(newUser, null, 2));
 
-    // const token = generateToken({
-    //     sub: params.id_usuario,
-    //     empresaId: params.id_empresa,
-    //     cargo: auth.cargo,
-    //     permissoes: auth.role.permissao
-    // }, '1h');
-
-    return res.status(200).json({
-        message: 'Empresa selecionada com sucesso',
-        auth: {
-            idEmpresa: auth.idEmpresa,
-            nomeFantasia: auth.empresa.nomeFantasia,
-            idUsuario: auth.idUser,
-            // token,
-        }
-    });
+    return newUser.idUser;
 }
 
+export async function conectUserToCompany(userId: string, companyId: string, cargo: string) {
+
+    const authCompany = await prisma.authCompany.create({
+        data: {
+            idUser: userId,
+            idEmpresa: companyId,
+            cargo,
+        }
+    });
+
+    console.log(`Usuário ${userId} conectado à empresa ${companyId} com cargo ${cargo}`);
+    console.log(JSON.stringify(authCompany, null, 2));
+
+    return authCompany;
+}
