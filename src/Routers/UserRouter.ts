@@ -18,8 +18,16 @@ user.post(
 user.get(
     '/get/:id',
     // verifyToken,
-    // verifyPermission(['companies:read']),
+    // verifyPermission(['user:read']),
     RequestHandler(UserController.getUserById),
 )
+
+user.post(
+    '/:userId/connect/:companyId',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.connectUserToCompanyHandler),
+);
+
 
 export default user;

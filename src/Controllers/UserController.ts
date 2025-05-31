@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserSchema, GetUserByIdSchema } from '../Schemas/UserSchema';
+import { ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -79,6 +79,7 @@ export async function insertUserInTable(email: string, senha: string, statusUser
   return newUser.idUser;
 }
 
+//auxiliary function 
 export async function conectUserToCompany(userId: string, companyId: string, cargo: string) {
 
   const authCompany = await prisma.authCompany.create({
@@ -138,5 +139,40 @@ export async function getUserById(req: Request, res: Response, next: NextFunctio
   } catch (err) {
     console.error('Erro ao buscar usuário:', err);
     return res.status(400).json({ error: err });
+  }
+}
+
+export async function connectUserToCompanyHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params, body } = ConnectUserToCompanyHandlerSchema.parse(req);
+    const { userId, companyId } = params;
+    const { cargo } = body;
+
+
+    const existing = await prisma.authCompany.findUnique({
+      where: {
+        idUser_idEmpresa: {
+          idUser: userId,
+          idEmpresa: companyId
+        }
+      }
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'Usuário já está vinculado a esta empresa' });
+    }
+
+    const result = await conectUserToCompany(userId, companyId, cargo);
+
+    return res.status(201).json({
+      message: 'Usuário vinculado com sucesso',
+      data: result
+    });
+
+  } catch (err) {
+    if (err instanceof Error) {
+      return res.status(400).json({ error: err.message });
+    }
+    return res.status(500).json({ error: 'Erro interno no servidor' });
   }
 }
