@@ -40,8 +40,17 @@ user.put(
     '/:userId/update/password',
     // verifyToken,
     // verifyPermission(['user:write']),
-    RequestHandler(UserController.updatePasswordHandler)
+    RequestHandler(UserController.updatePassword)
 );
+
+user.put(
+    '/:userId/update/status',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.updateUserStatus)
+
+);
+
 
 
 export default user;

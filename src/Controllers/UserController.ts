@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema, GetUsersSchema } from '../Schemas/UserSchema';
+import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema, GetUsersSchema, updateUserStatusSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -215,7 +215,7 @@ export async function connectUserToCompanyHandler(req: Request, res: Response, n
   }
 }
 
-export async function updatePasswordHandler(req: Request, res: Response) {
+export async function updatePassword(req: Request, res: Response) {
   try {
     const { params, body } = ChangePasswordSchema.parse(req);
     const { userId } = params;
@@ -249,3 +249,40 @@ export async function updatePasswordHandler(req: Request, res: Response) {
     return res.status(400).json({ error: 'Requisição inválida' });
   }
 }
+
+export async function updateUserStatus(req: Request, res: Response) {
+  try {
+    const { params, body } = updateUserStatusSchema.parse(req);
+    const { userId } = params;
+
+    console.log('Atualizando status do usuário:', userId);
+    console.log('Dados recebidos:', body);
+
+    const user = await prisma.user.findUnique({ where: { idUser: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { idUser: userId },
+      data: {
+        email: body.email,
+        statusUser: body.statusUser,
+      }
+    });
+
+    return res.status(200).json({
+      message: 'Usuário atualizado com sucesso',
+      data: {
+        idUser: updated.idUser,
+        email: updated.email,
+        statusUser: updated.statusUser,
+      }
+    });
+
+  } catch (err) {
+    console.error('Erro ao atualizar usuário:', err);
+    return res.status(400).json({ error: 'Requisição inválida' });
+  }
+}
+

@@ -5,7 +5,7 @@ import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
 // import { generateToken } from '../Helpers/jwt';
 
-//export async function createUser(req: Request, res: Response, next: NextFunction) {}
+
 export async function login(req: Request, res: Response, next: NextFunction) {
     const body = LoginSchema.parse(req.body);
     const { email, senha } = body;

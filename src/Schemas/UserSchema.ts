@@ -47,4 +47,14 @@ export const ChangePasswordSchema = z.object({
     senhaAtual: z.string().min(6, 'Senha atual é obrigatória'),
     novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres')
   })
-})
+});
+
+export const updateUserStatusSchema = z.object({
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
+  body: z.object({
+    email: z.string().email().optional(),
+    statusUser: z.boolean(),
+  })
+});
