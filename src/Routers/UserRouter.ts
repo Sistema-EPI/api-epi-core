@@ -8,11 +8,54 @@ import * as UserController from '../Controllers/UserController';
 
 const user = Router();
 
+user.get(
+    '/get/all',
+    // verifyToken,
+    // verifyPermission(['companies:read']),
+    RequestHandler(UserController.getAllUsers),
+);
+
 user.post(
     '/create/:id',
     // verifyToken,
     // verifyPermission(['user:write']),
     RequestHandler(UserController.createUser),
 );
+
+user.get(
+    '/get/:id',
+    // verifyToken,
+    // verifyPermission(['user:read']),
+    RequestHandler(UserController.getUserById),
+)
+
+user.post(
+    '/:userId/connect/:companyId',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.connectUserToCompanyHandler),
+);
+
+user.put(
+    '/:userId/update/password',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.updatePassword)
+);
+
+user.put(
+    '/:userId/update/status',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.updateUserStatus)
+);
+
+user.delete(
+    '/:userId/delete',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.deleteUser)
+);
+
 
 export default user;
