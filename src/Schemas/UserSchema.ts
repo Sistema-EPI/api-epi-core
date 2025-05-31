@@ -38,3 +38,13 @@ export const ConnectUserToCompanyHandlerSchema = z.object({
     }),
   }),
 });
+
+export const ChangePasswordSchema = z.object({
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
+  body: z.object({
+    senhaAtual: z.string().min(6, 'Senha atual é obrigatória'),
+    novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres')
+  })
+})

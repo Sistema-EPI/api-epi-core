@@ -36,5 +36,12 @@ user.post(
     RequestHandler(UserController.connectUserToCompanyHandler),
 );
 
+user.put(
+    '/:userId/update/password',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.updatePasswordHandler)
+);
+
 
 export default user;

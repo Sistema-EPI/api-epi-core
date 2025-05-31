@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema, GetUsersSchema } from '../Schemas/UserSchema';
+import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema, GetUsersSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -212,5 +212,40 @@ export async function connectUserToCompanyHandler(req: Request, res: Response, n
       return res.status(400).json({ error: err.message });
     }
     return res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+}
+
+export async function updatePasswordHandler(req: Request, res: Response) {
+  try {
+    const { params, body } = ChangePasswordSchema.parse(req);
+    const { userId } = params;
+    const { senhaAtual, novaSenha } = body;
+
+    const user = await prisma.user.findUnique({ where: { idUser: userId } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    const senhaCorreta = await bcrypt.compare(senhaAtual, user.senha);
+
+    if (!senhaCorreta) {
+      return res.status(401).json({ error: 'Senha atual incorreta' });
+    }
+
+    const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+    console.log('Nova senha hasheada:', novaSenhaHash);
+
+    await prisma.user.update({
+      where: { idUser: userId },
+      data: { senha: novaSenhaHash }
+    });
+
+    return res.status(200).json({ message: 'Senha atualizada com sucesso' });
+
+  } catch (err) {
+    console.error('Erro ao atualizar senha:', err);
+    return res.status(400).json({ error: 'Requisição inválida' });
   }
 }
