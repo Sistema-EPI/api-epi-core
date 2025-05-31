@@ -72,7 +72,9 @@ export async function createUser(req: Request, res: Response, next: NextFunction
     const userId = await insertUserInTable(email, senha, status_user);
 
     console.log('Usuário criado, conectando à empresa...');
+
     await conectUserToCompany(userId, idEmpresa, cargo);
+
     console.log('Finalizado com sucesso!');
 
     return res.status(201).json({
