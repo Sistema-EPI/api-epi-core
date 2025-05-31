@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 
+export const GetUsersSchema = z.object({
+  query: z.object({
+    page: z.string().optional(),
+    limit: z.string().optional(),
+  }),
+});
+
 export const CreateUserSchema = z.object({
   params: z.object({
     id: z.string().uuid(),

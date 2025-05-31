@@ -8,6 +8,13 @@ import * as UserController from '../Controllers/UserController';
 
 const user = Router();
 
+user.get(
+    '/get/all',
+    // verifyToken,
+    // verifyPermission(['companies:read']),
+    RequestHandler(UserController.getAllUsers),
+);
+
 user.post(
     '/create/:id',
     // verifyToken,
