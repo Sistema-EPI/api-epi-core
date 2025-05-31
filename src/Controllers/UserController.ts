@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, GetUserByIdSchema, GetUsersSchema, updateUserStatusSchema } from '../Schemas/UserSchema';
+import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, DeleteUserSchema, GetUserByIdSchema, GetUsersSchema, UpdateUserStatusSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -252,7 +252,7 @@ export async function updatePassword(req: Request, res: Response) {
 
 export async function updateUserStatus(req: Request, res: Response) {
   try {
-    const { params, body } = updateUserStatusSchema.parse(req);
+    const { params, body } = UpdateUserStatusSchema.parse(req);
     const { userId } = params;
 
     console.log('Atualizando status do usuário:', userId);
@@ -283,6 +283,37 @@ export async function updateUserStatus(req: Request, res: Response) {
   } catch (err) {
     console.error('Erro ao atualizar usuário:', err);
     return res.status(400).json({ error: 'Requisição inválida' });
+  }
+}
+
+export async function deleteUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = DeleteUserSchema.parse(req);
+    const userId = params.userId;
+
+
+    const existingUser = await prisma.user.findUnique({
+      where: { idUser: userId },
+    });
+
+    if (!existingUser) throw new HttpError('Usuário não encontrado', 404);
+
+    const updatedUser = await prisma.user.update({
+      where: { idUser: userId },
+      data: { deletedAt: new Date() },
+    });
+
+    console.log('Usuário soft deletado com sucesso:', updatedUser.idUser);
+
+    const response = HttpResponse.Ok({
+      message: 'Usuário deletado com sucesso',
+      user: updatedUser,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Erro ao deletar usuário:', err);
+    return res.status(500).json({ error: 'Erro interno no servidor' });
   }
 }
 

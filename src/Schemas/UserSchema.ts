@@ -49,7 +49,7 @@ export const ChangePasswordSchema = z.object({
   })
 });
 
-export const updateUserStatusSchema = z.object({
+export const UpdateUserStatusSchema = z.object({
   params: z.object({
     userId: z.string().uuid(),
   }),
@@ -57,4 +57,10 @@ export const updateUserStatusSchema = z.object({
     email: z.string().email().optional(),
     statusUser: z.boolean(),
   })
+});
+
+export const DeleteUserSchema = z.object({
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
 });

@@ -48,9 +48,14 @@ user.put(
     // verifyToken,
     // verifyPermission(['user:write']),
     RequestHandler(UserController.updateUserStatus)
-
 );
 
+user.delete(
+    '/:userId/delete',
+    // verifyToken,
+    // verifyPermission(['user:write']),
+    RequestHandler(UserController.deleteUser)
+);
 
 
 export default user;
