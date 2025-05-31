@@ -1,11 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateUserSchema } from '../Schemas/UserSchema';
+import { CreateUserSchema, GetUserByIdSchema } from '../Schemas/UserSchema';
 import HttpError from '../Helpers/HttpError';
 import bcrypt from 'bcrypt';
-import HttpResponse from '../Helpers/HttpResponse';
 import { randomUUID } from 'crypto';
 import { prisma } from '../server';
-
 
 export async function createUser(req: Request, res: Response, next: NextFunction) {
   try {
@@ -95,4 +93,50 @@ export async function conectUserToCompany(userId: string, companyId: string, car
   console.log(JSON.stringify(authCompany, null, 2));
 
   return authCompany;
+}
+
+export async function getUserById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetUserByIdSchema.parse(req);
+
+    const user = await prisma.user.findUnique({
+      where: { idUser: params.id },
+      include: {
+        authCompanies: {
+          select: {
+            idEmpresa: true,
+            cargo: true,
+            empresa: {
+              select: {
+                razaoSocial: true,
+                cnpj: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    console.log(user);
+
+    if (!user) {
+      throw HttpError.NotFound('Usuário não encontrado');
+    }
+
+    return res.status(200).json({
+      idUser: user.idUser,
+      email: user.email,
+      statusUser: user.statusUser,
+      empresas: user.authCompanies.map((auth: { idEmpresa: any; cargo: any; empresa: { razaoSocial: any; cnpj: any; }; }) => ({
+        idEmpresa: auth.idEmpresa,
+        cargo: auth.cargo,
+        razaoSocial: auth.empresa?.razaoSocial,
+        cnpj: auth.empresa?.cnpj
+      }))
+
+    });
+  } catch (err) {
+    console.error('Erro ao buscar usuário:', err);
+    return res.status(400).json({ error: err });
+  }
 }

@@ -15,4 +15,11 @@ user.post(
     RequestHandler(UserController.createUser),
 );
 
+user.get(
+    '/get/:id',
+    // verifyToken,
+    // verifyPermission(['companies:read']),
+    RequestHandler(UserController.getUserById),
+)
+
 export default user;
