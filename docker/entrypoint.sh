@@ -30,8 +30,6 @@ if [ -z "$ENV" ]; then
 fi
 
 if [ "$ENV" == "prod" ]; then
-    echo "Aguardando MySQL..."
-    ./wait-for-it.sh mysql:5432 --timeout=30 --strict -- echo "MySQL está pronto"
 
     echo "Aplicando migrations..."
     npx prisma migrate deploy
@@ -45,9 +43,6 @@ if [ "$ENV" == "prod" ]; then
 fi
 
 if [ "$ENV" == "homolog" ]; then
-    echo "⏳ Aguardando MySQL ficar disponível..."
-    ./wait-for-it.sh mysql:5432 --timeout=60 --strict -- echo "✅ MySQL está disponível!"
-
     # Executa as migrações do Prisma
     echo "🗄️  Executando migrações do Prisma..."
     npx prisma migrate reset --force --skip-seed || true
