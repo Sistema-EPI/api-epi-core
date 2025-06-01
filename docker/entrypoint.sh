@@ -31,7 +31,7 @@ fi
 
 if [ "$ENV" == "prod" ]; then
     echo "Aguardando MySQL..."
-    ./wait-for-it.sh mysql:3306 --timeout=30 --strict -- echo "MySQL está pronto"
+    ./wait-for-it.sh mysql:5432 --timeout=30 --strict -- echo "MySQL está pronto"
 
     echo "Aplicando migrations..."
     npx prisma migrate deploy
