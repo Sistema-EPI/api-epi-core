@@ -46,7 +46,7 @@ fi
 
 if [ "$ENV" == "homolog" ]; then
     echo "⏳ Aguardando MySQL ficar disponível..."
-    ./wait-for-it.sh mysql:3306 --timeout=60 --strict -- echo "✅ MySQL está disponível!"
+    ./wait-for-it.sh mysql:5432 --timeout=60 --strict -- echo "✅ MySQL está disponível!"
 
     # Executa as migrações do Prisma
     echo "🗄️  Executando migrações do Prisma..."
