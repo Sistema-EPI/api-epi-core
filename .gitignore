@@ -2,3 +2,4 @@
 .env
 dist
 configmap.yml
+/prisma/migrations

@@ -25,5 +25,28 @@ npx prisma migrate reset
 ### Rodar Docker Localmente
 
 ```bash
-docker-compose -f local-docker-compose.yml up --build -d
+docker-compose -f local-docker-compose.yml up --build
 ```
+projeto/    
+├── package.json       
+├── package-lock.json    
+├── tsconfig.json
+├── .env   
+├── prisma
+├── .gitignore
+├── docker/
+│   ├── entrypoint-local.sh
+│   ├── entrypoint-hml.sh
+│   ├── entrypoint-prd.sh
+│   └── wait-for-it.sh
+│   └── Dockerfile
+│   └── docker-compose.yml
+│   └── Dockerfile.local
+│   └── local-docker-compose.yml
+│   └── .dockerignore
+└── src/
+│   ├── server.ts
+│   ├── Controllers
+│   ├── Helpers
+│   ├── Routers
+│   ├── Schemas
