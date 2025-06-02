@@ -5,7 +5,7 @@ const EnvSchema = z
         //PROD
         CORS_ORIGIN: z.string(),
         DATABASE_URL: z.string(),
-        // JWT_SECRET: z.string(),
+        JWT_SECRET: z.string(),
         //DEV
         NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
         PORT: z
