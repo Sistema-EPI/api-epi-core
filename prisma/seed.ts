@@ -6,7 +6,6 @@ async function main() {
   // 1. Cadastrar empresas
   const empresa1 = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-1',
       nomeFantasia: 'Hamada Tecnologias',
       razaoSocial: 'Hamada Tecnologias LTDA',
       cnpj: '12345678000199',
@@ -21,7 +20,6 @@ async function main() {
 
   const empresa2 = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-2',
       nomeFantasia: 'Barcelos Engenharia',
       razaoSocial: 'Barcelos Engenharia de Segurança LTDA',
       cnpj: '98765432000188',
@@ -36,7 +34,6 @@ async function main() {
 
   const empresa3 = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-3',
       nomeFantasia: 'Construções Oliveira',
       razaoSocial: 'Oliveira Construções e Reformas LTDA',
       cnpj: '45678901000123',
@@ -51,7 +48,6 @@ async function main() {
 
   const empresa4 = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-4',
       nomeFantasia: 'JG Tech',
       razaoSocial: 'JG Tech LTDA',
       cnpj: '87654321000177',
@@ -66,7 +62,6 @@ async function main() {
 
   const empresa5 = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-5',
       nomeFantasia: 'Silva & Santos Metalúrgica',
       razaoSocial: 'Silva & Santos Metalúrgica LTDA',
       cnpj: '12387654000166',
@@ -323,6 +318,7 @@ async function main() {
       idEmpresa: empresa1.idEmpresa,
       nomeEpi: 'Capacete de Segurança',
       validade: new Date('2026-12-31'),
+      vidaUtil: new Date('2026-12-01'), // Capacete dura 2 anos
       dataCompra: new Date('2023-12-01'),
       quantidade: 20,
       quantidadeMinima: 5,
@@ -335,6 +331,7 @@ async function main() {
       idEmpresa: empresa1.idEmpresa,
       nomeEpi: 'Luva de Proteção Química',
       validade: new Date('2025-06-15'),
+      vidaUtil: new Date('2024-12-20'), // Luva dura 1 ano
       dataCompra: new Date('2024-01-20'),
       quantidade: 50,
       quantidadeMinima: 10,
@@ -347,6 +344,7 @@ async function main() {
       idEmpresa: empresa2.idEmpresa,
       nomeEpi: 'Óculos de Proteção',
       validade: new Date('2026-03-10'),
+      vidaUtil: new Date('2025-09-15'), // Óculos dura 1.5 anos
       dataCompra: new Date('2023-09-15'),
       quantidade: 30,
       quantidadeMinima: 8,
@@ -359,6 +357,7 @@ async function main() {
       idEmpresa: empresa2.idEmpresa,
       nomeEpi: 'Protetor Auricular',
       validade: new Date('2025-11-22'),
+      vidaUtil: new Date('2025-05-10'), // Protetor auricular dura 1.5 anos
       dataCompra: new Date('2023-11-10'),
       quantidade: 100,
       quantidadeMinima: 20,
@@ -371,6 +370,7 @@ async function main() {
       idEmpresa: empresa3.idEmpresa,
       nomeEpi: 'Bota de Segurança',
       validade: new Date('2026-08-05'),
+      vidaUtil: new Date('2026-02-12'), // Bota dura 2 anos
       dataCompra: new Date('2024-02-12'),
       quantidade: 25,
       quantidadeMinima: 5,
@@ -383,6 +383,7 @@ async function main() {
       idEmpresa: empresa3.idEmpresa,
       nomeEpi: 'Máscara Respiratória',
       validade: new Date('2026-01-30'),
+      vidaUtil: new Date('2024-07-18'), // Máscara dura 1 ano
       dataCompra: new Date('2023-07-18'),
       quantidade: 40,
       quantidadeMinima: 15,
@@ -395,6 +396,7 @@ async function main() {
       idEmpresa: empresa4.idEmpresa,
       nomeEpi: 'Cinto de Segurança',
       validade: new Date('2027-05-20'),
+      vidaUtil: new Date('2029-01-15'), // Cinto dura 5 anos
       dataCompra: new Date('2024-01-15'),
       quantidade: 10,
       quantidadeMinima: 3,
@@ -407,6 +409,7 @@ async function main() {
       idEmpresa: empresa4.idEmpresa,
       nomeEpi: 'Luva Anti-Corte',
       validade: new Date('2025-09-18'),
+      vidaUtil: new Date('2024-08-10'), // Luva dura 1 ano
       dataCompra: new Date('2023-08-10'),
       quantidade: 60,
       quantidadeMinima: 12,
@@ -419,6 +422,7 @@ async function main() {
       idEmpresa: empresa5.idEmpresa,
       nomeEpi: 'Avental de Proteção',
       validade: new Date('2026-04-12'),
+      vidaUtil: new Date('2025-10-22'), // Avental dura 2 anos
       dataCompra: new Date('2023-10-22'),
       quantidade: 15,
       quantidadeMinima: 4,
@@ -431,6 +435,7 @@ async function main() {
       idEmpresa: empresa5.idEmpresa,
       nomeEpi: 'Mangote de Segurança',
       validade: new Date('2025-12-05'),
+      vidaUtil: new Date('2027-03-01'), // Mangote dura 3 anos
       dataCompra: new Date('2024-03-01'),
       quantidade: 12,
       quantidadeMinima: 3,
