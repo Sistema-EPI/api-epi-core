@@ -14,8 +14,8 @@ export const CreateUserSchema = z.object({
   }),
   body: z.object({
     email: z.string().email(),
-    senha: z.string(),
-    cargo: z.enum(['ADMIN', 'GESTOR', 'OPERADOR']),
+    senha: z.string().min(6),
+    cargo: z.enum(['admin', 'gestor', 'técnico', 'viewer']),
     status_user: z.boolean().optional().default(true),
   }),
 });
@@ -32,9 +32,9 @@ export const ConnectUserToCompanyHandlerSchema = z.object({
     companyId: z.string().uuid({ message: 'ID da empresa inválido (UUID)' }),
   }),
   body: z.object({
-    cargo: z.enum(['ADMIN', 'GESTOR', 'OPERADOR'], {
+    cargo: z.enum(['admin', 'gestor', 'técnico', 'viewer'], {
       required_error: 'Cargo é obrigatório',
-      invalid_type_error: 'Cargo deve ser ADMIN, GESTOR ou OPERADOR',
+      invalid_type_error: 'Cargo deve ser admin, gestor, técnico ou viewer',
     }),
   }),
 });
