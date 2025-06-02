@@ -17,12 +17,14 @@ services:
     ports:
       - "8081:8081"
     build:
-      context: .
-      dockerfile: Dockerfile.local
+      context: ..   
+      dockerfile: docker/Dockerfile.local
     environment:
-      DATABASE_URL: "mysql://root:root_password@mysql:3306/epi"
-      NODE_ENV: "production"
-      CORS_ORIGIN: "*"
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=${NODE_ENV}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - ENV=${ENV}
+      - PORT=${PORT}
     depends_on:
       - mysql
     networks:

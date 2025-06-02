@@ -10,7 +10,8 @@
     "test": "npm run clear && tsc && node --test tests/index.test.mjs"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "seed-prd": "ts-node prisma/seed-prd.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -30,6 +31,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
+    "dotenv-cli": "^8.0.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "pino": "^9.6.0",

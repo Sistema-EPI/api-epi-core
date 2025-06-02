@@ -3,8 +3,10 @@ services:
   api-epi-core:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     environment:
-      DATABASE_URL: "mysql://mysql:ggruRGLuLMNej5DmSkVVZ28rhiZ2r4M3pP2YKRmsZ02zlsPal4T0lMflvreJjcTS@85.31.62.75:5432/epi"
-      NODE_ENV: "production"
-      CORS_ORIGIN: "*"
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=${NODE_ENV}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - ENV=${ENV}
+      - PORT=${PORT}
