@@ -17,7 +17,7 @@ const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://hml-service.barcelosengenharia.com/',
         description: 'Servidor de Desenvolvimento',
       },
     ],
