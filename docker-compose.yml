@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   api-epi-core:
+    container_name: api-epi-core
+    restart: unless-stopped
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -10,3 +12,4 @@ services:
       - CORS_ORIGIN=${CORS_ORIGIN}
       - ENV=${ENV}
       - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}

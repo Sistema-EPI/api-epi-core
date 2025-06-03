@@ -1,17 +1,18 @@
-FROM node:20.12.2-bullseye
+FROM node:20.12.2-bullseye  
+
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /usr/src/app
 
-# Copia os arquivos de configuração e dependências
+
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY .env ./
 
-# Instala as dependências
+
 RUN npm install
 
-# Copia o restante do código da aplicação
+
 COPY . .
 
 # Verifica se os arquivos existem antes de dar permissão
@@ -30,11 +31,11 @@ RUN if [ -f "docker/wait-for-it.sh" ]; then \
         chmod +x wait-for-it.sh; \
     fi
 
-# Gera os arquivos do Prisma
+
 RUN npx prisma generate
 
-# Compila com o script local
 RUN npm run build
 
-# Comando para iniciar o Prisma e a aplicação
+EXPOSE $PORT
+
 ENTRYPOINT ["./entrypoint.sh"]
