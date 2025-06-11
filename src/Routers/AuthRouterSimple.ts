@@ -3,19 +3,17 @@ import * as LoginController from '../Controllers/LoginController'
 import RequestHandler from '../Helpers/RequestHandler';
 import { rateLimitMiddleware } from '../Middlewares/rateLimit';
 
-const router = Router();
+const auth = Router();
 
-// POST /v1/auth/login
-router.post(
+auth.post(
   '/login',
   rateLimitMiddleware,
   RequestHandler(LoginController.login),
 );
 
-// POST /v1/auth/refresh
-router.post(
+auth.post(
   '/refresh',
   RequestHandler(LoginController.refresh),
 );
 
-export default router;
+export default auth;

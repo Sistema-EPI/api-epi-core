@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import * as CompanyController from '../Controllers/CompanyController';
+import * as LoginController from '../Controllers/LoginController';
 import RequestHandler from '../Helpers/RequestHandler';
+import { authMiddleware } from '../Middlewares/auth';
 // import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
@@ -202,5 +204,39 @@ company.delete(
   // verifyPermission(['companies:delete']),
   RequestHandler(CompanyController.deleteCompany),
 )
+
+/**
+ * @swagger
+ * /v1/company/info:
+ *   get:
+ *     summary: Obter informações da empresa logada
+ *     description: Retorna informações da empresa associada ao token JWT e API Key
+ *     tags: [Company]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Bearer token
+ *       - in: header
+ *         name: x-api-token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: API Key da empresa
+ *     responses:
+ *       200:
+ *         description: Informações da empresa recuperadas com sucesso
+ *       401:
+ *         description: Token inválido ou expirado
+ *       403:
+ *         description: API Key inválida
+ */
+company.get(
+  '/info',
+  authMiddleware,
+  RequestHandler(LoginController.getCompanyInfo),
+);
 
 export default company;

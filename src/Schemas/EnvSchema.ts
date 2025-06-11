@@ -6,6 +6,7 @@ const EnvSchema = z
         CORS_ORIGIN: z.string(),
         DATABASE_URL: z.string(),
         JWT_SECRET: z.string(),
+        JWT_EXPIRATION: z.string().optional().default('30m'),
         //DEV
         NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
         PORT: z

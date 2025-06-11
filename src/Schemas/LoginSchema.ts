@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export const LoginSchema = z.object({
-    email: z.string(),
-    senha: z.string().min(6),
-    status_user: z.enum(['ATIVO', 'INATIVO']).default('ATIVO'),
+    email: z.string().email(),
+    password: z.string().min(6),
 });
 
 export const SelectCompanySchema = z.object({

@@ -9,6 +9,7 @@ import {
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
+import crypto from 'crypto';
 import { prisma } from '../server';
 import { CompanyStatus } from '@prisma/client';
 
@@ -159,6 +160,8 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
                 logradouro: body.logradouro,
                 telefone: body.telefone,
                 statusEmpresa: body.status_empresa as CompanyStatus,
+                apiKey: crypto.randomUUID(),
+                active: true,
             },
         });
 

@@ -3,18 +3,20 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  // 1. Cadastrar empresas
+  // 1. Cadastrar empresas com API Keys
   const empresa1 = await prisma.company.create({
     data: {
       nomeFantasia: 'Hamada Tecnologias',
       razaoSocial: 'Hamada Tecnologias LTDA',
       cnpj: '12345678000199',
+      apiKey: 'hamada_api_key_2024_secure_token_123456789',
       uf: 'RJ',
       cep: '28970000',
       logradouro: 'Av. Principal, 123',
       email: 'contato@hamada.com.br',
       telefone: '21999999999',
       statusEmpresa: 'ATIVO',
+      active: true,
     },
   })
 
@@ -23,12 +25,14 @@ async function main() {
       nomeFantasia: 'Barcelos Engenharia',
       razaoSocial: 'Barcelos Engenharia de Segurança LTDA',
       cnpj: '98765432000188',
+      apiKey: 'barcelos_api_key_2024_secure_token_987654321',
       uf: 'SP',
       cep: '01001000',
       logradouro: 'Rua Central, 456',
       email: 'contato@barcelos.com.br',
       telefone: '11988888888',
       statusEmpresa: 'ATIVO',
+      active: true,
     },
   })
 
@@ -37,12 +41,14 @@ async function main() {
       nomeFantasia: 'Construções Oliveira',
       razaoSocial: 'Oliveira Construções e Reformas LTDA',
       cnpj: '45678901000123',
+      apiKey: 'oliveira_api_key_2024_secure_token_456789123',
       uf: 'MG',
       cep: '30130110',
       logradouro: 'Rua dos Construtores, 789',
       email: 'contato@oliveiraconstrucoes.com.br',
       telefone: '31977777777',
       statusEmpresa: 'ATIVO',
+      active: true,
     },
   })
 
@@ -51,12 +57,14 @@ async function main() {
       nomeFantasia: 'JG Tech',
       razaoSocial: 'JG Tech LTDA',
       cnpj: '87654321000177',
+      apiKey: 'jgtech_api_key_2024_secure_token_876543210',
       uf: 'RS',
       cep: '90020150',
       logradouro: 'Av. Tecnológica, 1010',
       email: 'contato@techsafety.com.br',
       telefone: '51966666666',
       statusEmpresa: 'ATIVO',
+      active: true,
     },
   })
 
@@ -65,12 +73,14 @@ async function main() {
       nomeFantasia: 'Silva & Santos Metalúrgica',
       razaoSocial: 'Silva & Santos Metalúrgica LTDA',
       cnpj: '12387654000166',
+      apiKey: 'silvasantos_api_key_2024_secure_token_123876540',
       uf: 'SC',
       cep: '88010400',
       logradouro: 'Rua dos Metais, 222',
       email: 'contato@silvasantos.com.br',
       telefone: '47955555555',
       statusEmpresa: 'INATIVO',
+      active: false,
     },
   })
 
@@ -97,49 +107,69 @@ async function main() {
     skipDuplicates: true,
   })
 
-  // 3. Cadastrar usuários
+  // 3. Cadastrar usuários com dados completos
   const user1 = await prisma.user.create({
     data: {
       idUser: 'user-1',
+      name: 'João Silva',
       email: 'admin@hamada.com.br',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
+      avatar: null,
+      department: 'Administração',
+      position: 'Administrador',
     },
   })
 
   const user2 = await prisma.user.create({
     data: {
       idUser: 'user-2',
+      name: 'Maria Santos',
       email: 'gestor@barcelos.com.br',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
+      avatar: null,
+      department: 'Gestão',
+      position: 'Gestor de Segurança',
     },
   })
 
   const user3 = await prisma.user.create({
     data: {
       idUser: 'user-3',
+      name: 'Carlos Pereira',
       email: 'tecnico@oliveira.com.br',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
+      avatar: null,
+      department: 'Técnico',
+      position: 'Técnico de Segurança',
     },
   })
 
   const user4 = await prisma.user.create({
     data: {
       idUser: 'user-4',
+      name: 'Ana Lima',
       email: 'viewer@techsafety.com.br',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
+      avatar: null,
+      department: 'Consulta',
+      position: 'Visualizador',
     },
   })
 
   const user5 = await prisma.user.create({
     data: {
       idUser: 'user-5',
+      name: 'Roberto Oliveira',
       email: 'inativo@silvasantos.com.br',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: false,
+      avatar: null,
+      department: 'Administração',
+      position: 'Administrador',
     },
   })
 

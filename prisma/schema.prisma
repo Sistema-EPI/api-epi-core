@@ -12,12 +12,14 @@ model Company {
   nomeFantasia  String        @map("nome_fantasia") @db.VarChar(255)
   razaoSocial   String?       @map("razao_social") @db.VarChar(255)
   cnpj          String        @unique @map("cnpj") @db.VarChar(14)
+  apiKey        String        @unique @map("api_key") @db.VarChar(255)
   uf            String?       @map("uf") @db.VarChar(2)
   cep           String        @map("cep") @db.VarChar(8)
   logradouro    String?       @map("logradouro") @db.VarChar(255)
   email         String?       @map("email") @db.VarChar(255)
   telefone      String?       @map("telefone") @db.VarChar(20)
   statusEmpresa CompanyStatus @default(ATIVO) @map("status_empresa")
+  active        Boolean       @default(true) @map("active")
   createdAt     DateTime      @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.DateTime(0)
 
@@ -103,13 +105,18 @@ model Biometria {
 }
 
 model User {
-  idUser     String    @id @default(uuid()) @map("id_user") @db.VarChar(36)
-  email      String    @unique @db.VarChar(255)
-  senha      String    @db.VarChar(255)
-  statusUser Boolean   @map("status_user")
-  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt  DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
-  deletedAt  DateTime? @map("deleted_at") @db.DateTime(0)
+  idUser        String    @id @default(uuid()) @map("id_user") @db.VarChar(36)
+  name          String?   @map("name") @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  senha         String    @db.VarChar(255)
+  statusUser    Boolean   @map("status_user")
+  avatar        String?   @map("avatar") @db.VarChar(255)
+  department    String?   @map("department") @db.VarChar(100)
+  position      String?   @map("position") @db.VarChar(100)
+  lastLoginAt   DateTime? @map("last_login_at") @db.DateTime(0)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
+  deletedAt     DateTime? @map("deleted_at") @db.DateTime(0)
 
   logs          Log[]
   authCompanies AuthCompany[]
