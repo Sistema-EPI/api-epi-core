@@ -18,11 +18,35 @@ export async function getAllCollaborators(req: Request, res: Response, next: Nex
             prisma.collaborator.findMany({
                 skip,
                 take: limit,
-                orderBy: {
-                    createdAt: 'desc',
-                },
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    empresa: {
+                        select: {
+                            idEmpresa: true,
+                            nomeFantasia: true,
+                            statusEmpresa: true
+                        }
+                    },
+                    _count: {
+                        select: {
+                            processos: true,
+                            biometrias: true,
+                            logs: true
+                        }
+                    }
+                }
             }),
         ]);
+
+
+        const formattedData = data.map(collaborator => ({
+            ...collaborator,
+            empresa: collaborator.empresa,
+            totalProcessos: collaborator._count.processos,
+            totalBiometrias: collaborator._count.biometrias,
+            totalLogs: collaborator._count.logs,
+            _count: undefined
+        }));
 
         const response = HttpResponse.Ok({
             message: 'Colaboradores recuperados com sucesso',
@@ -32,7 +56,7 @@ export async function getAllCollaborators(req: Request, res: Response, next: Nex
                 limit,
                 totalPages: Math.ceil(total / limit),
             },
-            data,
+            data: formattedData,
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -47,18 +71,62 @@ export async function getCollaboratorById(req: Request, res: Response, next: Nex
         const { params } = GetCollaboratorByIdSchema.parse(req);
         const collaboratorId = params.id;
 
-        console.log('collaboratorId:', collaboratorId);
-
         const existingCollaborator = await prisma.collaborator.findUnique({
             where: { idColaborador: collaboratorId },
+            include: {
+                empresa: {
+                    select: {
+                        idEmpresa: true,
+                        nomeFantasia: true,
+                        razaoSocial: true,
+                        cnpj: true,
+                        statusEmpresa: true
+                    }
+                },
+                processos: {
+                    include: {
+                        epi: {
+                            select: {
+                                ca: true,
+                                nomeEpi: true,
+                                validade: true
+                            }
+                        }
+                    }
+                },
+                biometrias: {
+                    select: {
+                        idBiometria: true,
+                        biometriaPath: true,
+                        certificadoPath: true,
+                        createdAt: true
+                    }
+                },
+                _count: {
+                    select: {
+                        processos: true,
+                        biometrias: true,
+                        logs: true
+                    }
+                }
+            }
         });
 
-        if (!existingCollaborator) throw new HttpError('Colaborador não encontrado', 404);
+        if (!existingCollaborator) {
+            throw HttpError.NotFound('Colaborador não encontrado');
+        }
 
         const response = HttpResponse.Ok({
             message: 'Colaborador recuperado com sucesso',
-            data: existingCollaborator,
+            data: {
+                ...existingCollaborator,
+                totalProcessos: existingCollaborator._count.processos,
+                totalBiometrias: existingCollaborator._count.biometrias,
+                totalLogs: existingCollaborator._count.logs,
+                _count: undefined
+            },
         });
+
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
         console.error('Error in getCollaboratorById:', err);
@@ -72,7 +140,23 @@ export async function createCollaborator(req: Request, res: Response, next: Next
 
         console.log('Creating new collaborator for company with companyId:', params.companyId);
 
-        console.log('body', body);
+        // Validar se a empresa existe
+        const existingCompany = await prisma.company.findUnique({
+            where: { idEmpresa: params.companyId }
+        });
+
+        if (!existingCompany) {
+            throw HttpError.NotFound('Empresa não encontrada');
+        }
+
+        // Verificar se CPF já existe
+        const existingCpf = await prisma.collaborator.findUnique({
+            where: { cpf: body.cpf }
+        });
+
+        if (existingCpf) {
+            throw HttpError.BadRequest('CPF já cadastrado');
+        }
 
         const collaborator = await prisma.collaborator.create({
             data: {
@@ -81,11 +165,28 @@ export async function createCollaborator(req: Request, res: Response, next: Next
                 cpf: body.cpf,
                 statusColaborador: body.status_colaborador,
             },
+            include: {
+                empresa: {
+                    select: {
+                        idEmpresa: true,
+                        nomeFantasia: true,
+                        statusEmpresa: true
+                    }
+                }
+            }
         });
 
+        logger.info(`Novo colaborador criado (id: ${collaborator.idColaborador}) para empresa ${existingCompany.nomeFantasia}`);
+
         const response = HttpResponse.Created({
-            message: 'Collaborator created successfully',
-            collaborator,
+            message: 'Colaborador criado com sucesso',
+            data: {
+                id: collaborator.idColaborador,
+                nome: collaborator.nomeColaborador,
+                cpf: collaborator.cpf,
+                status: collaborator.statusColaborador,
+                empresa: collaborator.empresa.nomeFantasia
+            }
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -106,15 +207,34 @@ export async function updateCollaborator(req: Request, res: Response, next: Next
             where: { idColaborador: collaboratorId },
         });
 
-        if (!existingCollaborator) throw new HttpError('Colaborador não encontrado', 404);
+        if (!existingCollaborator) {
+            throw HttpError.NotFound('Colaborador não encontrado');
+        }
+
+        if (body.cpf && body.cpf !== existingCollaborator.cpf) {
+            const cpfExists = await prisma.collaborator.findUnique({
+                where: { cpf: body.cpf }
+            });
+
+            if (cpfExists) {
+                throw HttpError.BadRequest('CPF já está cadastrado para outro colaborador');
+            }
+        }
+
+        const dataToUpdate = {
+            ...(body.nome_colaborador !== undefined && { nomeColaborador: body.nome_colaborador }),
+            ...(body.cpf !== undefined && { cpf: body.cpf }),
+            ...(body.status_colaborador !== undefined && { statusColaborador: body.status_colaborador }),
+        };
 
         const updatedCollaborator = await prisma.collaborator.update({
             where: { idColaborador: collaboratorId },
-            data: body,
+            data: dataToUpdate,
         });
 
+
         const changes: Record<string, { before: any; after: any }> = {};
-        for (const key in body) {
+        for (const key in dataToUpdate) {
             if ((existingCollaborator as any)[key] !== (updatedCollaborator as any)[key]) {
                 changes[key] = {
                     before: (existingCollaborator as any)[key],
@@ -124,14 +244,14 @@ export async function updateCollaborator(req: Request, res: Response, next: Next
         }
 
         if (Object.keys(changes).length > 0) {
-            logger.info(`Collaborator atualizado (id: ${collaboratorId}) com as mudanças: ${JSON.stringify(changes)}`);
-        } else {
-            logger.info(`Collaborator (id: ${collaboratorId}) recebeu uma requisição de update, mas nenhum dado foi alterado.`);
+            logger.info(`Colaborador atualizado (id: ${collaboratorId}) com as mudanças: ${JSON.stringify(changes)}`);
         }
 
-        const response = HttpResponse.Created({
-            message: 'Collaborator updated successfully',
-            id: collaboratorId,
+        const response = HttpResponse.Ok({
+            message: 'Colaborador atualizado com sucesso',
+            data: {
+                id: collaboratorId
+            }
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -150,19 +270,40 @@ export async function deleteCollaborator(req: Request, res: Response, next: Next
 
         const existingCollaborator = await prisma.collaborator.findUnique({
             where: { idColaborador: collaboratorId },
+            include: {
+                processos: true,
+                biometrias: true,
+                logs: true,
+                empresa: {
+                    select: {
+                        nomeFantasia: true
+                    }
+                }
+            }
         });
 
-        if (!existingCollaborator) throw new HttpError('Colaborador não encontrado', 404);
+        if (!existingCollaborator) {
+            throw HttpError.NotFound('Colaborador não encontrado');
+        }
 
+        if (existingCollaborator.processos.length > 0) {
+            throw HttpError.BadRequest('Não é possível deletar colaborador com processos vinculados');
+        }
+
+        //Biometrias e Logs têm CASCADE, então serão deletados automaticamente
         await prisma.collaborator.delete({
             where: { idColaborador: collaboratorId },
         });
 
-        logger.info(`Colaborador removido com sucesso (id: ${collaboratorId})`);
+        logger.info(`Colaborador ${existingCollaborator.nomeColaborador} removido da empresa ${existingCollaborator.empresa.nomeFantasia} (id: ${collaboratorId})`);
 
         const response = HttpResponse.Ok({
             message: 'Colaborador deletado com sucesso',
-            company: existingCollaborator,
+            data: {
+                id: collaboratorId,
+                nome: existingCollaborator.nomeColaborador,
+                empresa: existingCollaborator.empresa.nomeFantasia
+            },
         });
 
         return res.status(response.statusCode).json(response.payload);
