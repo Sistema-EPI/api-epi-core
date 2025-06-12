@@ -4,12 +4,13 @@ import {
   DeleteEpiSchema,
   GetEpisSchema,
   GetEpiByIdSchema,
+  GetEpisByEmpresaSchema,
   UpdateEpiSchema,
 } from '../Schemas/EpiSchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
-import { prisma } from '../server';
+import { EpiService } from '../Services/epiService';
 
 export async function getAllEpis(req: Request, res: Response, next: NextFunction) {
   try {
@@ -17,40 +18,19 @@ export async function getAllEpis(req: Request, res: Response, next: NextFunction
 
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);
-    const skip = (page - 1) * limit;
 
-    const whereClause = query.id_empresa 
-      ? { idEmpresa: query.id_empresa }
-      : {};
-
-    const [total, data] = await Promise.all([
-      prisma.epi.count({ where: whereClause }),
-      prisma.epi.findMany({
-        where: whereClause,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          empresa: {
-            select: {
-              idEmpresa: true,
-              nomeFantasia: true,
-              razaoSocial: true,
-            },
-          },
-        },
-      }),
-    ]);
+    // Usar o service para buscar os EPIs
+    const result = await EpiService.getAllEpis(page, limit, query.id_empresa);
 
     const response = HttpResponse.Ok({
       message: 'EPIs recuperados com sucesso',
       pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        total: result.meta.total,
+        page: result.meta.page,
+        limit: result.meta.limit,
+        totalPages: result.meta.totalPages,
       },
-      data,
+      data: result.data,
     });
 
     return res.status(response.statusCode).json(response.payload);
@@ -65,18 +45,8 @@ export async function getEpiById(req: Request, res: Response, next: NextFunction
         const { params } = GetEpiByIdSchema.parse(req);
         const id = params.id;
 
-        const existingEpi = await prisma.epi.findUnique({
-            where: { idEpi: id },
-            include: {
-              empresa: {
-                select: {
-                  idEmpresa: true,
-                  nomeFantasia: true,
-                  razaoSocial: true,
-                },
-              },
-            },
-        });
+        // Usar o service para buscar o EPI
+        const existingEpi = await EpiService.getEpiById(id);
 
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
@@ -91,42 +61,73 @@ export async function getEpiById(req: Request, res: Response, next: NextFunction
     }
 }
 
+export async function getEpisByEmpresa(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params, query } = GetEpisByEmpresaSchema.parse(req);
+        const idEmpresa = params.id_empresa;
+        
+        const page = parseInt(query.page || '1', 10);
+        const limit = parseInt(query.limit || '10', 10);
+
+        // Verificar se a empresa existe usando o service
+        const existingCompany = await EpiService.getCompanyById(idEmpresa);
+
+        if (!existingCompany) {
+            throw new HttpError('Empresa não encontrada', 404);
+        }
+
+        // Usar o service para buscar os EPIs
+        const result = await EpiService.getEpisByEmpresa(idEmpresa, page, limit);
+
+        const response = HttpResponse.Ok({
+            message: `EPIs da empresa ${existingCompany.nomeFantasia} recuperados com sucesso`,
+            pagination: {
+                total: result.meta.total,
+                page: result.meta.page,
+                limit: result.meta.limit,
+                totalPages: result.meta.totalPages,
+                hasNext: result.meta.hasNext,
+                hasPrev: result.meta.hasPrev
+            },
+            data: result.data,
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in getEpisByEmpresa:', err);
+        next(err);
+    }
+}
+
 export async function createEpi(req: Request, res: Response, next: NextFunction) {
     try {
         const body = CreateEpiSchema.parse(req.body);
 
         console.log('body', body);
 
-
-        const existingCompany = await prisma.company.findUnique({
-            where: { idEmpresa: body.id_empresa },
-        });
-
+        // Verificar se a empresa existe usando o service
+        const existingCompany = await EpiService.getCompanyById(body.id_empresa);
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
+        // Verificar se o CA já está em uso usando o service
+        const isCaAvailable = await EpiService.isCaAvailable(body.ca, body.id_empresa);
+        if (!isCaAvailable) throw new HttpError('CA já cadastrado para esta empresa', 409);
 
-        const existingEpi = await prisma.epi.findFirst({
-            where: { 
-                ca: body.ca,
-                idEmpresa: body.id_empresa 
-            },
-        });
+        // Preparar dados para criação
+        const epiData = {
+            ca: body.ca,
+            idEmpresa: body.id_empresa,
+            nomeEpi: body.nome_epi,
+            validade: body.validade ? new Date(body.validade) : undefined,
+            descricao: body.descricao,
+            quantidade: body.quantidade,
+            quantidadeMinima: body.quantidade_minima,
+            dataCompra: body.data_compra ? new Date(body.data_compra) : undefined,
+            vidaUtil: body.vida_util ? new Date(body.vida_util) : undefined,
+        };
 
-        if (existingEpi) throw new HttpError('CA já cadastrado para esta empresa', 409);
-
-        const epi = await prisma.epi.create({
-            data: {
-                ca: body.ca,
-                idEmpresa: body.id_empresa,
-                nomeEpi: body.nome_epi,
-                validade: body.validade ? new Date(body.validade) : null,
-                descricao: body.descricao || null,
-                quantidade: body.quantidade,
-                quantidadeMinima: body.quantidade_minima,
-                dataCompra: body.data_compra ? new Date(body.data_compra) : null,
-                vidaUtil: body.vida_util ? new Date(body.vida_util) : null,
-            },
-        });
+        // Usar o service para criar o EPI
+        const epi = await EpiService.createEpi(epiData);
         
         logger.info(`Novo EPI criado (ID: ${epi.idEpi}, CA: ${epi.ca})`);
 
@@ -147,57 +148,49 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
         const { body, params } = UpdateEpiSchema.parse(req);
         const id = params.id;
 
-        const existingEpi = await prisma.epi.findUnique({
-            where: { idEpi: id },
-        });
-
+        // Verificar se o EPI existe usando o service
+        const existingEpi = await EpiService.getEpiById(id);
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
-
+        // Verificar se a empresa existe (se fornecida) usando o service
         if (body.id_empresa) {
-            const existingCompany = await prisma.company.findUnique({
-                where: { idEmpresa: body.id_empresa },
-            });
-
+            const existingCompany = await EpiService.getCompanyById(body.id_empresa);
             if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
         }
 
-
+        // Verificar se o CA já está em uso (se fornecido) usando o service
         if (body.ca && body.ca !== existingEpi.ca) {
-            const existingCA = await prisma.epi.findFirst({
-                where: { 
-                    ca: body.ca,
-                    idEmpresa: body.id_empresa || existingEpi.idEmpresa,
-                    idEpi: { not: id }
-                },
-            });
-
-            if (existingCA) throw new HttpError('CA já cadastrado para esta empresa', 409);
+            const isCaAvailable = await EpiService.isCaAvailable(
+                body.ca, 
+                body.id_empresa || existingEpi.idEmpresa, 
+                id
+            );
+            if (!isCaAvailable) throw new HttpError('CA já cadastrado para esta empresa', 409);
         }
 
+        // Preparar dados para atualização
         const dataToUpdate = {
             ...(body.ca !== undefined && { ca: body.ca }),
             ...(body.id_empresa !== undefined && { idEmpresa: body.id_empresa }),
             ...(body.nome_epi !== undefined && { nomeEpi: body.nome_epi }),
             ...(body.validade !== undefined && { 
-                validade: body.validade ? new Date(body.validade) : null 
+                validade: body.validade ? new Date(body.validade) : undefined 
             }),
             ...(body.descricao !== undefined && { descricao: body.descricao }),
             ...(body.quantidade !== undefined && { quantidade: body.quantidade }),
             ...(body.quantidade_minima !== undefined && { quantidadeMinima: body.quantidade_minima }),
             ...(body.data_compra !== undefined && { 
-                dataCompra: body.data_compra ? new Date(body.data_compra) : null 
+                dataCompra: body.data_compra ? new Date(body.data_compra) : undefined 
             }),
             ...(body.vida_util !== undefined && { 
-                vidaUtil: body.vida_util ? new Date(body.vida_util) : null 
+                vidaUtil: body.vida_util ? new Date(body.vida_util) : undefined 
             }),
         };
 
-        const updatedEpi = await prisma.epi.update({
-            where: { idEpi: id },
-            data: dataToUpdate,
-        });
+        // Usar o service para atualizar o EPI
+        const updatedEpi = await EpiService.updateEpi(id, dataToUpdate);
 
+        // Log das mudanças
         const changes: Record<string, { before: any; after: any }> = {};
         for (const key in dataToUpdate) {
             if ((existingEpi as any)[key] !== (updatedEpi as any)[key]) {
@@ -231,15 +224,12 @@ export async function deleteEpi(req: Request, res: Response, next: NextFunction)
         const { params } = DeleteEpiSchema.parse(req);
         const id = params.id;
 
-        const existingEpi = await prisma.epi.findUnique({
-            where: { idEpi: id },
-        });
-
+        // Verificar se o EPI existe usando o service
+        const existingEpi = await EpiService.getEpiById(id);
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
-        await prisma.epi.delete({
-            where: { idEpi: id },
-        });
+        // Usar o service para deletar o EPI
+        await EpiService.deleteEpi(id);
 
         logger.info(`EPI removido com sucesso (ID: ${id}, CA: ${existingEpi.ca})`);
 

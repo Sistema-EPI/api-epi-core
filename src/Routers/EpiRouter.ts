@@ -126,6 +126,95 @@ epi.get(
 
 /**
  * @swagger
+ * /v1/epi/get/empresa/{id_empresa}:
+ *   get:
+ *     summary: Listar EPIs de uma empresa específica
+ *     description: Retorna uma lista paginada de todos os EPIs de uma empresa específica
+ *     tags: [EPI]
+ *     parameters:
+ *       - in: path
+ *         name: id_empresa
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID único da empresa
+ *         example: "550e8400-e29b-41d4-a716-446655440000"
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *           default: "1"
+ *         description: Número da página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *           default: "10"
+ *         description: Limite de registros por página
+ *     responses:
+ *       200:
+ *         description: Lista de EPIs da empresa recuperada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Epi'
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                           description: Total de registros
+ *                         page:
+ *                           type: integer
+ *                           description: Página atual
+ *                         limit:
+ *                           type: integer
+ *                           description: Limite de registros por página
+ *                         totalPages:
+ *                           type: integer
+ *                           description: Total de páginas
+ *                         hasNext:
+ *                           type: boolean
+ *                           description: Indica se há próxima página
+ *                         hasPrev:
+ *                           type: boolean
+ *                           description: Indica se há página anterior
+ *       404:
+ *         description: Empresa não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       400:
+ *         description: ID da empresa inválido (deve ser um UUID válido)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+epi.get(
+  '/get/empresa/:id_empresa',
+  // verifyToken,
+  // verifyPermission(['epis:read']),
+  RequestHandler(EpiController.getEpisByEmpresa),
+)
+
+/**
+ * @swagger
  * /v1/epi/create:
  *   post:
  *     summary: Criar novo EPI

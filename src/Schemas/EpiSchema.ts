@@ -43,6 +43,16 @@ export const UpdateEpiSchema = z.object({
     }),
 });
 
+export const GetEpisByEmpresaSchema = z.object({
+    params: z.object({
+        id_empresa: z.string().uuid('ID da empresa deve ser um UUID válido'),
+    }),
+    query: z.object({
+        page: z.string().optional(),
+        limit: z.string().optional(),
+    }),
+});
+
 export const DeleteEpiSchema = z.object({
     params: z.object({
         id: z.string().uuid('ID do EPI deve ser um UUID válido'),

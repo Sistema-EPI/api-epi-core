@@ -93,11 +93,11 @@ async function main() {
       },
       {
         cargo: 'gestor',
-        permissao: { create: true, read: true, update: true, delete: false },
+        permissao: { create: true, read: true, update: true, delete: true },
       },
       {
         cargo: 'técnico',
-        permissao: { create: false, read: true, update: true, delete: false },
+        permissao: { create: true, read: true, update: true, delete: false },
       },
       {
         cargo: 'viewer',
