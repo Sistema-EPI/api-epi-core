@@ -347,6 +347,7 @@ async function main() {
       ca: '12345',
       idEmpresa: empresa1.idEmpresa,
       nomeEpi: 'Capacete de Segurança',
+      descricao: 'Capacete de segurança classe A, resistente a impactos',
       validade: new Date('2026-12-31'),
       vidaUtil: new Date('2026-12-01'), // Capacete dura 2 anos
       dataCompra: new Date('2023-12-01'),
@@ -360,6 +361,7 @@ async function main() {
       ca: '67890',
       idEmpresa: empresa1.idEmpresa,
       nomeEpi: 'Luva de Proteção Química',
+      descricao: 'Luva resistente a produtos químicos e solventes',
       validade: new Date('2025-06-15'),
       vidaUtil: new Date('2024-12-20'), // Luva dura 1 ano
       dataCompra: new Date('2024-01-20'),
@@ -373,6 +375,7 @@ async function main() {
       ca: '23456',
       idEmpresa: empresa2.idEmpresa,
       nomeEpi: 'Óculos de Proteção',
+      descricao: 'Óculos de proteção contra respingos e partículas',
       validade: new Date('2026-03-10'),
       vidaUtil: new Date('2025-09-15'), // Óculos dura 1.5 anos
       dataCompra: new Date('2023-09-15'),
@@ -386,6 +389,7 @@ async function main() {
       ca: '78901',
       idEmpresa: empresa2.idEmpresa,
       nomeEpi: 'Protetor Auricular',
+      descricao: 'Protetor auricular tipo plugue, atenuação 25dB',
       validade: new Date('2025-11-22'),
       vidaUtil: new Date('2025-05-10'), // Protetor auricular dura 1.5 anos
       dataCompra: new Date('2023-11-10'),
@@ -399,6 +403,7 @@ async function main() {
       ca: '34567',
       idEmpresa: empresa3.idEmpresa,
       nomeEpi: 'Bota de Segurança',
+      descricao: 'Bota de segurança com biqueira de aço e solado antiderrapante',
       validade: new Date('2026-08-05'),
       vidaUtil: new Date('2026-02-12'), // Bota dura 2 anos
       dataCompra: new Date('2024-02-12'),
@@ -412,6 +417,7 @@ async function main() {
       ca: '89012',
       idEmpresa: empresa3.idEmpresa,
       nomeEpi: 'Máscara Respiratória',
+      descricao: 'Máscara respiratória semifacial com filtro P2',
       validade: new Date('2026-01-30'),
       vidaUtil: new Date('2024-07-18'), // Máscara dura 1 ano
       dataCompra: new Date('2023-07-18'),
@@ -425,6 +431,7 @@ async function main() {
       ca: '45678',
       idEmpresa: empresa4.idEmpresa,
       nomeEpi: 'Cinto de Segurança',
+      descricao: 'Cinto de segurança para trabalho em altura com duas argolas',
       validade: new Date('2027-05-20'),
       vidaUtil: new Date('2029-01-15'), // Cinto dura 5 anos
       dataCompra: new Date('2024-01-15'),
@@ -438,6 +445,7 @@ async function main() {
       ca: '90123',
       idEmpresa: empresa4.idEmpresa,
       nomeEpi: 'Luva Anti-Corte',
+      descricao: 'Luva de proteção contra cortes, nível 5',
       validade: new Date('2025-09-18'),
       vidaUtil: new Date('2024-08-10'), // Luva dura 1 ano
       dataCompra: new Date('2023-08-10'),
@@ -451,6 +459,7 @@ async function main() {
       ca: '56789',
       idEmpresa: empresa5.idEmpresa,
       nomeEpi: 'Avental de Proteção',
+      descricao: 'Avental de proteção contra respingos químicos',
       validade: new Date('2026-04-12'),
       vidaUtil: new Date('2025-10-22'), // Avental dura 2 anos
       dataCompra: new Date('2023-10-22'),
@@ -464,6 +473,7 @@ async function main() {
       ca: '01234',
       idEmpresa: empresa5.idEmpresa,
       nomeEpi: 'Mangote de Segurança',
+      descricao: 'Mangote de proteção para braços e antebraços',
       validade: new Date('2025-12-05'),
       vidaUtil: new Date('2027-03-01'), // Mangote dura 3 anos
       dataCompra: new Date('2024-03-01'),
@@ -477,7 +487,7 @@ async function main() {
     data: {
       idProcesso: 'proc-1',
       idColaborador: colab1.idColaborador,
-      ca: epi1.ca,
+      idEpi: epi1.idEpi,
       dataAgendada: new Date('2024-05-15'),
       dataEntrega: new Date('2024-05-15T10:30:00'),
       statusEntrega: true,
@@ -490,7 +500,7 @@ async function main() {
     data: {
       idProcesso: 'proc-2',
       idColaborador: colab1.idColaborador,
-      ca: epi2.ca,
+      idEpi: epi2.idEpi,
       dataAgendada: new Date('2024-05-15'),
       dataEntrega: new Date('2024-05-15T10:35:00'),
       statusEntrega: true,
@@ -503,7 +513,7 @@ async function main() {
     data: {
       idProcesso: 'proc-3',
       idColaborador: colab2.idColaborador,
-      ca: epi1.ca,
+      idEpi: epi1.idEpi,
       dataAgendada: new Date('2024-05-16'),
       dataEntrega: new Date('2024-05-16T14:20:00'),
       statusEntrega: true,
@@ -516,7 +526,7 @@ async function main() {
     data: {
       idProcesso: 'proc-4',
       idColaborador: colab3.idColaborador,
-      ca: epi3.ca,
+      idEpi: epi3.idEpi,
       dataAgendada: new Date('2024-05-20'),
       dataEntrega: new Date('2024-05-20T09:15:00'),
       statusEntrega: true,
@@ -530,7 +540,7 @@ async function main() {
     data: {
       idProcesso: 'proc-5',
       idColaborador: colab4.idColaborador,
-      ca: epi4.ca,
+      idEpi: epi4.idEpi,
       dataAgendada: new Date('2024-05-22'),
       dataEntrega: new Date('2024-05-22T16:45:00'),
       statusEntrega: true,
@@ -543,7 +553,7 @@ async function main() {
     data: {
       idProcesso: 'proc-6',
       idColaborador: colab5.idColaborador,
-      ca: epi5.ca,
+      idEpi: epi5.idEpi,
       dataAgendada: new Date('2024-06-05'),
       dataEntrega: new Date('2024-06-05T11:10:00'),
       statusEntrega: true,
@@ -556,7 +566,7 @@ async function main() {
     data: {
       idProcesso: 'proc-7',
       idColaborador: colab6.idColaborador,
-      ca: epi6.ca,
+      idEpi: epi6.idEpi,
       dataAgendada: new Date('2024-06-05'),
       dataEntrega: new Date('2024-06-05T14:30:00'),
       statusEntrega: true,
@@ -569,7 +579,7 @@ async function main() {
     data: {
       idProcesso: 'proc-8',
       idColaborador: colab7.idColaborador,
-      ca: epi7.ca,
+      idEpi: epi7.idEpi,
       dataAgendada: new Date('2024-06-10'),
       statusEntrega: false,
       vidaUtil: new Date('2025-06-10'),
@@ -580,7 +590,7 @@ async function main() {
     data: {
       idProcesso: 'proc-9',
       idColaborador: colab8.idColaborador,
-      ca: epi8.ca,
+      idEpi: epi8.idEpi,
       dataAgendada: new Date('2024-06-12'),
       statusEntrega: false,
       vidaUtil: new Date('2025-01-12'),
@@ -591,7 +601,7 @@ async function main() {
     data: {
       idProcesso: 'proc-10',
       idColaborador: colab9.idColaborador,
-      ca: epi9.ca,
+      idEpi: epi9.idEpi,
       dataAgendada: new Date('2024-06-15'),
       statusEntrega: false,
       vidaUtil: new Date('2025-06-15'),
@@ -606,7 +616,7 @@ async function main() {
         idUser: user1.idUser,
         idColaborador: colab1.idColaborador,
         idProcesso: process1.idProcesso,
-        ca: epi1.ca,
+        idEpi: epi1.idEpi,
         body: { 
           acao: "entrega", 
           detalhes: "Entrega de EPI realizada com sucesso" 
@@ -619,7 +629,7 @@ async function main() {
         idUser: user1.idUser,
         idColaborador: colab1.idColaborador,
         idProcesso: process2.idProcesso,
-        ca: epi2.ca,
+        idEpi: epi2.idEpi,
         body: { 
           acao: "entrega", 
           detalhes: "Entrega de EPI realizada com sucesso" 
@@ -632,7 +642,7 @@ async function main() {
         idUser: user1.idUser,
         idColaborador: colab2.idColaborador,
         idProcesso: process3.idProcesso,
-        ca: epi1.ca,
+        idEpi: epi1.idEpi,
         body: { 
           acao: "entrega", 
           detalhes: "Entrega de EPI realizada com sucesso" 
@@ -645,7 +655,7 @@ async function main() {
         idUser: user2.idUser,
         idColaborador: colab3.idColaborador,
         idProcesso: process4.idProcesso,
-        ca: epi3.ca,
+        idEpi: epi3.idEpi,
         body: { 
           acao: "entrega", 
           detalhes: "Entrega de EPI realizada com sucesso" 
@@ -658,7 +668,7 @@ async function main() {
         idUser: user2.idUser,
         idColaborador: colab3.idColaborador,
         idProcesso: process4.idProcesso,
-        ca: epi3.ca,
+        idEpi: epi3.idEpi,
         body: { 
           acao: "devolução", 
           detalhes: "Devolução de EPI por danificação" 
@@ -670,7 +680,7 @@ async function main() {
         idLog: 'log-6',
         idUser: user3.idUser,
         idColaborador: colab5.idColaborador,
-        ca: epi5.ca,
+        idEpi: epi5.idEpi,
         body: { 
           acao: "estoque", 
           detalhes: "Atualização de estoque: +10 unidades" 

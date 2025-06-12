@@ -7,6 +7,9 @@ const EnvSchema = z
         DATABASE_URL: z.string(),
         JWT_SECRET: z.string(),
         JWT_EXPIRATION: z.string().optional().default('30m'),
+        API_CONSULTA_URL: z.string().optional(),
+        API_KEY: z.string().optional(),
+        API_TOKEN: z.string().optional(),
         //DEV
         NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
         PORT: z
