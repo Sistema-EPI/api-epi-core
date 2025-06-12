@@ -18,6 +18,9 @@ import CollaboratorRouter from './Routers/CollaboratorRouter';
 import EpiRouter from './Routers/EpiRouter';
 import AuthRouter from './Routers/AuthRouter';
 import UserRouter from './Routers/UserRouter';
+import CARouter from './Routers/CARouter';
+
+// Middlewares
 import { ErrorMiddleware } from './Helpers/RequestHandler';
 
 const app = express();
@@ -55,6 +58,7 @@ apiV1Router.use('/company', CompanyRouter);
 apiV1Router.use('/collaborator', CollaboratorRouter);
 apiV1Router.use('/epi', EpiRouter);
 apiV1Router.use('/user', UserRouter);
+apiV1Router.use('/consulta-epi', CARouter);
 
 // Configurar Swagger
 setupSwagger(app);

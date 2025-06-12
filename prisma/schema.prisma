@@ -53,14 +53,16 @@ model Collaborator {
 }
 
 model Epi {
-  ca               String    @id @db.VarChar(5)
+  idEpi            String    @id @default(uuid()) @map("id_epi") @db.VarChar(36)
+  ca               String    @unique @db.VarChar(20)
   idEmpresa        String    @map("id_empresa") @db.VarChar(36)
   nomeEpi          String    @map("nome_epi") @db.VarChar(255)
   validade         DateTime? @db.Date
-  vidaUtil         DateTime? @map("vida_util") @db.Date
+  descricao        String?   @map("descricao") @db.Text
   quantidade       Int
   quantidadeMinima Int       @map("quantidade_minima")
   dataCompra       DateTime? @map("data_compra") @db.Date
+  vidaUtil         DateTime? @map("vida_util") @db.Date
   createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
@@ -74,7 +76,7 @@ model Epi {
 model Process {
   idProcesso    String    @id @default(uuid()) @map("id_processo") @db.VarChar(36)
   idColaborador String?   @map("id_colaborador") @db.VarChar(36)
-  ca            String?   @db.VarChar(5)
+  idEpi         String?   @map("id_epi") @db.VarChar(36)
   dataAgendada  DateTime  @map("data_agendada") @db.Date
   dataEntrega   DateTime? @map("data_entrega") @db.Timestamp(0)
   statusEntrega Boolean   @default(false) @map("status_entrega")
@@ -85,7 +87,7 @@ model Process {
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
   colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: SetNull)
-  epi         Epi?          @relation(fields: [ca], references: [ca], onDelete: SetNull)
+  epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: SetNull)
   logs        Log[]
 
   @@map("process")
@@ -134,7 +136,7 @@ model Log {
   idUser        String?   @map("id_user") @db.VarChar(36)
   idColaborador String?   @map("id_colaborador") @db.VarChar(36)
   idProcesso    String?   @map("id_processo") @db.VarChar(36)
-  ca            String?   @db.VarChar(5)
+  idEpi         String?   @map("id_epi") @db.VarChar(36)
   body          Json
   tipo          String    @db.VarChar(20)
   timestamp     DateTime? @db.Timestamp(0)
@@ -142,7 +144,7 @@ model Log {
   usuario     User?         @relation(fields: [idUser], references: [idUser], onDelete: Cascade)
   colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
   processo    Process?      @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
-  epi         Epi?          @relation(fields: [ca], references: [ca], onDelete: Cascade)
+  epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
 
   @@map("log")
 }
