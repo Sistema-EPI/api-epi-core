@@ -35,9 +35,9 @@ export const UpdateCompanySchema = z.object({
         cnpj: z.string().length(14).optional(),
         uf: z.string().length(2).optional(),
         cep: z.string().length(8).optional(),
-        logradouro: z.string().min(5).optional(),
+        logradouro: z.string().optional(),
         email: z.string().email().optional(),
-        telefone: z.string().min(10).max(20).optional(),
+        telefone: z.string().optional(),
         status_empresa: z.boolean(), 
     }),
 });
