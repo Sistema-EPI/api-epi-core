@@ -96,7 +96,7 @@ async function main() {
         permissao: { create: true, read: true, update: true, delete: true },
       },
       {
-        cargo: 'técnico',
+        cargo: 'estoque',
         permissao: { create: true, read: true, update: true, delete: false },
       },
       {
