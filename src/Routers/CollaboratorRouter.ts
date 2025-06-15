@@ -1,6 +1,7 @@
 import { Router } from "express";
 import RequestHandler from "../Helpers/RequestHandler";
 import * as CollaboratorController from '../Controllers/CollaboratorController';
+import { verifyToken, verifyPermission } from '../Middlewares/auth';
 
 const collaborator = Router();
 
@@ -47,8 +48,8 @@ const collaborator = Router();
  */
 collaborator.get(
     '/get/all',
-    // verifyToken,
-    // verifyPermission(['collaborator:read']),
+    verifyToken,
+    verifyPermission(['collaborator:read']),
     RequestHandler(CollaboratorController.getAllCollaborators),
 );
 
@@ -94,8 +95,8 @@ collaborator.get(
  */
 collaborator.get(
     '/get/:id',
-    // verifyToken,
-    // verifyPermission(['collaborator:read']),
+    verifyToken,
+    verifyPermission(['collaborator:read']),
     RequestHandler(CollaboratorController.getCollaboratorById),
 )
 
@@ -153,8 +154,8 @@ collaborator.get(
  */
 collaborator.post(
     '/create/:companyId',
-    // verifyToken,
-    // verifyPermission(['collaborator:create']),
+    verifyToken,
+    verifyPermission(['collaborator:create']),
     RequestHandler(CollaboratorController.createCollaborator),
 );
 
@@ -212,8 +213,8 @@ collaborator.post(
  */
 collaborator.put(
     '/update/:id',
-    // verifyToken,
-    // verifyPermission(['collaborator:update']),
+    verifyToken,
+    verifyPermission(['collaborator:update']),
     RequestHandler(CollaboratorController.updateCollaborator),
 )
 
@@ -254,8 +255,8 @@ collaborator.put(
  */
 collaborator.delete(
     '/delete/:id',
-    // verifyToken,
-    // verifyPermission(['companies:delete']),
+    verifyToken,
+    verifyPermission(['collaborator:delete']),
     RequestHandler(CollaboratorController.deleteCollaborator),
 )
 

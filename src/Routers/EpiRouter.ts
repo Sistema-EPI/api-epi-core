@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as EpiController from '../Controllers/EpiController';
 import RequestHandler from '../Helpers/RequestHandler';
-// import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
+import { verifyToken, verifyPermission } from '../Middlewares/auth';
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
 const epi = Router();
@@ -65,8 +65,8 @@ const epi = Router();
  */
 epi.get(
   '/get/all',
-  // verifyToken,
-  // verifyPermission(['epis:read']),
+  verifyToken,
+  verifyPermission(['epi:read']),
   RequestHandler(EpiController.getAllEpis),
 )
 
@@ -119,8 +119,8 @@ epi.get(
  */
 epi.get(
   '/get/:id',
-  // verifyToken,
-  // verifyPermission(['epis:read']),
+  verifyToken,
+  verifyPermission(['epi:read']),
   RequestHandler(EpiController.getEpiById),
 )
 
@@ -208,8 +208,8 @@ epi.get(
  */
 epi.get(
   '/get/empresa/:id_empresa',
-  // verifyToken,
-  // verifyPermission(['epis:read']),
+  verifyToken,
+  verifyPermission(['epi:read']),
   RequestHandler(EpiController.getEpisByEmpresa),
 )
 
@@ -319,8 +319,8 @@ epi.get(
  */
 epi.post(
   '/create',
-  // verifyToken,
-  // verifyPermission(['epis:create']),
+  verifyToken,
+  verifyPermission(['epi:create']),
   RequestHandler(EpiController.createEpi),
 );
 
@@ -434,8 +434,8 @@ epi.post(
  */
 epi.put(
   '/update/:id',
-  // verifyToken,
-  // verifyPermission(['epis:update']),
+  verifyToken,
+  verifyPermission(['epi:update']),
   RequestHandler(EpiController.updateEpi),
 )
 
@@ -488,8 +488,8 @@ epi.put(
  */
 epi.delete(
   '/delete/:id',
-  // verifyToken,
-  // verifyPermission(['epis:delete']),
+  verifyToken,
+  verifyPermission(['epi:delete']),
   RequestHandler(EpiController.deleteEpi),
 )
 

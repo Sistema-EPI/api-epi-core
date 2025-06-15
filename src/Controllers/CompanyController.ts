@@ -11,7 +11,6 @@ import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import crypto from 'crypto';
 import { prisma } from '../server';
-import { CompanyStatus } from '@prisma/client';
 
 export async function getAllCompanies(req: Request, res: Response, next: NextFunction) {
     try {
@@ -159,9 +158,8 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
                 uf: body.uf,
                 logradouro: body.logradouro,
                 telefone: body.telefone,
-                statusEmpresa: body.status_empresa as CompanyStatus,
+                statusEmpresa: body.status_empresa,
                 apiKey: crypto.randomUUID(),
-                active: true,
             },
         });
 
@@ -216,7 +214,7 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
             ...(body.logradouro !== undefined && { logradouro: body.logradouro }),
             ...(body.telefone !== undefined && { telefone: body.telefone }),
             ...(body.status_empresa !== undefined && {
-                statusEmpresa: (body.status_empresa ? 'ATIVO' : 'INATIVO') as CompanyStatus
+                statusEmpresa: body.status_empresa
             }),
         };
 

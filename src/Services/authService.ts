@@ -147,8 +147,7 @@ export class AuthService {
     const company = await prisma.company.findFirst({
       where: {
         apiKey: apiKey,
-        active: true,
-        statusEmpresa: 'ATIVO'
+        statusEmpresa: true
       }
     });
     

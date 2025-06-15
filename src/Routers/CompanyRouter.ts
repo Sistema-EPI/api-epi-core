@@ -2,8 +2,7 @@ import { Router } from 'express';
 import * as CompanyController from '../Controllers/CompanyController';
 import * as LoginController from '../Controllers/LoginController';
 import RequestHandler from '../Helpers/RequestHandler';
-import { authMiddleware } from '../Middlewares/auth';
-// import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
+import { authMiddleware, verifyToken, verifyPermission } from '../Middlewares/auth';
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
 const company = Router();
@@ -47,8 +46,8 @@ const company = Router();
  */
 company.get(
   '/get/all',
-  // verifyToken,
-  // verifyPermission(['companies:read']),
+  verifyToken,
+  verifyPermission(['company:read']),
   RequestHandler(CompanyController.getAllCompanies),
 )
 
@@ -84,8 +83,8 @@ company.get(
  */
 company.get(
   '/get/:id',
-  // verifyToken,
-  // verifyPermission(['companies:read']),
+  verifyToken,
+  verifyPermission(['company:read']),
   RequestHandler(CompanyController.getCompanyById),
 )
 
@@ -144,8 +143,8 @@ company.get(
  */
 company.post(
   '/create',
-  // verifyToken,
-  // verifyPermission(['companies:create']),
+  verifyToken,
+  verifyPermission(['company:create']),
   RequestHandler(CompanyController.createCompany),
 );
 
@@ -172,8 +171,8 @@ company.post(
  */
 company.put(
   '/update/:id',
-  // verifyToken,
-  // verifyPermission(['companies:update']),
+  verifyToken,
+  verifyPermission(['company:update']),
   RequestHandler(CompanyController.updateCompany),
 )
 
@@ -200,8 +199,8 @@ company.put(
  */
 company.delete(
   '/delete/:id',
-  // verifyToken,
-  // verifyPermission(['companies:delete']),
+  verifyToken,
+  verifyPermission(['company:delete']),
   RequestHandler(CompanyController.deleteCompany),
 )
 

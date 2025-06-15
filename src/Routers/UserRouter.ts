@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import RequestHandler from '../Helpers/RequestHandler';
 import * as UserController from '../Controllers/UserController';
-// import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
+import { verifyToken, verifyPermission } from '../Middlewares/auth';
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
 //v1/user
@@ -49,8 +49,8 @@ const user = Router();
  */
 user.get(
     '/get/all',
-    // verifyToken,
-    // verifyPermission(['companies:read']),
+    verifyToken,
+    verifyPermission(['user:read']),
     RequestHandler(UserController.getAllUsers),
 );
 
@@ -108,8 +108,8 @@ user.get(
  */
 user.post(
     '/create/:id',
-    // verifyToken,
-    // verifyPermission(['user:write']),
+    verifyToken,
+    verifyPermission(['user:create']),
     RequestHandler(UserController.createUser),
 );
 
@@ -155,8 +155,8 @@ user.post(
  */
 user.get(
     '/get/:id',
-    // verifyToken,
-    // verifyPermission(['user:read']),
+    verifyToken,
+    verifyPermission(['user:read']),
     RequestHandler(UserController.getUserById),
 )
 
@@ -221,8 +221,8 @@ user.get(
  */
 user.post(
     '/:userId/connect/:companyId',
-    // verifyToken,
-    // verifyPermission(['user:write']),
+    verifyToken,
+    verifyPermission(['user:update']),
     RequestHandler(UserController.connectUserToCompanyHandler),
 );
 
@@ -275,8 +275,8 @@ user.post(
  */
 user.put(
     '/:userId/update/password',
-    // verifyToken,
-    // verifyPermission(['user:write']),
+    verifyToken,
+    verifyPermission(['user:update']),
     RequestHandler(UserController.updatePassword)
 );
 
@@ -334,8 +334,8 @@ user.put(
  */
 user.put(
     '/:userId/update/status',
-    // verifyToken,
-    // verifyPermission(['user:write']),
+    verifyToken,
+    verifyPermission(['user:update']),
     RequestHandler(UserController.updateUserStatus)
 );
 
@@ -376,8 +376,8 @@ user.put(
  */
 user.delete(
     '/:userId/delete',
-    // verifyToken,
-    // verifyPermission(['user:write']),
+    verifyToken,
+    verifyPermission(['user:delete']),
     RequestHandler(UserController.deleteUser)
 );
 

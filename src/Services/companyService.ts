@@ -7,8 +7,7 @@ export class CompanyService {
     const company = await prisma.company.findUnique({
       where: {
         idEmpresa: companyId,
-        active: true,
-        statusEmpresa: 'ATIVO'
+        statusEmpresa: true
       },
       select: {
         idEmpresa: true,

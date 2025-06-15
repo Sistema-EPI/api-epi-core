@@ -22,7 +22,7 @@ export const CreateCompanySchema = z.object({
     logradouro: z.string().optional(),
     email: z.string().email(),
     telefone: z.string().min(10).max(20).optional(),
-    status_empresa: z.enum(['ATIVO', 'INATIVO']),
+    status_empresa: z.boolean().default(true),
 });
 
 export const UpdateCompanySchema = z.object({
@@ -38,7 +38,7 @@ export const UpdateCompanySchema = z.object({
         logradouro: z.string().optional(),
         email: z.string().email().optional(),
         telefone: z.string().optional(),
-        status_empresa: z.boolean(), 
+        status_empresa: z.boolean().optional(), 
     }),
 });
 

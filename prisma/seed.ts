@@ -15,8 +15,7 @@ async function main() {
       logradouro: 'Av. Principal, 123',
       email: 'contato@hamada.com.br',
       telefone: '21999999999',
-      statusEmpresa: 'ATIVO',
-      active: true,
+      statusEmpresa: true,
     },
   })
 
@@ -31,8 +30,7 @@ async function main() {
       logradouro: 'Rua Central, 456',
       email: 'contato@barcelos.com.br',
       telefone: '11988888888',
-      statusEmpresa: 'ATIVO',
-      active: true,
+      statusEmpresa: true,
     },
   })
 
@@ -47,8 +45,7 @@ async function main() {
       logradouro: 'Rua dos Construtores, 789',
       email: 'contato@oliveiraconstrucoes.com.br',
       telefone: '31977777777',
-      statusEmpresa: 'ATIVO',
-      active: true,
+      statusEmpresa: true,
     },
   })
 
@@ -63,8 +60,7 @@ async function main() {
       logradouro: 'Av. Tecnológica, 1010',
       email: 'contato@techsafety.com.br',
       telefone: '51966666666',
-      statusEmpresa: 'ATIVO',
-      active: true,
+      statusEmpresa: true,
     },
   })
 
@@ -79,8 +75,7 @@ async function main() {
       logradouro: 'Rua dos Metais, 222',
       email: 'contato@silvasantos.com.br',
       telefone: '47955555555',
-      statusEmpresa: 'INATIVO',
-      active: false,
+      statusEmpresa: false,
     },
   })
 
@@ -189,7 +184,7 @@ async function main() {
       {
         idUser: user3.idUser,
         idEmpresa: empresa3.idEmpresa,
-        cargo: 'técnico',
+        cargo: 'estoque',
       },
       {
         idUser: user4.idUser,

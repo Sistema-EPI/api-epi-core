@@ -8,31 +8,25 @@ datasource db {
 }
 
 model Company {
-  idEmpresa     String        @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
-  nomeFantasia  String        @map("nome_fantasia") @db.VarChar(255)
-  razaoSocial   String?       @map("razao_social") @db.VarChar(255)
-  cnpj          String        @unique @map("cnpj") @db.VarChar(14)
-  apiKey        String        @unique @map("api_key") @db.VarChar(255)
-  uf            String?       @map("uf") @db.VarChar(2)
-  cep           String        @map("cep") @db.VarChar(8)
-  logradouro    String?       @map("logradouro") @db.VarChar(255)
-  email         String?       @map("email") @db.VarChar(255)
-  telefone      String?       @map("telefone") @db.VarChar(20)
-  statusEmpresa CompanyStatus @default(ATIVO) @map("status_empresa")
-  active        Boolean       @default(true) @map("active")
-  createdAt     DateTime      @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime      @updatedAt @map("updated_at") @db.DateTime(0)
+  idEmpresa        String   @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
+  nomeFantasia     String   @map("nome_fantasia") @db.VarChar(255)
+  razaoSocial      String?  @map("razao_social") @db.VarChar(255)
+  cnpj             String   @unique @map("cnpj") @db.VarChar(14)
+  apiKey           String   @unique @map("api_key") @db.VarChar(255)
+  uf               String?  @map("uf") @db.VarChar(2)
+  cep              String   @map("cep") @db.VarChar(8)
+  logradouro       String?  @map("logradouro") @db.VarChar(255)
+  email            String?  @map("email") @db.VarChar(255)
+  telefone         String?  @map("telefone") @db.VarChar(20)
+  statusEmpresa    Boolean  @default(true) @map("status_empresa")
+  createdAt        DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.DateTime(0)
 
   colaboradores Collaborator[] @relation("EmpresaColaboradores")
   epis          Epi[]
   authCompanies AuthCompany[]
 
   @@map("company")
-}
-
-enum CompanyStatus {
-  ATIVO
-  INATIVO
 }
 
 model Collaborator {
