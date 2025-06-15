@@ -206,7 +206,7 @@ async function main() {
       idEmpresa: empresa1.idEmpresa,
       nomeColaborador: 'João da Silva',
       cpf: '12345678901',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -216,7 +216,7 @@ async function main() {
       idEmpresa: empresa1.idEmpresa,
       nomeColaborador: 'Maria Souza',
       cpf: '98765432100',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -226,7 +226,7 @@ async function main() {
       idEmpresa: empresa2.idEmpresa,
       nomeColaborador: 'Carlos Pereira',
       cpf: '45678912300',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -236,7 +236,7 @@ async function main() {
       idEmpresa: empresa2.idEmpresa,
       nomeColaborador: 'Ana Lima',
       cpf: '78912345600',
-      statusColaborador: 'Afastado',
+      statusColaborador: false,
     },
   })
 
@@ -246,7 +246,7 @@ async function main() {
       idEmpresa: empresa3.idEmpresa,
       nomeColaborador: 'Fernando Costa',
       cpf: '32165498700',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -256,7 +256,7 @@ async function main() {
       idEmpresa: empresa3.idEmpresa,
       nomeColaborador: 'Roberta Alves',
       cpf: '65432198700',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -266,7 +266,7 @@ async function main() {
       idEmpresa: empresa4.idEmpresa,
       nomeColaborador: 'Marcos Oliveira',
       cpf: '98765432101',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 
@@ -276,7 +276,7 @@ async function main() {
       idEmpresa: empresa4.idEmpresa,
       nomeColaborador: 'Juliana Santos',
       cpf: '12398745600',
-      statusColaborador: 'Férias',
+      statusColaborador: false,
     },
   })
 
@@ -286,7 +286,7 @@ async function main() {
       idEmpresa: empresa5.idEmpresa,
       nomeColaborador: 'Ricardo Ferreira',
       cpf: '78945612300',
-      statusColaborador: 'Inativo',
+      statusColaborador: false,
     },
   })
 
@@ -296,7 +296,7 @@ async function main() {
       idEmpresa: empresa5.idEmpresa,
       nomeColaborador: 'Paula Martins',
       cpf: '32178945600',
-      statusColaborador: 'Ativo',
+      statusColaborador: true,
     },
   })
 

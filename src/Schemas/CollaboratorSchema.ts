@@ -20,7 +20,7 @@ export const CreateCollaboratorSchema = z.object({
     body: z.object({
         nome_colaborador: z.string(),
         cpf: z.string().max(11).min(11),
-        status_colaborador: z.enum(['ATIVO', 'INATIVO']),
+        status_colaborador: z.boolean().default(true),
     })
 });
 
@@ -29,9 +29,9 @@ export const UpdateCollaboratorSchema = z.object({
         id: z.string(),
     }),
     body: z.object({
-        nome_colaborador: z.string(),
-        cpf: z.string().max(11).min(11),
-        status_colaborador: z.enum(['ATIVO', 'INATIVO']),
+        nome_colaborador: z.string().optional(),
+        cpf: z.string().max(11).min(11).optional(),
+        status_colaborador: z.boolean().optional(),
     }),
 });
 
