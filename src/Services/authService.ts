@@ -69,9 +69,6 @@ export class AuthService {
         email: user.email,
         role: authCompany.cargo,
         permissions: authCompany.role.permissao,
-        avatar: user.avatar || null,
-        department: user.department || null,
-        position: user.position || null
       },
       apiToken: apiKey,
       company: {
@@ -136,9 +133,6 @@ export class AuthService {
         email: user.email,
         role: authCompany.cargo,
         permissions: authCompany.role.permissao,
-        avatar: user.avatar || null,
-        department: user.department || null,
-        position: user.position || null
       }
     };
   }

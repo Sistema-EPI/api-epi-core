@@ -76,7 +76,6 @@ model Process {
   statusEntrega Boolean   @default(false) @map("status_entrega")
   pdfUrl        String?   @map("pdf_url") @db.VarChar(255)
   dataDevolucao DateTime? @map("data_devolucao") @db.Timestamp(0)
-  vidaUtil      DateTime? @map("vida_util") @db.Date
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
@@ -106,9 +105,6 @@ model User {
   email         String    @unique @db.VarChar(255)
   senha         String    @db.VarChar(255)
   statusUser    Boolean   @map("status_user")
-  avatar        String?   @map("avatar") @db.VarChar(255)
-  department    String?   @map("department") @db.VarChar(100)
-  position      String?   @map("position") @db.VarChar(100)
   lastLoginAt   DateTime? @map("last_login_at") @db.DateTime(0)
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
@@ -118,11 +114,6 @@ model User {
   authCompanies AuthCompany[]
 
   @@map("user")
-}
-
-enum UserStatus {
-  ATIVO
-  INATIVO
 }
 
 model Log {

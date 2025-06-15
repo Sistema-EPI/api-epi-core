@@ -110,9 +110,6 @@ async function main() {
       email: 'admin@hamada.com.br',
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
-      avatar: null,
-      department: 'Administração',
-      position: 'Administrador',
     },
   })
 
@@ -123,9 +120,6 @@ async function main() {
       email: 'gestor@barcelos.com.br',
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
-      avatar: null,
-      department: 'Gestão',
-      position: 'Gestor de Segurança',
     },
   })
 
@@ -136,9 +130,6 @@ async function main() {
       email: 'tecnico@oliveira.com.br',
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
-      avatar: null,
-      department: 'Técnico',
-      position: 'Técnico de Segurança',
     },
   })
 
@@ -149,9 +140,6 @@ async function main() {
       email: 'viewer@techsafety.com.br',
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
-      avatar: null,
-      department: 'Consulta',
-      position: 'Visualizador',
     },
   })
 
@@ -162,9 +150,6 @@ async function main() {
       email: 'inativo@silvasantos.com.br',
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: false,
-      avatar: null,
-      department: 'Administração',
-      position: 'Administrador',
     },
   })
 
@@ -487,7 +472,6 @@ async function main() {
       dataEntrega: new Date('2024-05-15T10:30:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-capacete-joao.pdf',
-      vidaUtil: new Date('2025-05-15'),
     },
   })
 
@@ -500,7 +484,6 @@ async function main() {
       dataEntrega: new Date('2024-05-15T10:35:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-luva-joao.pdf',
-      vidaUtil: new Date('2024-11-15'),
     },
   })
 
@@ -513,7 +496,6 @@ async function main() {
       dataEntrega: new Date('2024-05-16T14:20:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-capacete-maria.pdf',
-      vidaUtil: new Date('2025-05-16'),
     },
   })
 
@@ -526,7 +508,6 @@ async function main() {
       dataEntrega: new Date('2024-05-20T09:15:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-oculos-carlos.pdf',
-      vidaUtil: new Date('2025-05-20'),
       dataDevolucao: new Date('2024-08-15T11:20:00'),
     },
   })
@@ -540,7 +521,6 @@ async function main() {
       dataEntrega: new Date('2024-05-22T16:45:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-protetor-ana.pdf',
-      vidaUtil: new Date('2025-05-22'),
     },
   })
 
@@ -553,7 +533,6 @@ async function main() {
       dataEntrega: new Date('2024-06-05T11:10:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-bota-fernando.pdf',
-      vidaUtil: new Date('2025-06-05'),
     },
   })
 
@@ -566,7 +545,6 @@ async function main() {
       dataEntrega: new Date('2024-06-05T14:30:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-mascara-roberta.pdf',
-      vidaUtil: new Date('2025-01-05'),
     },
   })
 
@@ -577,7 +555,6 @@ async function main() {
       idEpi: epi7.idEpi,
       dataAgendada: new Date('2024-06-10'),
       statusEntrega: false,
-      vidaUtil: new Date('2025-06-10'),
     },
   })
 
@@ -588,7 +565,6 @@ async function main() {
       idEpi: epi8.idEpi,
       dataAgendada: new Date('2024-06-12'),
       statusEntrega: false,
-      vidaUtil: new Date('2025-01-12'),
     },
   })
 
@@ -599,7 +575,6 @@ async function main() {
       idEpi: epi9.idEpi,
       dataAgendada: new Date('2024-06-15'),
       statusEntrega: false,
-      vidaUtil: new Date('2025-06-15'),
     },
   })
 
