@@ -202,7 +202,7 @@ export class ProcessController {
     }
   }
 
-  // Listar todos os processos (admin)
+  // Listar todos os processos (admin) (todo: tem necessidade? remove?)
   static async listProcesses(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       if (req.userRole !== 'admin') {
