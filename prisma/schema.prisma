@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -24,6 +25,7 @@ model Company {
 
   colaboradores Collaborator[] @relation("EmpresaColaboradores")
   epis          Epi[]
+  processos     Process[]
   authCompanies AuthCompany[]
 
   @@map("company")
@@ -60,30 +62,46 @@ model Epi {
   createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
-  empresa   Company   @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
-  processos Process[]
-  logs      Log[]
+  empresa     Company      @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  processEpis ProcessEpi[]
+  logs        Log[]
 
   @@map("epi")
 }
 
 model Process {
   idProcesso    String    @id @default(uuid()) @map("id_processo") @db.VarChar(36)
-  idColaborador String?   @map("id_colaborador") @db.VarChar(36)
-  idEpi         String?   @map("id_epi") @db.VarChar(36)
+  idEmpresa     String    @map("id_empresa") @db.VarChar(36)
+  idColaborador String    @map("id_colaborador") @db.VarChar(36)
   dataAgendada  DateTime  @map("data_agendada") @db.Date
   dataEntrega   DateTime? @map("data_entrega") @db.Timestamp(0)
   statusEntrega Boolean   @default(false) @map("status_entrega")
   pdfUrl        String?   @map("pdf_url") @db.VarChar(255)
   dataDevolucao DateTime? @map("data_devolucao") @db.Timestamp(0)
+  observacoes   String?   @map("observacoes") @db.Text
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
-  colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: SetNull)
-  epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: SetNull)
+  empresa     Company           @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  colaborador Collaborator      @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
+  processEpis ProcessEpi[]
   logs        Log[]
 
   @@map("process")
+}
+
+model ProcessEpi {
+  idProcessEpi String @id @default(uuid()) @map("id_process_epi") @db.VarChar(36)
+  idProcesso   String @map("id_processo") @db.VarChar(36)
+  idEpi        String @map("id_epi") @db.VarChar(36)
+  quantidade   Int    @default(1)
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  processo Process @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
+  epi      Epi     @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
+
+  @@unique([idProcesso, idEpi])
+  @@map("process_epi")
 }
 
 model Biometria {

@@ -5,6 +5,7 @@ import {
     GetCompaniesSchema,
     GetCompanyByIdSchema,
     UpdateCompanySchema,
+    UpdateCompanyStatusSchema,
 } from '../Schemas/CompanySchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import { CompanyService } from '../Services/companyService';
@@ -106,6 +107,26 @@ export async function deleteCompany(req: Request, res: Response, next: NextFunct
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
         console.error('Error in deleteCompany:', err);
+        next(err);
+    }
+}
+
+export async function updateCompanyStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params, body } = UpdateCompanyStatusSchema.parse(req);
+        const companyId = params.id;
+        const { status_empresa } = body;
+
+        const result = await companyService.updateCompanyStatus(companyId, status_empresa);
+
+        const response = HttpResponse.Ok({
+            message: `Status da empresa ${status_empresa ? 'ativado' : 'desativado'} com sucesso`,
+            data: result,
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in updateCompanyStatus:', err);
         next(err);
     }
 }

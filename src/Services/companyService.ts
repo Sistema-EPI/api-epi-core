@@ -306,4 +306,48 @@ export class CompanyService {
       uf: company.uf
     };
   }
+
+  async updateCompanyStatus(companyId: string, status: boolean) {
+    // Verificar se empresa existe
+    const existingCompany = await prisma.company.findUnique({
+      where: { idEmpresa: companyId },
+      select: {
+        idEmpresa: true,
+        nomeFantasia: true,
+        cnpj: true,
+        statusEmpresa: true
+      }
+    });
+
+    if (!existingCompany) {
+      throw HttpError.NotFound('Empresa não encontrada');
+    }
+
+    // Verificar se o status já é o mesmo
+    if (existingCompany.statusEmpresa === status) {
+      throw HttpError.BadRequest(`Empresa já está ${status ? 'ativa' : 'inativa'}`);
+    }
+
+    // Atualizar apenas o status
+    const updatedCompany = await prisma.company.update({
+      where: { idEmpresa: companyId },
+      data: { statusEmpresa: status },
+      select: {
+        idEmpresa: true,
+        nomeFantasia: true,
+        cnpj: true,
+        statusEmpresa: true
+      }
+    });
+
+    logger.info(`Status da empresa alterado (id: ${companyId}) de ${existingCompany.statusEmpresa} para ${status}`);
+
+    return {
+      id: updatedCompany.idEmpresa,
+      nomeFantasia: updatedCompany.nomeFantasia,
+      cnpj: updatedCompany.cnpj,
+      statusEmpresa: updatedCompany.statusEmpresa,
+      statusAnterior: existingCompany.statusEmpresa
+    };
+  }
 }

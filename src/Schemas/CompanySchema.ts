@@ -47,3 +47,12 @@ export const DeleteCompanySchema = z.object({
         id: z.string(),
     }),
 });
+
+export const UpdateCompanyStatusSchema = z.object({
+    params: z.object({
+        id: z.string(),
+    }),
+    body: z.object({
+        status_empresa: z.boolean(),
+    }),
+});

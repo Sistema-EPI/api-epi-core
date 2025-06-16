@@ -85,11 +85,15 @@ export class CollaboratorService {
         },
         processos: {
           include: {
-            epi: {
-              select: {
-                ca: true,
-                nomeEpi: true,
-                validade: true
+            processEpis: {
+              include: {
+                epi: {
+                  select: {
+                    ca: true,
+                    nomeEpi: true,
+                    validade: true
+                  }
+                }
               }
             }
           }
@@ -101,13 +105,6 @@ export class CollaboratorService {
             certificadoPath: true,
             createdAt: true
           }
-        },
-        _count: {
-          select: {
-            processos: true,
-            biometrias: true,
-            logs: true
-          }
         }
       }
     });
@@ -116,12 +113,18 @@ export class CollaboratorService {
       throw HttpError.NotFound('Colaborador não encontrado');
     }
 
+    // Buscar counts separadamente
+    const [processosCount, biometriasCount, logsCount] = await Promise.all([
+      prisma.process.count({ where: { idColaborador: collaboratorId } }),
+      prisma.biometria.count({ where: { idColaborador: collaboratorId } }),
+      prisma.log.count({ where: { idColaborador: collaboratorId } })
+    ]);
+
     return {
       ...existingCollaborator,
-      totalProcessos: existingCollaborator._count.processos,
-      totalBiometrias: existingCollaborator._count.biometrias,
-      totalLogs: existingCollaborator._count.logs,
-      _count: undefined
+      totalProcessos: processosCount,
+      totalBiometrias: biometriasCount,
+      totalLogs: logsCount
     };
   }
 

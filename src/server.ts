@@ -19,6 +19,7 @@ import EpiRouter from './Routers/EpiRouter';
 import AuthRouter from './Routers/AuthRouter';
 import UserRouter from './Routers/UserRouter';
 import CARouter from './Routers/CARouter';
+import ProcessRouter from './Routers/ProcessRouter';
 
 // Middlewares
 import { ErrorMiddleware } from './Helpers/RequestHandler';
@@ -59,6 +60,7 @@ apiV1Router.use('/collaborator', CollaboratorRouter);
 apiV1Router.use('/epi', EpiRouter);
 apiV1Router.use('/user', UserRouter);
 apiV1Router.use('/consulta-epi', CARouter);
+apiV1Router.use('/process', ProcessRouter);
 
 // Configurar Swagger
 setupSwagger(app);

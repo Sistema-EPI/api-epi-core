@@ -206,6 +206,68 @@ company.delete(
 
 /**
  * @swagger
+ * /v1/company/status/{id}:
+ *   put:
+ *     summary: Alterar status da empresa
+ *     description: Ativa ou desativa uma empresa específica
+ *     tags: [Company]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID da empresa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status_empresa]
+ *             properties:
+ *               status_empresa:
+ *                 type: boolean
+ *                 description: Novo status da empresa (true = ativo, false = inativo)
+ *     responses:
+ *       200:
+ *         description: Status da empresa alterado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         nomeFantasia:
+ *                           type: string
+ *                         cnpj:
+ *                           type: string
+ *                         statusEmpresa:
+ *                           type: boolean
+ *                         statusAnterior:
+ *                           type: boolean
+ *       400:
+ *         description: Status já é o mesmo ou dados inválidos
+ *       404:
+ *         description: Empresa não encontrada
+ */
+company.put(
+  '/status/:id',
+  verifyToken,
+  verifyPermission(['company:update']),
+  RequestHandler(CompanyController.updateCompanyStatus),
+)
+
+/**
+ * @swagger
  * /v1/company/info:
  *   get:
  *     summary: Obter informações da empresa logada

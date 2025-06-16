@@ -467,11 +467,12 @@ async function main() {
     data: {
       idProcesso: 'proc-1',
       idColaborador: colab1.idColaborador,
-      idEpi: epi1.idEpi,
+      idEmpresa: empresa1.idEmpresa,
       dataAgendada: new Date('2024-05-15'),
       dataEntrega: new Date('2024-05-15T10:30:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-capacete-joao.pdf',
+      observacoes: 'Entrega de capacete para obra civil',
     },
   })
 
@@ -479,11 +480,12 @@ async function main() {
     data: {
       idProcesso: 'proc-2',
       idColaborador: colab1.idColaborador,
-      idEpi: epi2.idEpi,
+      idEmpresa: empresa1.idEmpresa,
       dataAgendada: new Date('2024-05-15'),
       dataEntrega: new Date('2024-05-15T10:35:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-luva-joao.pdf',
+      observacoes: 'Entrega de luvas para manuseio químico',
     },
   })
 
@@ -491,11 +493,12 @@ async function main() {
     data: {
       idProcesso: 'proc-3',
       idColaborador: colab2.idColaborador,
-      idEpi: epi1.idEpi,
+      idEmpresa: empresa1.idEmpresa,
       dataAgendada: new Date('2024-05-16'),
       dataEntrega: new Date('2024-05-16T14:20:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-capacete-maria.pdf',
+      observacoes: 'Entrega de capacete - colaboradora Maria',
     },
   })
 
@@ -503,12 +506,13 @@ async function main() {
     data: {
       idProcesso: 'proc-4',
       idColaborador: colab3.idColaborador,
-      idEpi: epi3.idEpi,
+      idEmpresa: empresa2.idEmpresa,
       dataAgendada: new Date('2024-05-20'),
       dataEntrega: new Date('2024-05-20T09:15:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-oculos-carlos.pdf',
       dataDevolucao: new Date('2024-08-15T11:20:00'),
+      observacoes: 'Óculos entregue e devolvido por danificação',
     },
   })
 
@@ -516,11 +520,12 @@ async function main() {
     data: {
       idProcesso: 'proc-5',
       idColaborador: colab4.idColaborador,
-      idEpi: epi4.idEpi,
+      idEmpresa: empresa2.idEmpresa,
       dataAgendada: new Date('2024-05-22'),
       dataEntrega: new Date('2024-05-22T16:45:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-protetor-ana.pdf',
+      observacoes: 'Protetor auricular para Ana Lima',
     },
   })
 
@@ -528,11 +533,12 @@ async function main() {
     data: {
       idProcesso: 'proc-6',
       idColaborador: colab5.idColaborador,
-      idEpi: epi5.idEpi,
+      idEmpresa: empresa3.idEmpresa,
       dataAgendada: new Date('2024-06-05'),
       dataEntrega: new Date('2024-06-05T11:10:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-bota-fernando.pdf',
+      observacoes: 'Bota de segurança para Fernando Costa',
     },
   })
 
@@ -540,11 +546,12 @@ async function main() {
     data: {
       idProcesso: 'proc-7',
       idColaborador: colab6.idColaborador,
-      idEpi: epi6.idEpi,
+      idEmpresa: empresa3.idEmpresa,
       dataAgendada: new Date('2024-06-05'),
       dataEntrega: new Date('2024-06-05T14:30:00'),
       statusEntrega: true,
       pdfUrl: '/storage/termos/termo-entrega-mascara-roberta.pdf',
+      observacoes: 'Máscara respiratória para Roberta Alves',
     },
   })
 
@@ -552,9 +559,10 @@ async function main() {
     data: {
       idProcesso: 'proc-8',
       idColaborador: colab7.idColaborador,
-      idEpi: epi7.idEpi,
+      idEmpresa: empresa4.idEmpresa,
       dataAgendada: new Date('2024-06-10'),
       statusEntrega: false,
+      observacoes: 'Processo agendado - aguardando entrega',
     },
   })
 
@@ -562,9 +570,10 @@ async function main() {
     data: {
       idProcesso: 'proc-9',
       idColaborador: colab8.idColaborador,
-      idEpi: epi8.idEpi,
+      idEmpresa: empresa4.idEmpresa,
       dataAgendada: new Date('2024-06-12'),
       statusEntrega: false,
+      observacoes: 'Processo agendado para colaboradora Juliana',
     },
   })
 
@@ -572,13 +581,109 @@ async function main() {
     data: {
       idProcesso: 'proc-10',
       idColaborador: colab9.idColaborador,
-      idEpi: epi9.idEpi,
+      idEmpresa: empresa5.idEmpresa,
       dataAgendada: new Date('2024-06-15'),
       statusEntrega: false,
+      observacoes: 'Processo agendado para Ricardo Ferreira',
     },
   })
 
-  // 9. Registrar alguns logs
+  // 9. Criar relacionamentos ProcessEpi (processo-EPI com quantidades)
+  await prisma.processEpi.createMany({
+    data: [
+      // Processo 1: João Silva - Capacete (2 unidades)
+      {
+        idProcesso: process1.idProcesso,
+        idEpi: epi1.idEpi,
+        quantidade: 2,
+      },
+      
+      // Processo 2: João Silva - Luvas (3 pares)
+      {
+        idProcesso: process2.idProcesso,
+        idEpi: epi2.idEpi,
+        quantidade: 3,
+      },
+      
+      // Processo 3: Maria Souza - Capacete (1 unidade)
+      {
+        idProcesso: process3.idProcesso,
+        idEpi: epi1.idEpi,
+        quantidade: 1,
+      },
+      
+      // Processo 4: Carlos Pereira - Óculos (2 unidades) + Protetor Auricular (5 unidades)
+      {
+        idProcesso: process4.idProcesso,
+        idEpi: epi3.idEpi,
+        quantidade: 2,
+      },
+      {
+        idProcesso: process4.idProcesso,
+        idEpi: epi4.idEpi,
+        quantidade: 5,
+      },
+      
+      // Processo 5: Ana Lima - Protetor Auricular (10 unidades)
+      {
+        idProcesso: process5.idProcesso,
+        idEpi: epi4.idEpi,
+        quantidade: 10,
+      },
+      
+      // Processo 6: Fernando Costa - Bota (1 par) + Máscara (2 unidades)
+      {
+        idProcesso: process6.idProcesso,
+        idEpi: epi5.idEpi,
+        quantidade: 1,
+      },
+      {
+        idProcesso: process6.idProcesso,
+        idEpi: epi6.idEpi,
+        quantidade: 2,
+      },
+      
+      // Processo 7: Roberta Alves - Máscara (1 unidade)
+      {
+        idProcesso: process7.idProcesso,
+        idEpi: epi6.idEpi,
+        quantidade: 1,
+      },
+      
+      // Processo 8: Marcos Oliveira - Cinto (1 unidade) + Luva Anti-Corte (4 pares)
+      {
+        idProcesso: process8.idProcesso,
+        idEpi: epi7.idEpi,
+        quantidade: 1,
+      },
+      {
+        idProcesso: process8.idProcesso,
+        idEpi: epi8.idEpi,
+        quantidade: 4,
+      },
+      
+      // Processo 9: Juliana Santos - Luva Anti-Corte (2 pares)
+      {
+        idProcesso: process9.idProcesso,
+        idEpi: epi8.idEpi,
+        quantidade: 2,
+      },
+      
+      // Processo 10: Ricardo Ferreira - Avental (1 unidade) + Mangote (2 unidades)
+      {
+        idProcesso: process10.idProcesso,
+        idEpi: epi9.idEpi,
+        quantidade: 1,
+      },
+      {
+        idProcesso: process10.idProcesso,
+        idEpi: epi10.idEpi,
+        quantidade: 2,
+      },
+    ],
+  })
+
+  // 10. Registrar alguns logs
   await prisma.log.createMany({
     data: [
       {
