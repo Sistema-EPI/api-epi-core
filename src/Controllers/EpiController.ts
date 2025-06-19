@@ -11,6 +11,9 @@ import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import { EpiService } from '../Services/epiService';
+import { CompanyService } from '../Services/companyService';
+
+const companyService = new CompanyService();
 
 export async function getAllEpis(req: Request, res: Response, next: NextFunction) {
   try {
@@ -67,7 +70,7 @@ export async function getEpisByEmpresa(req: Request, res: Response, next: NextFu
         const page = parseInt(query.page || '1', 10);
         const limit = parseInt(query.limit || '10', 10);
 
-        const existingCompany = await EpiService.getCompanyById(idEmpresa);
+        const existingCompany = await companyService.getCompanyByIdSimple(idEmpresa);
 
         if (!existingCompany) {
             throw new HttpError('Empresa não encontrada', 404);
@@ -102,7 +105,7 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
 
         console.log('body', body);
 
-        const existingCompany = await EpiService.getCompanyById(body.id_empresa);
+        const existingCompany = await companyService.getCompanyByIdSimple(body.id_empresa);
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
 
@@ -150,7 +153,7 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
 
 
         if (body.id_empresa) {
-            const existingCompany = await EpiService.getCompanyById(body.id_empresa);
+            const existingCompany = await companyService.getCompanyByIdSimple(body.id_empresa);
             if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
         }
 

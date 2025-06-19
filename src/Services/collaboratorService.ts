@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
+import { CompanyService } from './companyService';
 
 const prisma = new PrismaClient();
+const companyService = new CompanyService();
 
 interface CreateCollaboratorData {
   nome_colaborador: string;
@@ -265,21 +267,6 @@ export class CollaboratorService {
       nome: existingCollaborator.nomeColaborador,
       empresa: existingCollaborator.empresa.nomeFantasia
     };
-  }
-
-  /**
-   * Método auxiliar para verificar se uma empresa existe
-   */
-  async getCompanyById(companyId: string) {
-    return await prisma.company.findUnique({
-      where: { idEmpresa: companyId },
-      select: {
-        idEmpresa: true,
-        nomeFantasia: true,
-        razaoSocial: true,
-        statusEmpresa: true
-      }
-    });
   }
 
   /**

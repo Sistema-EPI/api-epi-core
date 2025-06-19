@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
+import { CompanyService } from './companyService';
 
 const prisma = new PrismaClient();
+const companyService = new CompanyService();
 
 export class EpiService {
     /**
@@ -12,7 +14,7 @@ export class EpiService {
         return await prisma.epi.findUnique({
             where: { 
                 idEpi: id,
-                status: true // Apenas EPIs ativos
+                status: true 
             },
             include: {
                 empresa: {
@@ -41,7 +43,7 @@ export class EpiService {
             prisma.epi.findMany({
                 where: { 
                     idEmpresa: idEmpresa,
-                    status: true // Apenas EPIs ativos
+                    status: true 
                 },
                 skip,
                 take,
@@ -59,7 +61,7 @@ export class EpiService {
             prisma.epi.count({
                 where: { 
                     idEmpresa: idEmpresa,
-                    status: true // Apenas EPIs ativos
+                    status: true 
                 }
             })
         ]);
@@ -93,9 +95,9 @@ export class EpiService {
 
         const where = idEmpresa ? { 
             idEmpresa: idEmpresa,
-            status: true // Apenas EPIs ativos
+            status: true 
         } : { 
-            status: true // Apenas EPIs ativos
+            status: true 
         };
 
         const [epis, total] = await Promise.all([
@@ -149,7 +151,6 @@ export class EpiService {
         dataCompra?: Date;
         vidaUtil?: Date;
     }) {
-        // Verificar se já existe um EPI com o mesmo CA na empresa
         const existingEpi = await prisma.epi.findFirst({
             where: {
                 ca: epiData.ca,
@@ -159,10 +160,10 @@ export class EpiService {
 
         if (existingEpi) {
             if (existingEpi.status === true) {
-                // EPI já existe e está ativo - erro
+
                 throw new Error('EPI com este CA já está cadastrado e ativo');
             } else {
-                // EPI existe mas está inativo - reativar e atualizar dados
+  
                 return await prisma.epi.update({
                     where: { idEpi: existingEpi.idEpi },
                     data: {
@@ -189,11 +190,10 @@ export class EpiService {
             }
         }
 
-        // EPI não existe - criar novo
         return await prisma.epi.create({
             data: {
                 ...epiData,
-                status: true // Por padrão, novos EPIs são criados como ativos
+                status: true 
             },
             include: {
                 empresa: {
@@ -224,7 +224,6 @@ export class EpiService {
         dataCompra?: Date;
         vidaUtil?: Date;
     }) {
-        // Verificar se o EPI existe e está ativo
         const existingEpi = await prisma.epi.findUnique({
             where: { idEpi: id },
             select: { idEpi: true, status: true, ca: true, idEmpresa: true }
@@ -234,7 +233,6 @@ export class EpiService {
             throw new Error('EPI não encontrado ou está inativo');
         }
 
-        // Se está alterando o CA, verificar se não conflita com outro EPI ativo
         if (epiData.ca && epiData.ca !== existingEpi.ca) {
             const conflictingEpi = await prisma.epi.findFirst({
                 where: {
@@ -271,7 +269,6 @@ export class EpiService {
      * @returns EPI desativado ou null se não encontrado
      */
     static async deleteEpi(id: string) {
-        // Verificar se o EPI existe e está ativo
         const existingEpi = await prisma.epi.findUnique({
             where: { idEpi: id },
             select: { idEpi: true, status: true, nomeEpi: true, ca: true }
@@ -285,12 +282,11 @@ export class EpiService {
             throw new Error('EPI já está inativo');
         }
 
-        // Verificar se há processos ativos usando este EPI
         const activeProcesses = await prisma.processEpi.findFirst({
             where: {
                 idEpi: id,
                 processo: {
-                    statusEntrega: false // Processos ainda não entregues
+                    statusEntrega: false 
                 }
             }
         });
@@ -299,7 +295,7 @@ export class EpiService {
             throw new Error('Não é possível inativar EPI que possui processos de entrega pendentes');
         }
 
-        // Soft delete - apenas desativa o EPI
+
         return await prisma.epi.update({
             where: { idEpi: id },
             data: { 
@@ -339,7 +335,7 @@ export class EpiService {
         const where: any = {
             ca,
             idEmpresa: idEmpresa,
-            status: true // Apenas EPIs ativos
+            status: true 
         };
 
         if (excludeEpiId) {
@@ -355,28 +351,11 @@ export class EpiService {
     }
 
     /**
-     * Verifica se uma empresa existe
-     * @param idEmpresa - UUID da empresa
-     * @returns Empresa encontrada ou null
-     */
-    static async getCompanyById(idEmpresa: string) {
-        return await prisma.company.findUnique({
-            where: { idEmpresa },
-            select: { 
-                idEmpresa: true, 
-                nomeFantasia: true,
-                razaoSocial: true 
-            }
-        });
-    }
-
-    /**
      * Reativa um EPI inativo
      * @param id - UUID do EPI
      * @returns EPI reativado ou null se não encontrado
      */
     static async reactivateEpi(id: string) {
-        // Verificar se o EPI existe e está inativo
         const existingEpi = await prisma.epi.findUnique({
             where: { idEpi: id },
             select: { idEpi: true, status: true, nomeEpi: true, ca: true }
@@ -390,7 +369,7 @@ export class EpiService {
             throw new Error('EPI já está ativo');
         }
 
-        // Reativar o EPI
+
         return await prisma.epi.update({
             where: { idEpi: id },
             data: { 

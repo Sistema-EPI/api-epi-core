@@ -3,8 +3,10 @@ import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
+import { CompanyService } from './companyService';
 
 const prisma = new PrismaClient();
+const companyService = new CompanyService();
 
 interface CreateUserData {
   email: string;
@@ -108,7 +110,7 @@ export class UserService {
   }
 
   async createUser(companyId: string, data: CreateUserData) {
-    // Verificar se a empresa existe
+    
     const empresa = await prisma.company.findUnique({
       where: { idEmpresa: companyId }
     });
@@ -117,7 +119,6 @@ export class UserService {
       throw HttpError.NotFound('Empresa não encontrada');
     }
 
-    // Verificar se email já está em uso
     const isEmailAlreadyInUse = await prisma.user.findUnique({
       where: { email: data.email }
     });
@@ -162,7 +163,7 @@ export class UserService {
   }
 
   async connectUserToCompany(userId: string, companyId: string, cargo: string) {
-    // Verificar se a empresa existe
+ 
     const company = await prisma.company.findUnique({
       where: { idEmpresa: companyId }
     });
@@ -171,7 +172,7 @@ export class UserService {
       throw HttpError.NotFound(`Empresa com ID '${companyId}' não encontrada`);
     }
 
-    // Verificar se o cargo existe
+
     const role = await prisma.role.findUnique({
       where: { cargo }
     });
@@ -180,7 +181,7 @@ export class UserService {
       throw HttpError.BadRequest(`Cargo '${cargo}' não existe`);
     }
 
-    // Verificar se o usuário existe
+
     const user = await prisma.user.findUnique({
       where: { idUser: userId }
     });
@@ -189,7 +190,7 @@ export class UserService {
       throw HttpError.NotFound(`Usuário com ID '${userId}' não encontrado`);
     }
 
-    // Verificar se já existe conexão
+
     const existingConnection = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -217,7 +218,7 @@ export class UserService {
   }
 
   async connectUserToCompanyHandler(userId: string, companyId: string, data: ConnectUserToCompanyData) {
-    // Verificar se já existe conexão
+
     const existing = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -237,7 +238,7 @@ export class UserService {
   }
 
   async updatePassword(userId: string, senhaAtual: string, novaSenha: string) {
-    // Verificar se o usuário existe
+
     const user = await prisma.user.findUnique({ 
       where: { idUser: userId } 
     });
@@ -246,14 +247,14 @@ export class UserService {
       throw HttpError.NotFound('Usuário não encontrado');
     }
 
-    // Verificar se a senha atual está correta
+
     const senhaCorreta = await bcrypt.compare(senhaAtual, user.senha);
 
     if (!senhaCorreta) {
       throw HttpError.Unauthorized('Senha atual incorreta');
     }
 
-    // Hash da nova senha
+
     const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
 
     console.log('Nova senha hasheada:', novaSenhaHash);
@@ -269,7 +270,7 @@ export class UserService {
   }
 
   async updateUserStatus(userId: string, data: UpdateUserStatusData) {
-    // Verificar se o usuário existe
+
     const user = await prisma.user.findUnique({ 
       where: { idUser: userId } 
     });
@@ -299,7 +300,7 @@ export class UserService {
   }
 
   async deleteUser(userId: string) {
-    // Verificar se o usuário existe
+
     const existingUser = await prisma.user.findUnique({
       where: { idUser: userId },
       include: {
@@ -316,7 +317,7 @@ export class UserService {
       throw HttpError.BadRequest('Usuário já foi deletado');
     }
 
-    // Soft delete - mantém relacionamentos para auditoria
+
     const updatedUser = await prisma.user.update({
       where: { idUser: userId },
       data: {
@@ -334,38 +335,21 @@ export class UserService {
     };
   }
 
-  /**
-   * Método auxiliar para verificar se uma empresa existe
-   */
-  async getCompanyById(companyId: string) {
-    return await prisma.company.findUnique({
-      where: { idEmpresa: companyId },
-      select: {
-        idEmpresa: true,
-        nomeFantasia: true,
-        razaoSocial: true,
-        statusEmpresa: true
-      }
-    });
-  }
 
-  /**
-   * Método auxiliar para verificar se um email já está em uso
-   */
   async isEmailAvailable(email: string, excludeUserId?: string) {
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!existingUser) {
-      return true; // Email disponível
+      return true; 
     }
 
-    // Se estamos excluindo um usuário específico (para update), verificar se é o mesmo
+   
     if (excludeUserId && existingUser.idUser === excludeUserId) {
-      return true; // Email pertence ao próprio usuário sendo atualizado
+      return true; 
     }
 
-    return false; // Email já está em uso por outro usuário
+    return false; 
   }
 }

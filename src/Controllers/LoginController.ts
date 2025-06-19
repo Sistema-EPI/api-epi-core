@@ -80,7 +80,6 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
 
 export async function getCompanyInfo(req: Request, res: Response, next: NextFunction) {
     try {
-        // O middleware de auth já validou e anexou a company no req
         const companyId = (req as any).company?.idEmpresa;
         
         if (!companyId) {
