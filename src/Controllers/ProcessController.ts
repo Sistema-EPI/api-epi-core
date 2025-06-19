@@ -13,7 +13,7 @@ import {
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
 
-// Interface para AuthRequest
+
 interface AuthRequest extends Request {
   company?: {
     idEmpresa: string;
@@ -24,7 +24,6 @@ interface AuthRequest extends Request {
 }
 
 export class ProcessController {
-  // Criar novo processo
   static async createProcess(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { idEmpresa } = req.company!;
@@ -43,13 +42,12 @@ export class ProcessController {
     }
   }
 
-  // Buscar processo por ID
   static async getProcessById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = GetProcessByIdSchema.parse(req.params);
       const { idEmpresa } = req.company!;
 
-      // Validar se o processo pertence à empresa (exceto para admin)
+  
       if (req.userRole !== 'admin') {
         await ProcessService.validateProcessOwnership(id, idEmpresa);
       }
@@ -67,7 +65,6 @@ export class ProcessController {
     }
   }
 
-  // Atualizar processo
   static async updateProcess(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = GetProcessByIdSchema.parse(req.params);
@@ -87,7 +84,6 @@ export class ProcessController {
     }
   }
 
-  // Deletar processo
   static async deleteProcess(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = GetProcessByIdSchema.parse(req.params);
@@ -106,14 +102,13 @@ export class ProcessController {
     }
   }
 
-  // Listar processos por empresa
   static async getProcessesByEmpresa(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id_empresa } = req.params;
       const queryParams = { ...req.query, id_empresa };
       const validatedParams = GetProcessesByEmpresaSchema.parse(queryParams);
 
-      // Verificar permissões
+
       if (req.userRole !== 'admin' && req.company!.idEmpresa !== id_empresa) {
         throw new HttpError('Acesso negado', 403);
       }
@@ -132,7 +127,7 @@ export class ProcessController {
     }
   }
 
-  // Listar processos por colaborador
+
   static async getProcessesByColaborador(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id_colaborador } = req.params;
@@ -153,13 +148,12 @@ export class ProcessController {
     }
   }
 
-  // Confirmar entrega (biometria)
   static async confirmDelivery(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const validatedData = ConfirmDeliverySchema.parse({ id, ...req.body });
 
-      // Para biometria, não precisa validação de empresa
+ 
       const processo = await ProcessService.confirmDelivery(
         validatedData.id, 
         validatedData.dataEntrega,
@@ -177,7 +171,7 @@ export class ProcessController {
     }
   }
 
-  // Registrar devolução
+
   static async registerReturn(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;

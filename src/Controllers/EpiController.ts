@@ -19,7 +19,6 @@ export async function getAllEpis(req: Request, res: Response, next: NextFunction
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);
 
-    // Usar o service para buscar os EPIs
     const result = await EpiService.getAllEpis(page, limit, query.id_empresa);
 
     const response = HttpResponse.Ok({
@@ -45,7 +44,6 @@ export async function getEpiById(req: Request, res: Response, next: NextFunction
         const { params } = GetEpiByIdSchema.parse(req);
         const id = params.id;
 
-        // Usar o service para buscar o EPI
         const existingEpi = await EpiService.getEpiById(id);
 
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
@@ -69,14 +67,13 @@ export async function getEpisByEmpresa(req: Request, res: Response, next: NextFu
         const page = parseInt(query.page || '1', 10);
         const limit = parseInt(query.limit || '10', 10);
 
-        // Verificar se a empresa existe usando o service
         const existingCompany = await EpiService.getCompanyById(idEmpresa);
 
         if (!existingCompany) {
             throw new HttpError('Empresa não encontrada', 404);
         }
 
-        // Usar o service para buscar os EPIs
+
         const result = await EpiService.getEpisByEmpresa(idEmpresa, page, limit);
 
         const response = HttpResponse.Ok({
@@ -105,15 +102,14 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
 
         console.log('body', body);
 
-        // Verificar se a empresa existe usando o service
         const existingCompany = await EpiService.getCompanyById(body.id_empresa);
         if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
 
-        // Verificar se o CA já está em uso usando o service
+
         const isCaAvailable = await EpiService.isCaAvailable(body.ca, body.id_empresa);
         if (!isCaAvailable) throw new HttpError('CA já cadastrado para esta empresa', 409);
 
-        // Preparar dados para criação
+
         const epiData = {
             ca: body.ca,
             idEmpresa: body.id_empresa,
@@ -126,7 +122,7 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
             vidaUtil: body.vida_util ? new Date(body.vida_util) : undefined,
         };
 
-        // Usar o service para criar o EPI
+ 
         const epi = await EpiService.createEpi(epiData);
         
         logger.info(`Novo EPI criado (ID: ${epi.idEpi}, CA: ${epi.ca})`);
@@ -148,17 +144,17 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
         const { body, params } = UpdateEpiSchema.parse(req);
         const id = params.id;
 
-        // Verificar se o EPI existe usando o service
+ 
         const existingEpi = await EpiService.getEpiById(id);
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
-        // Verificar se a empresa existe (se fornecida) usando o service
+
         if (body.id_empresa) {
             const existingCompany = await EpiService.getCompanyById(body.id_empresa);
             if (!existingCompany) throw new HttpError('Empresa não encontrada', 404);
         }
 
-        // Verificar se o CA já está em uso (se fornecido) usando o service
+
         if (body.ca && body.ca !== existingEpi.ca) {
             const isCaAvailable = await EpiService.isCaAvailable(
                 body.ca, 
@@ -168,7 +164,7 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
             if (!isCaAvailable) throw new HttpError('CA já cadastrado para esta empresa', 409);
         }
 
-        // Preparar dados para atualização
+  
         const dataToUpdate = {
             ...(body.ca !== undefined && { ca: body.ca }),
             ...(body.id_empresa !== undefined && { idEmpresa: body.id_empresa }),
@@ -187,10 +183,10 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
             }),
         };
 
-        // Usar o service para atualizar o EPI
+
         const updatedEpi = await EpiService.updateEpi(id, dataToUpdate);
 
-        // Log das mudanças
+
         const changes: Record<string, { before: any; after: any }> = {};
         for (const key in dataToUpdate) {
             if ((existingEpi as any)[key] !== (updatedEpi as any)[key]) {
@@ -224,18 +220,16 @@ export async function deleteEpi(req: Request, res: Response, next: NextFunction)
         const { params } = DeleteEpiSchema.parse(req);
         const id = params.id;
 
-        // Verificar se o EPI existe usando o service
         const existingEpi = await EpiService.getEpiById(id);
         if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
-        // Usar o service para deletar o EPI
-        await EpiService.deleteEpi(id);
+        const deletedEpi = await EpiService.deleteEpi(id);
 
         logger.info(`EPI removido com sucesso (ID: ${id}, CA: ${existingEpi.ca})`);
 
         const response = HttpResponse.Ok({
-            message: 'EPI deletado com sucesso',
-            data: existingEpi,
+            message: 'EPI desativado com sucesso',
+            data: deletedEpi,
         });
 
         return res.status(response.statusCode).json(response.payload);

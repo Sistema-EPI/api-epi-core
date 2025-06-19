@@ -11,7 +11,7 @@ interface AuthRequest extends Request {
   userRole?: any;
 }
 
-// Middleware de autenticação
+
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const apiKey = req.headers['x-api-token'] as string;
@@ -34,7 +34,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
       return;
     }
     
-    // Validar API Key
+
     const company = await validateApiKey(apiKey);
     if (!company) {
       res.status(403).json({ 
@@ -44,7 +44,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
       return;
     }
     
-    // Validar JWT
+ 
     const decoded = jwtVerifyToken(token);
     const user = await getUserById(decoded.userId);
     
@@ -56,7 +56,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
       return;
     }
 
-    // Verificar se usuário pertence à empresa da API Key
+  
     const authCompany = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -111,7 +111,7 @@ const getUserById = async (userId: string) => {
   return user;
 };
 
-// Middleware para verificar token JWT e API Key
+
 export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const apiKey = req.headers['x-api-token'] as string;
@@ -134,7 +134,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
     
-    // Validar API Key
+    
     const company = await validateApiKey(apiKey);
     if (!company) {
       res.status(403).json({ 
@@ -144,7 +144,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
     
-    // Validar JWT
+ 
     const decoded = jwtVerifyToken(token);
     const user = await getUserById(decoded.userId);
     
@@ -156,7 +156,6 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
 
-    // Verificar se usuário pertence à empresa da API Key
     const authCompany = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -189,7 +188,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
   }
 };
 
-// Middleware para verificar permissões baseadas no cargo do usuário
+
 export const verifyPermission = (requiredActions: string[]) => {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -205,11 +204,11 @@ export const verifyPermission = (requiredActions: string[]) => {
 
       const permissions = userRole.permissao as any;
       
-      // Verificar se o usuário tem todas as permissões necessárias
+
       for (const action of requiredActions) {
         const [resource, operation] = action.split(':');
         
-        // Para operações CRUD básicas
+    
         switch (operation) {
           case 'create':
             if (!permissions.create) {
