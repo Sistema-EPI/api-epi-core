@@ -3,83 +3,10 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1. Cadastrar empresas com API Keys
-  const empresa1 = await prisma.company.create({
-    data: {
-      nomeFantasia: 'Hamada Tecnologias',
-      razaoSocial: 'Hamada Tecnologias LTDA',
-      cnpj: '12345678000199',
-      apiKey: 'hamada_api_key_2024_secure_token_123456789',
-      uf: 'RJ',
-      cep: '28970000',
-      logradouro: 'Av. Principal, 123',
-      email: 'contato@hamada.com.br',
-      telefone: '21999999999',
-      statusEmpresa: true,
-    },
-  });
+  console.log('🚀 Iniciando seed do banco de dados...');
 
-  const empresa2 = await prisma.company.create({
-    data: {
-      nomeFantasia: 'Barcelos Engenharia',
-      razaoSocial: 'Barcelos Engenharia de Segurança LTDA',
-      cnpj: '98765432000188',
-      apiKey: 'barcelos_api_key_2024_secure_token_987654321',
-      uf: 'SP',
-      cep: '01001000',
-      logradouro: 'Rua Central, 456',
-      email: 'contato@barcelos.com.br',
-      telefone: '11988888888',
-      statusEmpresa: true,
-    },
-  });
-
-  const empresa3 = await prisma.company.create({
-    data: {
-      nomeFantasia: 'Construções Oliveira',
-      razaoSocial: 'Oliveira Construções e Reformas LTDA',
-      cnpj: '45678901000123',
-      apiKey: 'oliveira_api_key_2024_secure_token_456789123',
-      uf: 'MG',
-      cep: '30130110',
-      logradouro: 'Rua dos Construtores, 789',
-      email: 'contato@oliveiraconstrucoes.com.br',
-      telefone: '31977777777',
-      statusEmpresa: true,
-    },
-  });
-
-  const empresa4 = await prisma.company.create({
-    data: {
-      nomeFantasia: 'JG Tech',
-      razaoSocial: 'JG Tech LTDA',
-      cnpj: '87654321000177',
-      apiKey: 'jgtech_api_key_2024_secure_token_876543210',
-      uf: 'RS',
-      cep: '90020150',
-      logradouro: 'Av. Tecnológica, 1010',
-      email: 'contato@techsafety.com.br',
-      telefone: '51966666666',
-      statusEmpresa: true,
-    },
-  });
-
-  const empresa5 = await prisma.company.create({
-    data: {
-      nomeFantasia: 'Silva & Santos Metalúrgica',
-      razaoSocial: 'Silva & Santos Metalúrgica LTDA',
-      cnpj: '12387654000166',
-      apiKey: 'silvasantos_api_key_2024_secure_token_123876540',
-      uf: 'SC',
-      cep: '88010400',
-      logradouro: 'Rua dos Metais, 222',
-      email: 'contato@silvasantos.com.br',
-      telefone: '47955555555',
-      statusEmpresa: false,
-    },
-  });
-
-  // 2. Cadastrar cargos e permissões
+  // 1. Cadastrar roles
+  console.log('📝 Criando roles...');
   await prisma.role.createMany({
     data: [
       {
@@ -102,681 +29,533 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 3. Cadastrar usuários com dados completos
-  const user1 = await prisma.user.create({
+  // 2. Cadastrar 3 empresas
+  console.log('🏢 Criando empresas...');
+  const empresa1 = await prisma.company.create({
     data: {
-      idUser: 'user-1',
-      name: 'João Silva',
-      email: 'admin@hamada.com.br',
-      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
+      nomeFantasia: 'SafeTech Indústria',
+      razaoSocial: 'SafeTech Indústria de Equipamentos LTDA',
+      cnpj: '12345678000199',
+      apiKey: 'safetech_api_key_2025_secure_token_123456789',
+      uf: 'SP',
+      cep: '01310100',
+      logradouro: 'Av. Paulista, 1000',
+      email: 'contato@safetech.com.br',
+      telefone: '11987654321',
+      statusEmpresa: true,
+    },
+  });
+
+  const empresa2 = await prisma.company.create({
+    data: {
+      nomeFantasia: 'Construção Segura',
+      razaoSocial: 'Construção Segura Engenharia LTDA',
+      cnpj: '98765432000188',
+      apiKey: 'construcao_api_key_2025_secure_token_987654321',
+      uf: 'RJ',
+      cep: '20040020',
+      logradouro: 'Rua da Assembleia, 500',
+      email: 'contato@construcaosegura.com.br',
+      telefone: '21976543210',
+      statusEmpresa: true,
+    },
+  });
+
+  const empresa3 = await prisma.company.create({
+    data: {
+      nomeFantasia: 'Mineração Protegida',
+      razaoSocial: 'Mineração Protegida S/A',
+      cnpj: '45678901000123',
+      apiKey: 'mineracao_api_key_2025_secure_token_456789123',
+      uf: 'MG',
+      cep: '30130110',
+      logradouro: 'Av. Afonso Pena, 750',
+      email: 'contato@mineracaoprotegida.com.br',
+      telefone: '31965432109',
+      statusEmpresa: true,
+    },
+  });
+
+  // 3. Cadastrar 5 usuários (1 admin, 2 gestores, 1 estoquista, 1 viewer)
+  console.log('👥 Criando usuários...');
+  const adminUser = await prisma.user.create({
+    data: {
+      name: 'Administrador Sistema',
+      email: 'admin@sistema.com.br',
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456"
       statusUser: true,
     },
   });
 
-  const user2 = await prisma.user.create({
+  const gestorUser1 = await prisma.user.create({
     data: {
-      idUser: 'user-2',
-      name: 'Maria Santos',
-      email: 'gestor@barcelos.com.br',
-      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
+      name: 'Maria Silva',
+      email: 'gestor1@empresa.com.br',
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456"
       statusUser: true,
     },
   });
 
-  const user3 = await prisma.user.create({
+  const gestorUser2 = await prisma.user.create({
     data: {
-      idUser: 'user-3',
-      name: 'Carlos Pereira',
-      email: 'tecnico@oliveira.com.br',
-      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
+      name: 'João Santos',
+      email: 'gestor2@empresa.com.br',
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456"
       statusUser: true,
     },
   });
 
-  const user4 = await prisma.user.create({
+  const estoqueUser = await prisma.user.create({
     data: {
-      idUser: 'user-4',
-      name: 'Ana Lima',
-      email: 'viewer@techsafety.com.br',
-      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
+      name: 'Carlos Estoque',
+      email: 'estoque@empresa.com.br',
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456"
       statusUser: true,
     },
   });
 
-  const user5 = await prisma.user.create({
+  const viewerUser = await prisma.user.create({
     data: {
-      idUser: 'user-5',
-      name: 'Roberto Oliveira',
-      email: 'inativo@silvasantos.com.br',
-      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
-      statusUser: false,
+      name: 'Ana Visualizadora',
+      email: 'viewer@empresa.com.br',
+      senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456"
+      statusUser: true,
     },
   });
 
-  // 4. Vincular usuários às empresas com cargos
+  // 4. Vincular usuários às empresas (AuthCompany)
+  console.log('🔗 Vinculando usuários às empresas...');
   await prisma.authCompany.createMany({
     data: [
-      {
-        idUser: user1.idUser,
-        idEmpresa: empresa1.idEmpresa,
-        cargo: 'admin',
-      },
-      {
-        idUser: user2.idUser,
-        idEmpresa: empresa2.idEmpresa,
-        cargo: 'gestor',
-      },
-      {
-        idUser: user3.idUser,
-        idEmpresa: empresa3.idEmpresa,
-        cargo: 'estoque',
-      },
-      {
-        idUser: user4.idUser,
-        idEmpresa: empresa4.idEmpresa,
-        cargo: 'viewer',
-      },
-      {
-        idUser: user5.idUser,
-        idEmpresa: empresa5.idEmpresa,
-        cargo: 'admin',
-      },
+      { idUser: adminUser.idUser, idEmpresa: empresa1.idEmpresa, cargo: 'admin' },
+      { idUser: gestorUser1.idUser, idEmpresa: empresa2.idEmpresa, cargo: 'gestor' },
+      { idUser: gestorUser2.idUser, idEmpresa: empresa3.idEmpresa, cargo: 'gestor' },
+      { idUser: estoqueUser.idUser, idEmpresa: empresa1.idEmpresa, cargo: 'estoque' },
+      { idUser: viewerUser.idUser, idEmpresa: empresa2.idEmpresa, cargo: 'viewer' },
     ],
   });
 
-  // 5. Cadastrar colaboradores
-  const colab1 = await prisma.collaborator.create({
+  // 5. Cadastrar 3 colaboradores para cada empresa (9 total)
+  console.log('🧑‍💼 Criando colaboradores...');
+
+  // Colaboradores Empresa 1
+  const colab1_1 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-1',
       idEmpresa: empresa1.idEmpresa,
-      nomeColaborador: 'João da Silva',
+      nomeColaborador: 'Pedro Oliveira',
       cpf: '12345678901',
       status: true,
     },
   });
 
-  const colab2 = await prisma.collaborator.create({
+  const colab1_2 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-2',
       idEmpresa: empresa1.idEmpresa,
-      nomeColaborador: 'Maria Souza',
-      cpf: '98765432100',
+      nomeColaborador: 'Fernanda Costa',
+      cpf: '23456789012',
       status: true,
     },
   });
 
-  const colab3 = await prisma.collaborator.create({
+  const colab1_3 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-3',
-      idEmpresa: empresa2.idEmpresa,
-      nomeColaborador: 'Carlos Pereira',
-      cpf: '45678912300',
+      idEmpresa: empresa1.idEmpresa,
+      nomeColaborador: 'Roberto Almeida',
+      cpf: '34567890123',
       status: true,
     },
   });
 
-  const colab4 = await prisma.collaborator.create({
+  // Colaboradores Empresa 2
+  const colab2_1 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-4',
       idEmpresa: empresa2.idEmpresa,
-      nomeColaborador: 'Ana Lima',
-      cpf: '78912345600',
+      nomeColaborador: 'Carla Mendes',
+      cpf: '45678901234',
+      status: true,
+    },
+  });
+
+  const colab2_2 = await prisma.collaborator.create({
+    data: {
+      idEmpresa: empresa2.idEmpresa,
+      nomeColaborador: 'Lucas Ferreira',
+      cpf: '56789012345',
+      status: true,
+    },
+  });
+
+  const colab2_3 = await prisma.collaborator.create({
+    data: {
+      idEmpresa: empresa2.idEmpresa,
+      nomeColaborador: 'Juliana Rocha',
+      cpf: '67890123456',
       status: false,
     },
   });
 
-  const colab5 = await prisma.collaborator.create({
+  // Colaboradores Empresa 3
+  const colab3_1 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-5',
       idEmpresa: empresa3.idEmpresa,
-      nomeColaborador: 'Fernando Costa',
-      cpf: '32165498700',
+      nomeColaborador: 'Ricardo Lima',
+      cpf: '78901234567',
       status: true,
     },
   });
 
-  const colab6 = await prisma.collaborator.create({
+  const colab3_2 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-6',
       idEmpresa: empresa3.idEmpresa,
-      nomeColaborador: 'Roberta Alves',
-      cpf: '65432198700',
+      nomeColaborador: 'Amanda Souza',
+      cpf: '89012345678',
       status: true,
     },
   });
 
-  const colab7 = await prisma.collaborator.create({
+  const colab3_3 = await prisma.collaborator.create({
     data: {
-      idColaborador: 'colab-7',
-      idEmpresa: empresa4.idEmpresa,
-      nomeColaborador: 'Marcos Oliveira',
-      cpf: '98765432101',
+      idEmpresa: empresa3.idEmpresa,
+      nomeColaborador: 'Diego Martins',
+      cpf: '90123456789',
       status: true,
     },
   });
 
-  const colab8 = await prisma.collaborator.create({
-    data: {
-      idColaborador: 'colab-8',
-      idEmpresa: empresa4.idEmpresa,
-      nomeColaborador: 'Juliana Santos',
-      cpf: '12398745600',
-      status: true,
-    },
-  });
+  // 6. Cadastrar 4 EPIs para cada empresa com CAs específicos
+  console.log('🦺 Criando EPIs...');
 
-  const colab9 = await prisma.collaborator.create({
+  // EPIs Empresa 1
+  const epi1_1 = await prisma.epi.create({
     data: {
-      idColaborador: 'colab-9',
-      idEmpresa: empresa5.idEmpresa,
-      nomeColaborador: 'Ricardo Ferreira',
-      cpf: '78945612300',
-      status: true,
-    },
-  });
-
-  const colab10 = await prisma.collaborator.create({
-    data: {
-      idColaborador: 'colab-10',
-      idEmpresa: empresa5.idEmpresa,
-      nomeColaborador: 'Paula Martins',
-      cpf: '32178945600',
-      status: true,
-    },
-  });
-
-  // 6. Cadastrar biometrias para alguns colaboradores
-  await prisma.biometria.createMany({
-    data: [
-      {
-        idBiometria: 'bio-1',
-        idColaborador: colab1.idColaborador,
-        biometriaPath: '/storage/biometrias/bio-joao-silva.dat',
-        certificadoPath: '/storage/certificados/cert-joao-silva.pdf',
-      },
-      {
-        idBiometria: 'bio-2',
-        idColaborador: colab2.idColaborador,
-        biometriaPath: '/storage/biometrias/bio-maria-souza.dat',
-        certificadoPath: '/storage/certificados/cert-maria-souza.pdf',
-      },
-      {
-        idBiometria: 'bio-3',
-        idColaborador: colab3.idColaborador,
-        biometriaPath: '/storage/biometrias/bio-carlos-pereira.dat',
-        certificadoPath: '/storage/certificados/cert-carlos-pereira.pdf',
-      },
-      {
-        idBiometria: 'bio-5',
-        idColaborador: colab5.idColaborador,
-        biometriaPath: '/storage/biometrias/bio-fernando-costa.dat',
-        certificadoPath: '/storage/certificados/cert-fernando-costa.pdf',
-      },
-      {
-        idBiometria: 'bio-7',
-        idColaborador: colab7.idColaborador,
-        biometriaPath: '/storage/biometrias/bio-marcos-oliveira.dat',
-        certificadoPath: '/storage/certificados/cert-marcos-oliveira.pdf',
-      },
-    ],
-  });
-
-  // 7. Cadastrar EPIs
-  const epi1 = await prisma.epi.create({
-    data: {
-      ca: '12345',
+      ca: '15081',
       idEmpresa: empresa1.idEmpresa,
-      nomeEpi: 'Capacete de Segurança',
-      descricao: 'Capacete de segurança classe A, resistente a impactos',
+      nomeEpi: 'Capacete de Segurança Classe A',
+      descricao: 'Capacete de segurança em polietileno de alta densidade',
       validade: new Date('2026-12-31'),
-      vidaUtil: 730, // Capacete dura 2 anos (730 dias)
-      dataCompra: new Date('2023-12-01'),
-      quantidade: 20,
-      quantidadeMinima: 5,
-    },
-  });
-
-  const epi2 = await prisma.epi.create({
-    data: {
-      ca: '67890',
-      idEmpresa: empresa1.idEmpresa,
-      nomeEpi: 'Luva de Proteção Química',
-      descricao: 'Luva resistente a produtos químicos e solventes',
-      validade: new Date('2025-06-15'),
-      vidaUtil: 365, // Luva dura 1 ano (365 dias)
-      dataCompra: new Date('2024-01-20'),
+      vidaUtil: 1095, // 3 anos
+      dataCompra: new Date('2024-01-15'),
       quantidade: 50,
       quantidadeMinima: 10,
+      preco: 45.9,
+      status: true,
     },
   });
 
-  const epi3 = await prisma.epi.create({
+  const epi1_2 = await prisma.epi.create({
     data: {
-      ca: '23456',
-      idEmpresa: empresa2.idEmpresa,
-      nomeEpi: 'Óculos de Proteção',
-      descricao: 'Óculos de proteção contra respingos e partículas',
-      validade: new Date('2026-03-10'),
-      vidaUtil: 547, // Óculos dura 1.5 anos (547 dias)
-      dataCompra: new Date('2023-09-15'),
-      quantidade: 30,
-      quantidadeMinima: 8,
-    },
-  });
-
-  const epi4 = await prisma.epi.create({
-    data: {
-      ca: '78901',
-      idEmpresa: empresa2.idEmpresa,
-      nomeEpi: 'Protetor Auricular',
-      descricao: 'Protetor auricular tipo plugue, atenuação 25dB',
-      validade: new Date('2025-11-22'),
-      vidaUtil: 547, // Protetor auricular dura 1.5 anos (547 dias)
-      dataCompra: new Date('2023-11-10'),
+      ca: '34485',
+      idEmpresa: empresa1.idEmpresa,
+      nomeEpi: 'Luva de Látex Nitrílico',
+      descricao: 'Luva de proteção contra agentes químicos e biológicos',
+      validade: new Date('2025-08-20'),
+      vidaUtil: 180, // 6 meses
+      dataCompra: new Date('2024-02-10'),
       quantidade: 100,
       quantidadeMinima: 20,
+      preco: 8.5,
+      status: true,
     },
   });
 
-  const epi5 = await prisma.epi.create({
+  const epi1_3 = await prisma.epi.create({
     data: {
-      ca: '34567',
-      idEmpresa: empresa3.idEmpresa,
-      nomeEpi: 'Bota de Segurança',
-      descricao: 'Bota de segurança com biqueira de aço e solado antiderrapante',
-      validade: new Date('2026-08-05'),
-      vidaUtil: 730, // Bota dura 2 anos (730 dias)
-      dataCompra: new Date('2024-02-12'),
-      quantidade: 25,
-      quantidadeMinima: 5,
-    },
-  });
-
-  const epi6 = await prisma.epi.create({
-    data: {
-      ca: '89012',
-      idEmpresa: empresa3.idEmpresa,
-      nomeEpi: 'Máscara Respiratória',
-      descricao: 'Máscara respiratória semifacial com filtro P2',
-      validade: new Date('2026-01-30'),
-      vidaUtil: 365, // Máscara dura 1 ano (365 dias)
-      dataCompra: new Date('2023-07-18'),
-      quantidade: 40,
+      ca: '41752',
+      idEmpresa: empresa1.idEmpresa,
+      nomeEpi: 'Óculos de Proteção Panorâmico',
+      descricao: 'Óculos de proteção contra impactos e respingos',
+      validade: new Date('2027-03-15'),
+      vidaUtil: 365, // 1 ano
+      dataCompra: new Date('2024-03-05'),
+      quantidade: 75,
       quantidadeMinima: 15,
+      preco: 25.3,
+      status: true,
     },
   });
 
-  const epi7 = await prisma.epi.create({
+  const epi1_4 = await prisma.epi.create({
     data: {
-      ca: '45678',
-      idEmpresa: empresa4.idEmpresa,
-      nomeEpi: 'Cinto de Segurança',
-      descricao: 'Cinto de segurança para trabalho em altura com duas argolas',
-      validade: new Date('2027-05-20'),
-      vidaUtil: 1825, // Cinto dura 5 anos (1825 dias)
-      dataCompra: new Date('2024-01-15'),
-      quantidade: 10,
-      quantidadeMinima: 3,
+      ca: '39240',
+      idEmpresa: empresa1.idEmpresa,
+      nomeEpi: 'Bota de Segurança PVC',
+      descricao: 'Bota de segurança em PVC com biqueira de aço',
+      validade: new Date('2026-11-30'),
+      vidaUtil: 730, // 2 anos
+      dataCompra: new Date('2024-01-20'),
+      quantidade: 30,
+      quantidadeMinima: 8,
+      preco: 89.9,
+      status: true,
     },
   });
 
-  const epi8 = await prisma.epi.create({
+  // EPIs Empresa 2
+  const epi2_1 = await prisma.epi.create({
     data: {
-      ca: '90123',
-      idEmpresa: empresa4.idEmpresa,
-      nomeEpi: 'Luva Anti-Corte',
-      descricao: 'Luva de proteção contra cortes, nível 5',
-      validade: new Date('2025-09-18'),
-      vidaUtil: 365, // Luva dura 1 ano (365 dias)
-      dataCompra: new Date('2023-08-10'),
+      ca: '15081',
+      idEmpresa: empresa2.idEmpresa,
+      nomeEpi: 'Capacete de Segurança Classe B',
+      descricao: 'Capacete de segurança para trabalhos com eletricidade',
+      validade: new Date('2026-10-15'),
+      vidaUtil: 1095, // 3 anos
+      dataCompra: new Date('2024-02-01'),
+      quantidade: 40,
+      quantidadeMinima: 8,
+      preco: 52.0,
+      status: true,
+    },
+  });
+
+  const epi2_2 = await prisma.epi.create({
+    data: {
+      ca: '34485',
+      idEmpresa: empresa2.idEmpresa,
+      nomeEpi: 'Luva Anticorte Nível 3',
+      descricao: 'Luva de proteção contra cortes e perfurações',
+      validade: new Date('2025-09-10'),
+      vidaUtil: 240, // 8 meses
+      dataCompra: new Date('2024-01-25'),
       quantidade: 60,
       quantidadeMinima: 12,
+      preco: 15.75,
+      status: true,
     },
   });
 
-  const epi9 = await prisma.epi.create({
+  const epi2_3 = await prisma.epi.create({
     data: {
-      ca: '56789',
-      idEmpresa: empresa5.idEmpresa,
-      nomeEpi: 'Avental de Proteção',
-      descricao: 'Avental de proteção contra respingos químicos',
-      validade: new Date('2026-04-12'),
-      vidaUtil: 730, // Avental dura 2 anos (730 dias)
-      dataCompra: new Date('2023-10-22'),
-      quantidade: 15,
-      quantidadeMinima: 4,
+      ca: '41752',
+      idEmpresa: empresa2.idEmpresa,
+      nomeEpi: 'Óculos de Segurança com Antiembaçante',
+      descricao: 'Óculos com tratamento antiembaçante e proteção UV',
+      validade: new Date('2026-07-25'),
+      vidaUtil: 365, // 1 ano
+      dataCompra: new Date('2024-02-15'),
+      quantidade: 45,
+      quantidadeMinima: 10,
+      preco: 32.4,
+      status: true,
     },
   });
 
-  const epi10 = await prisma.epi.create({
+  const epi2_4 = await prisma.epi.create({
     data: {
-      ca: '01234',
-      idEmpresa: empresa5.idEmpresa,
-      nomeEpi: 'Mangote de Segurança',
-      descricao: 'Mangote de proteção para braços e antebraços',
-      validade: new Date('2025-12-05'),
-      vidaUtil: 1095, // Mangote dura 3 anos (1095 dias)
+      ca: '39240',
+      idEmpresa: empresa2.idEmpresa,
+      nomeEpi: 'Bota de Segurança Couro',
+      descricao: 'Bota de segurança em couro com palmilha antiperfuração',
+      validade: new Date('2027-01-10'),
+      vidaUtil: 730, // 2 anos
       dataCompra: new Date('2024-03-01'),
-      quantidade: 12,
-      quantidadeMinima: 3,
+      quantidade: 25,
+      quantidadeMinima: 6,
+      preco: 125.5,
+      status: true,
     },
   });
 
-  // 8. Cadastrar processos de entrega de EPIs
-  const process1 = await prisma.process.create({
+  // EPIs Empresa 3
+  const epi3_1 = await prisma.epi.create({
     data: {
-      idProcesso: 'proc-1',
-      idColaborador: colab1.idColaborador,
-      idEmpresa: empresa1.idEmpresa,
-      dataAgendada: new Date('2024-05-15'),
-      dataEntrega: new Date('2024-05-15T10:30:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-capacete-joao.pdf',
-      observacoes: 'Entrega de capacete para obra civil',
-    },
-  });
-
-  const process2 = await prisma.process.create({
-    data: {
-      idProcesso: 'proc-2',
-      idColaborador: colab1.idColaborador,
-      idEmpresa: empresa1.idEmpresa,
-      dataAgendada: new Date('2024-05-15'),
-      dataEntrega: new Date('2024-05-15T10:35:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-luva-joao.pdf',
-      observacoes: 'Entrega de luvas para manuseio químico',
-    },
-  });
-
-  const process3 = await prisma.process.create({
-    data: {
-      idProcesso: 'proc-3',
-      idColaborador: colab2.idColaborador,
-      idEmpresa: empresa1.idEmpresa,
-      dataAgendada: new Date('2024-05-16'),
-      dataEntrega: new Date('2024-05-16T14:20:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-capacete-maria.pdf',
-      observacoes: 'Entrega de capacete - colaboradora Maria',
-    },
-  });
-
-  const process4 = await prisma.process.create({
-    data: {
-      idProcesso: 'proc-4',
-      idColaborador: colab3.idColaborador,
-      idEmpresa: empresa2.idEmpresa,
-      dataAgendada: new Date('2024-05-20'),
-      dataEntrega: new Date('2024-05-20T09:15:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-oculos-carlos.pdf',
-      dataDevolucao: new Date('2024-08-15T11:20:00'),
-      observacoes: 'Óculos entregue e devolvido por danificação',
-    },
-  });
-
-  const process5 = await prisma.process.create({
-    data: {
-      idProcesso: 'proc-5',
-      idColaborador: colab4.idColaborador,
-      idEmpresa: empresa2.idEmpresa,
-      dataAgendada: new Date('2024-05-22'),
-      dataEntrega: new Date('2024-05-22T16:45:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-protetor-ana.pdf',
-      observacoes: 'Protetor auricular para Ana Lima',
-    },
-  });
-
-  const process6 = await prisma.process.create({
-    data: {
-      idProcesso: 'proc-6',
-      idColaborador: colab5.idColaborador,
+      ca: '15081',
       idEmpresa: empresa3.idEmpresa,
-      dataAgendada: new Date('2024-06-05'),
-      dataEntrega: new Date('2024-06-05T11:10:00'),
-      statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-bota-fernando.pdf',
-      observacoes: 'Bota de segurança para Fernando Costa',
+      nomeEpi: 'Capacete Mineração com Lanterna',
+      descricao: 'Capacete específico para mineração com sistema de iluminação',
+      validade: new Date('2026-09-20'),
+      vidaUtil: 1095, // 3 anos
+      dataCompra: new Date('2024-01-10'),
+      quantidade: 35,
+      quantidadeMinima: 7,
+      preco: 78.9,
+      status: true,
     },
   });
 
-  const process7 = await prisma.process.create({
+  const epi3_2 = await prisma.epi.create({
     data: {
-      idProcesso: 'proc-7',
-      idColaborador: colab6.idColaborador,
+      ca: '34485',
       idEmpresa: empresa3.idEmpresa,
-      dataAgendada: new Date('2024-06-05'),
-      dataEntrega: new Date('2024-06-05T14:30:00'),
+      nomeEpi: 'Luva Térmica Resistente',
+      descricao: 'Luva de proteção contra altas temperaturas',
+      validade: new Date('2025-12-05'),
+      vidaUtil: 300, // 10 meses
+      dataCompra: new Date('2024-02-20'),
+      quantidade: 80,
+      quantidadeMinima: 16,
+      preco: 22.8,
+      status: true,
+    },
+  });
+
+  const epi3_3 = await prisma.epi.create({
+    data: {
+      ca: '41752',
+      idEmpresa: empresa3.idEmpresa,
+      nomeEpi: 'Óculos Contra Poeira Mineral',
+      descricao: 'Óculos especiais para proteção contra poeira de mineração',
+      validade: new Date('2026-06-30'),
+      vidaUtil: 365, // 1 ano
+      dataCompra: new Date('2024-03-10'),
+      quantidade: 55,
+      quantidadeMinima: 12,
+      preco: 38.6,
+      status: true,
+    },
+  });
+
+  const epi3_4 = await prisma.epi.create({
+    data: {
+      ca: '39240',
+      idEmpresa: empresa3.idEmpresa,
+      nomeEpi: 'Bota Mineração Antiderrapante',
+      descricao: 'Bota específica para mineração com solado antiderrapante',
+      validade: new Date('2027-02-15'),
+      vidaUtil: 730, // 2 anos
+      dataCompra: new Date('2024-02-28'),
+      quantidade: 20,
+      quantidadeMinima: 5,
+      preco: 145.0,
+      status: true,
+    },
+  });
+
+  // 7. Cadastrar 3 processos para cada empresa (2 false, 1 true)
+  console.log('📋 Criando processos...');
+
+  // Processos Empresa 1
+  const proc1_1 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa1.idEmpresa,
+      idColaborador: colab1_1.idColaborador,
+      dataAgendada: new Date('2025-06-25'),
+      statusEntrega: false,
+      observacoes: 'Processo agendado - aguardando entrega de capacete',
+    },
+  });
+
+  const proc1_2 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa1.idEmpresa,
+      idColaborador: colab1_2.idColaborador,
+      dataAgendada: new Date('2025-06-28'),
+      statusEntrega: false,
+      observacoes: 'Processo agendado - kit completo de EPIs',
+    },
+  });
+
+  const proc1_3 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa1.idEmpresa,
+      idColaborador: colab1_3.idColaborador,
+      dataAgendada: new Date('2025-06-20'),
+      dataEntrega: new Date('2025-06-20T14:30:00'),
       statusEntrega: true,
-      pdfUrl: '/storage/termos/termo-entrega-mascara-roberta.pdf',
-      observacoes: 'Máscara respiratória para Roberta Alves',
+      pdfUrl: '/storage/termos/termo-entrega-roberto-empresa1.pdf',
+      observacoes: 'Entrega realizada com sucesso - luvas e óculos',
     },
   });
 
-  const process8 = await prisma.process.create({
+  // Processos Empresa 2
+  const proc2_1 = await prisma.process.create({
     data: {
-      idProcesso: 'proc-8',
-      idColaborador: colab7.idColaborador,
-      idEmpresa: empresa4.idEmpresa,
-      dataAgendada: new Date('2024-06-10'),
+      idEmpresa: empresa2.idEmpresa,
+      idColaborador: colab2_1.idColaborador,
+      dataAgendada: new Date('2025-06-26'),
       statusEntrega: false,
-      observacoes: 'Processo agendado - aguardando entrega',
+      observacoes: 'Processo agendado - capacete classe B',
     },
   });
 
-  const process9 = await prisma.process.create({
+  const proc2_2 = await prisma.process.create({
     data: {
-      idProcesso: 'proc-9',
-      idColaborador: colab8.idColaborador,
-      idEmpresa: empresa4.idEmpresa,
-      dataAgendada: new Date('2024-06-12'),
+      idEmpresa: empresa2.idEmpresa,
+      idColaborador: colab2_2.idColaborador,
+      dataAgendada: new Date('2025-06-30'),
       statusEntrega: false,
-      observacoes: 'Processo agendado para colaboradora Juliana',
+      observacoes: 'Processo agendado - bota de segurança em couro',
     },
   });
 
-  const process10 = await prisma.process.create({
+  const proc2_3 = await prisma.process.create({
     data: {
-      idProcesso: 'proc-10',
-      idColaborador: colab9.idColaborador,
-      idEmpresa: empresa5.idEmpresa,
-      dataAgendada: new Date('2024-06-15'),
-      statusEntrega: false,
-      observacoes: 'Processo agendado para Ricardo Ferreira',
+      idEmpresa: empresa2.idEmpresa,
+      idColaborador: colab2_3.idColaborador,
+      dataAgendada: new Date('2025-06-18'),
+      dataEntrega: new Date('2025-06-18T09:15:00'),
+      statusEntrega: true,
+      pdfUrl: '/storage/termos/termo-entrega-juliana-empresa2.pdf',
+      observacoes: 'Entrega concluída - luvas anticorte',
     },
   });
 
-  // 9. Criar relacionamentos ProcessEpi (processo-EPI com quantidades)
+  // Processos Empresa 3
+  const proc3_1 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa3.idEmpresa,
+      idColaborador: colab3_1.idColaborador,
+      dataAgendada: new Date('2025-06-27'),
+      statusEntrega: false,
+      observacoes: 'Processo agendado - capacete com lanterna',
+    },
+  });
+
+  const proc3_2 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa3.idEmpresa,
+      idColaborador: colab3_2.idColaborador,
+      dataAgendada: new Date('2025-07-01'),
+      statusEntrega: false,
+      observacoes: 'Processo agendado - kit mineração completo',
+    },
+  });
+
+  const proc3_3 = await prisma.process.create({
+    data: {
+      idEmpresa: empresa3.idEmpresa,
+      idColaborador: colab3_3.idColaborador,
+      dataAgendada: new Date('2025-06-19'),
+      dataEntrega: new Date('2025-06-19T11:45:00'),
+      statusEntrega: true,
+      pdfUrl: '/storage/termos/termo-entrega-diego-empresa3.pdf',
+      observacoes: 'Entrega finalizada - óculos contra poeira mineral',
+    },
+  });
+
+  // 8. Criar relacionamentos ProcessEpi
+  console.log('🔗 Criando relacionamentos processo-EPI...');
   await prisma.processEpi.createMany({
     data: [
-      // Processo 1: João Silva - Capacete (2 unidades)
-      {
-        idProcesso: process1.idProcesso,
-        idEpi: epi1.idEpi,
-        quantidade: 2,
-      },
+      // Processos Empresa 1
+      { idProcesso: proc1_1.idProcesso, idEpi: epi1_1.idEpi, quantidade: 1 },
+      { idProcesso: proc1_2.idProcesso, idEpi: epi1_2.idEpi, quantidade: 2 },
+      { idProcesso: proc1_2.idProcesso, idEpi: epi1_3.idEpi, quantidade: 1 },
+      { idProcesso: proc1_3.idProcesso, idEpi: epi1_2.idEpi, quantidade: 3 },
+      { idProcesso: proc1_3.idProcesso, idEpi: epi1_3.idEpi, quantidade: 1 },
 
-      // Processo 2: João Silva - Luvas (3 pares)
-      {
-        idProcesso: process2.idProcesso,
-        idEpi: epi2.idEpi,
-        quantidade: 3,
-      },
+      // Processos Empresa 2
+      { idProcesso: proc2_1.idProcesso, idEpi: epi2_1.idEpi, quantidade: 1 },
+      { idProcesso: proc2_2.idProcesso, idEpi: epi2_4.idEpi, quantidade: 1 },
+      { idProcesso: proc2_3.idProcesso, idEpi: epi2_2.idEpi, quantidade: 2 },
 
-      // Processo 3: Maria Souza - Capacete (1 unidade)
-      {
-        idProcesso: process3.idProcesso,
-        idEpi: epi1.idEpi,
-        quantidade: 1,
-      },
-
-      // Processo 4: Carlos Pereira - Óculos (2 unidades) + Protetor Auricular (5 unidades)
-      {
-        idProcesso: process4.idProcesso,
-        idEpi: epi3.idEpi,
-        quantidade: 2,
-      },
-      {
-        idProcesso: process4.idProcesso,
-        idEpi: epi4.idEpi,
-        quantidade: 5,
-      },
-
-      // Processo 5: Ana Lima - Protetor Auricular (10 unidades)
-      {
-        idProcesso: process5.idProcesso,
-        idEpi: epi4.idEpi,
-        quantidade: 10,
-      },
-
-      // Processo 6: Fernando Costa - Bota (1 par) + Máscara (2 unidades)
-      {
-        idProcesso: process6.idProcesso,
-        idEpi: epi5.idEpi,
-        quantidade: 1,
-      },
-      {
-        idProcesso: process6.idProcesso,
-        idEpi: epi6.idEpi,
-        quantidade: 2,
-      },
-
-      // Processo 7: Roberta Alves - Máscara (1 unidade)
-      {
-        idProcesso: process7.idProcesso,
-        idEpi: epi6.idEpi,
-        quantidade: 1,
-      },
-
-      // Processo 8: Marcos Oliveira - Cinto (1 unidade) + Luva Anti-Corte (4 pares)
-      {
-        idProcesso: process8.idProcesso,
-        idEpi: epi7.idEpi,
-        quantidade: 1,
-      },
-      {
-        idProcesso: process8.idProcesso,
-        idEpi: epi8.idEpi,
-        quantidade: 4,
-      },
-
-      // Processo 9: Juliana Santos - Luva Anti-Corte (2 pares)
-      {
-        idProcesso: process9.idProcesso,
-        idEpi: epi8.idEpi,
-        quantidade: 2,
-      },
-
-      // Processo 10: Ricardo Ferreira - Avental (1 unidade) + Mangote (2 unidades)
-      {
-        idProcesso: process10.idProcesso,
-        idEpi: epi9.idEpi,
-        quantidade: 1,
-      },
-      {
-        idProcesso: process10.idProcesso,
-        idEpi: epi10.idEpi,
-        quantidade: 2,
-      },
+      // Processos Empresa 3
+      { idProcesso: proc3_1.idProcesso, idEpi: epi3_1.idEpi, quantidade: 1 },
+      { idProcesso: proc3_2.idProcesso, idEpi: epi3_2.idEpi, quantidade: 2 },
+      { idProcesso: proc3_2.idProcesso, idEpi: epi3_3.idEpi, quantidade: 1 },
+      { idProcesso: proc3_2.idProcesso, idEpi: epi3_4.idEpi, quantidade: 1 },
+      { idProcesso: proc3_3.idProcesso, idEpi: epi3_3.idEpi, quantidade: 1 },
     ],
   });
 
-  // 10. Registrar alguns logs
-  await prisma.log.createMany({
-    data: [
-      {
-        idLog: 'log-1',
-        idUser: user1.idUser,
-        idColaborador: colab1.idColaborador,
-        idProcesso: process1.idProcesso,
-        idEpi: epi1.idEpi,
-        body: {
-          acao: 'entrega',
-          detalhes: 'Entrega de EPI realizada com sucesso',
-        },
-        tipo: 'ENTREGA',
-        timestamp: new Date('2024-05-15T10:30:00'),
-      },
-      {
-        idLog: 'log-2',
-        idUser: user1.idUser,
-        idColaborador: colab1.idColaborador,
-        idProcesso: process2.idProcesso,
-        idEpi: epi2.idEpi,
-        body: {
-          acao: 'entrega',
-          detalhes: 'Entrega de EPI realizada com sucesso',
-        },
-        tipo: 'ENTREGA',
-        timestamp: new Date('2024-05-15T10:35:00'),
-      },
-      {
-        idLog: 'log-3',
-        idUser: user1.idUser,
-        idColaborador: colab2.idColaborador,
-        idProcesso: process3.idProcesso,
-        idEpi: epi1.idEpi,
-        body: {
-          acao: 'entrega',
-          detalhes: 'Entrega de EPI realizada com sucesso',
-        },
-        tipo: 'ENTREGA',
-        timestamp: new Date('2024-05-16T14:20:00'),
-      },
-      {
-        idLog: 'log-4',
-        idUser: user2.idUser,
-        idColaborador: colab3.idColaborador,
-        idProcesso: process4.idProcesso,
-        idEpi: epi3.idEpi,
-        body: {
-          acao: 'entrega',
-          detalhes: 'Entrega de EPI realizada com sucesso',
-        },
-        tipo: 'ENTREGA',
-        timestamp: new Date('2024-05-20T09:15:00'),
-      },
-      {
-        idLog: 'log-5',
-        idUser: user2.idUser,
-        idColaborador: colab3.idColaborador,
-        idProcesso: process4.idProcesso,
-        idEpi: epi3.idEpi,
-        body: {
-          acao: 'devolução',
-          detalhes: 'Devolução de EPI por danificação',
-        },
-        tipo: 'DEVOLUCAO',
-        timestamp: new Date('2024-08-15T11:20:00'),
-      },
-      {
-        idLog: 'log-6',
-        idUser: user3.idUser,
-        idColaborador: colab5.idColaborador,
-        idEpi: epi5.idEpi,
-        body: {
-          acao: 'estoque',
-          detalhes: 'Atualização de estoque: +10 unidades',
-        },
-        tipo: 'ESTOQUE',
-        timestamp: new Date('2024-04-10T09:25:00'),
-      },
-      {
-        idLog: 'log-7',
-        idUser: user4.idUser,
-        body: {
-          acao: 'login',
-          detalhes: 'Login no sistema',
-        },
-        tipo: 'SISTEMA',
-        timestamp: new Date('2024-05-10T08:30:00'),
-      },
-    ],
-  });
-
-  console.log('Seed realizado com sucesso!');
+  console.log('✅ Seed concluído com sucesso!');
+  console.log('📊 Dados criados:');
+  console.log('   - 4 roles (admin, gestor, estoque, viewer)');
+  console.log('   - 3 empresas');
+  console.log('   - 5 usuários (1 admin, 2 gestores, 1 estoquista, 1 viewer)');
+  console.log('   - 9 colaboradores (3 por empresa)');
+  console.log('   - 12 EPIs (4 por empresa) com CAs: 15081, 34485, 41752, 39240');
+  console.log('   - 9 processos (3 por empresa: 2 false, 1 true)');
+  console.log('   - Relacionamentos processo-EPI configurados');
 }
 
 main()

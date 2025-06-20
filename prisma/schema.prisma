@@ -50,7 +50,7 @@ model Collaborator {
 
 model Epi {
   idEpi            String    @id @default(uuid()) @map("id_epi") @db.VarChar(36)
-  ca               String    @unique @db.VarChar(20)
+  ca               String    @db.VarChar(20)
   idEmpresa        String    @map("id_empresa") @db.VarChar(36)
   nomeEpi          String    @map("nome_epi") @db.VarChar(255)
   validade         DateTime? @db.Date
