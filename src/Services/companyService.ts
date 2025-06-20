@@ -176,7 +176,7 @@ export class CompanyService {
       throw HttpError.NotFound('Empresa não encontrada');
     }
 
-    // Verificar se o novo CNPJ já existe em outra empresa
+
     if (data.cnpj && data.cnpj !== existingCompany.cnpj) {
       const cnpjExists = await prisma.company.findUnique({
         where: { cnpj: data.cnpj }
