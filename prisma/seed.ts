@@ -329,7 +329,7 @@ async function main() {
       nomeEpi: 'Capacete de Segurança',
       descricao: 'Capacete de segurança classe A, resistente a impactos',
       validade: new Date('2026-12-31'),
-      vidaUtil: new Date('2026-12-01'), // Capacete dura 2 anos
+      vidaUtil: 730, // Capacete dura 2 anos (730 dias)
       dataCompra: new Date('2023-12-01'),
       quantidade: 20,
       quantidadeMinima: 5,
@@ -343,7 +343,7 @@ async function main() {
       nomeEpi: 'Luva de Proteção Química',
       descricao: 'Luva resistente a produtos químicos e solventes',
       validade: new Date('2025-06-15'),
-      vidaUtil: new Date('2024-12-20'), // Luva dura 1 ano
+      vidaUtil: 365, // Luva dura 1 ano (365 dias)
       dataCompra: new Date('2024-01-20'),
       quantidade: 50,
       quantidadeMinima: 10,
@@ -357,7 +357,7 @@ async function main() {
       nomeEpi: 'Óculos de Proteção',
       descricao: 'Óculos de proteção contra respingos e partículas',
       validade: new Date('2026-03-10'),
-      vidaUtil: new Date('2025-09-15'), // Óculos dura 1.5 anos
+      vidaUtil: 547, // Óculos dura 1.5 anos (547 dias)
       dataCompra: new Date('2023-09-15'),
       quantidade: 30,
       quantidadeMinima: 8,
@@ -371,7 +371,7 @@ async function main() {
       nomeEpi: 'Protetor Auricular',
       descricao: 'Protetor auricular tipo plugue, atenuação 25dB',
       validade: new Date('2025-11-22'),
-      vidaUtil: new Date('2025-05-10'), // Protetor auricular dura 1.5 anos
+      vidaUtil: 547, // Protetor auricular dura 1.5 anos (547 dias)
       dataCompra: new Date('2023-11-10'),
       quantidade: 100,
       quantidadeMinima: 20,
@@ -385,7 +385,7 @@ async function main() {
       nomeEpi: 'Bota de Segurança',
       descricao: 'Bota de segurança com biqueira de aço e solado antiderrapante',
       validade: new Date('2026-08-05'),
-      vidaUtil: new Date('2026-02-12'), // Bota dura 2 anos
+      vidaUtil: 730, // Bota dura 2 anos (730 dias)
       dataCompra: new Date('2024-02-12'),
       quantidade: 25,
       quantidadeMinima: 5,
@@ -399,7 +399,7 @@ async function main() {
       nomeEpi: 'Máscara Respiratória',
       descricao: 'Máscara respiratória semifacial com filtro P2',
       validade: new Date('2026-01-30'),
-      vidaUtil: new Date('2024-07-18'), // Máscara dura 1 ano
+      vidaUtil: 365, // Máscara dura 1 ano (365 dias)
       dataCompra: new Date('2023-07-18'),
       quantidade: 40,
       quantidadeMinima: 15,
@@ -413,7 +413,7 @@ async function main() {
       nomeEpi: 'Cinto de Segurança',
       descricao: 'Cinto de segurança para trabalho em altura com duas argolas',
       validade: new Date('2027-05-20'),
-      vidaUtil: new Date('2029-01-15'), // Cinto dura 5 anos
+      vidaUtil: 1825, // Cinto dura 5 anos (1825 dias)
       dataCompra: new Date('2024-01-15'),
       quantidade: 10,
       quantidadeMinima: 3,
@@ -427,7 +427,7 @@ async function main() {
       nomeEpi: 'Luva Anti-Corte',
       descricao: 'Luva de proteção contra cortes, nível 5',
       validade: new Date('2025-09-18'),
-      vidaUtil: new Date('2024-08-10'), // Luva dura 1 ano
+      vidaUtil: 365, // Luva dura 1 ano (365 dias)
       dataCompra: new Date('2023-08-10'),
       quantidade: 60,
       quantidadeMinima: 12,
@@ -441,7 +441,7 @@ async function main() {
       nomeEpi: 'Avental de Proteção',
       descricao: 'Avental de proteção contra respingos químicos',
       validade: new Date('2026-04-12'),
-      vidaUtil: new Date('2025-10-22'), // Avental dura 2 anos
+      vidaUtil: 730, // Avental dura 2 anos (730 dias)
       dataCompra: new Date('2023-10-22'),
       quantidade: 15,
       quantidadeMinima: 4,
@@ -455,7 +455,7 @@ async function main() {
       nomeEpi: 'Mangote de Segurança',
       descricao: 'Mangote de proteção para braços e antebraços',
       validade: new Date('2025-12-05'),
-      vidaUtil: new Date('2027-03-01'), // Mangote dura 3 anos
+      vidaUtil: 1095, // Mangote dura 3 anos (1095 dias)
       dataCompra: new Date('2024-03-01'),
       quantidade: 12,
       quantidadeMinima: 3,

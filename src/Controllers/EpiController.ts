@@ -12,6 +12,8 @@ import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import { EpiService } from '../Services/epiService';
 import { CompanyService } from '../Services/companyService';
+import { parseDate } from '../Helpers/DateHelper';
+import { formatEpiForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
 
 const companyService = new CompanyService();
 
@@ -32,7 +34,7 @@ export async function getAllEpis(req: Request, res: Response, next: NextFunction
         limit: result.meta.limit,
         totalPages: result.meta.totalPages,
       },
-      data: result.data,
+      data: formatListForFrontend(result.data, formatEpiForFrontend),
     });
 
     return res.status(response.statusCode).json(response.payload);
@@ -53,7 +55,7 @@ export async function getEpiById(req: Request, res: Response, next: NextFunction
 
         const response = HttpResponse.Ok({
             message: 'EPI recuperado com sucesso',
-            data: existingEpi,
+            data: formatEpiForFrontend(existingEpi),
         });
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
@@ -89,7 +91,7 @@ export async function getEpisByEmpresa(req: Request, res: Response, next: NextFu
                 hasNext: result.meta.hasNext,
                 hasPrev: result.meta.hasPrev
             },
-            data: result.data,
+            data: formatListForFrontend(result.data, formatEpiForFrontend),
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -117,12 +119,12 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
             ca: body.ca,
             idEmpresa: body.id_empresa,
             nomeEpi: body.nome_epi,
-            validade: body.validade ? new Date(body.validade) : undefined,
+            validade: parseDate(body.validade),
             descricao: body.descricao,
             quantidade: body.quantidade,
             quantidadeMinima: body.quantidade_minima,
-            dataCompra: body.data_compra ? new Date(body.data_compra) : undefined,
-            vidaUtil: body.vida_util ? new Date(body.vida_util) : undefined,
+            dataCompra: parseDate(body.data_compra),
+            vidaUtil: body.vida_util,
         };
 
  
@@ -132,7 +134,7 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
 
         const response = HttpResponse.Created({
             message: 'EPI criado com sucesso',
-            data: epi,
+            data: formatEpiForFrontend(epi),
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -173,16 +175,16 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
             ...(body.id_empresa !== undefined && { idEmpresa: body.id_empresa }),
             ...(body.nome_epi !== undefined && { nomeEpi: body.nome_epi }),
             ...(body.validade !== undefined && { 
-                validade: body.validade ? new Date(body.validade) : undefined 
+                validade: parseDate(body.validade)
             }),
             ...(body.descricao !== undefined && { descricao: body.descricao }),
             ...(body.quantidade !== undefined && { quantidade: body.quantidade }),
             ...(body.quantidade_minima !== undefined && { quantidadeMinima: body.quantidade_minima }),
             ...(body.data_compra !== undefined && { 
-                dataCompra: body.data_compra ? new Date(body.data_compra) : undefined 
+                dataCompra: parseDate(body.data_compra)
             }),
             ...(body.vida_util !== undefined && { 
-                vidaUtil: body.vida_util ? new Date(body.vida_util) : undefined 
+                vidaUtil: body.vida_util
             }),
         };
 
@@ -208,7 +210,7 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
 
         const response = HttpResponse.Ok({
             message: 'EPI atualizado com sucesso',
-            data: updatedEpi,
+            data: formatEpiForFrontend(updatedEpi),
         });
 
         return res.status(response.statusCode).json(response.payload);

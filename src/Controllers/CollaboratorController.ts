@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CreateCollaboratorSchema, DeleteCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema, UpdateCollaboratorSchema } from "../Schemas/CollaboratorSchema";
 import HttpResponse from '../Helpers/HttpResponse';
 import { CollaboratorService } from '../Services/collaboratorService';
+import { formatCollaboratorForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
 
 const collaboratorService = new CollaboratorService();
 
@@ -19,7 +20,7 @@ export async function getAllCollaborators(req: Request, res: Response, next: Nex
                 limit: result.limit,
                 totalPages: result.totalPages,
             },
-            data: result.data,
+            data: formatListForFrontend(result.data, formatCollaboratorForFrontend),
         });
 
         return res.status(response.statusCode).json(response.payload);
@@ -38,7 +39,7 @@ export async function getCollaboratorById(req: Request, res: Response, next: Nex
 
         const response = HttpResponse.Ok({
             message: 'Colaborador recuperado com sucesso',
-            data: collaboratorData,
+            data: formatCollaboratorForFrontend(collaboratorData),
         });
 
         return res.status(response.statusCode).json(response.payload);

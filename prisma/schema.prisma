@@ -58,7 +58,7 @@ model Epi {
   quantidade       Int
   quantidadeMinima Int       @map("quantidade_minima")
   dataCompra       DateTime? @map("data_compra") @db.Date
-  vidaUtil         DateTime? @map("vida_util") @db.Date
+  vidaUtil         Int?      @map("vida_util")
   status           Boolean   @default(true) @map("status")
   createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.DateTime(0)

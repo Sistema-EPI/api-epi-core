@@ -115,7 +115,6 @@ export class CollaboratorService {
       throw HttpError.NotFound('Colaborador não encontrado');
     }
 
-    // Buscar counts separadamente
     const [processosCount, biometriasCount, logsCount] = await Promise.all([
       prisma.process.count({ where: { idColaborador: collaboratorId } }),
       prisma.biometria.count({ where: { idColaborador: collaboratorId } }),
@@ -131,7 +130,7 @@ export class CollaboratorService {
   }
 
   async createCollaborator(companyId: string, data: CreateCollaboratorData) {
-    // Validar se a empresa existe
+
     const existingCompany = await prisma.company.findUnique({
       where: { idEmpresa: companyId }
     });
@@ -140,7 +139,7 @@ export class CollaboratorService {
       throw HttpError.NotFound('Empresa não encontrada');
     }
 
-    // Verificar se CPF já existe
+ 
     const existingCpf = await prisma.collaborator.findUnique({
       where: { cpf: data.cpf }
     });
@@ -179,7 +178,7 @@ export class CollaboratorService {
   }
 
   async updateCollaborator(collaboratorId: string, data: UpdateCollaboratorData) {
-    // Verificar se colaborador existe
+
     const existingCollaborator = await prisma.collaborator.findUnique({
       where: { idColaborador: collaboratorId },
     });
@@ -188,7 +187,7 @@ export class CollaboratorService {
       throw HttpError.NotFound('Colaborador não encontrado');
     }
 
-    // Verificar se o novo CPF já existe em outro colaborador
+ 
     if (data.cpf && data.cpf !== existingCollaborator.cpf) {
       const cpfExists = await prisma.collaborator.findUnique({
         where: { cpf: data.cpf }
@@ -210,7 +209,7 @@ export class CollaboratorService {
       data: dataToUpdate,
     });
 
-    // Log das mudanças
+
     const changes: Record<string, { before: any; after: any }> = {};
     for (const key in dataToUpdate) {
       if ((existingCollaborator as any)[key] !== (updatedCollaborator as any)[key]) {
@@ -231,7 +230,7 @@ export class CollaboratorService {
   }
 
   async deleteCollaborator(collaboratorId: string) {
-    // Verificar se colaborador existe
+
     const existingCollaborator = await prisma.collaborator.findUnique({
       where: { idColaborador: collaboratorId },
       include: {
@@ -250,12 +249,12 @@ export class CollaboratorService {
       throw HttpError.NotFound('Colaborador não encontrado');
     }
 
-    // Verificar dependências
+
     if (existingCollaborator.processos.length > 0) {
       throw HttpError.BadRequest('Não é possível deletar colaborador com processos vinculados');
     }
 
-    // Biometrias e Logs têm CASCADE, então serão deletados automaticamente
+
     await prisma.collaborator.delete({
       where: { idColaborador: collaboratorId },
     });
@@ -269,23 +268,21 @@ export class CollaboratorService {
     };
   }
 
-  /**
-   * Método auxiliar para verificar se um CPF já está em uso
-   */
+
   async isCpfAvailable(cpf: string, excludeCollaboratorId?: string) {
     const existingCollaborator = await prisma.collaborator.findUnique({
       where: { cpf }
     });
 
     if (!existingCollaborator) {
-      return true; // CPF disponível
+      return true; 
     }
 
-    // Se estamos excluindo um colaborador específico (para update), verificar se é o mesmo
+   
     if (excludeCollaboratorId && existingCollaborator.idColaborador === excludeCollaboratorId) {
-      return true; // CPF pertence ao próprio colaborador sendo atualizado
+      return true; 
     }
 
-    return false; // CPF já está em uso por outro colaborador
+    return false; 
   }
 }
