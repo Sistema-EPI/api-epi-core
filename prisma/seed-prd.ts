@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   // 1. Cadastrar empresas
@@ -17,7 +17,7 @@ async function main() {
       telefone: '11988888888',
       statusEmpresa: 'ATIVO',
     },
-  })
+  });
 
   // 2. Cadastrar cargos e permissões
   await prisma.role.createMany({
@@ -40,7 +40,7 @@ async function main() {
       },
     ],
     skipDuplicates: true,
-  })
+  });
 
   // 3. Cadastrar usuários
   const user1 = await prisma.user.create({
@@ -50,7 +50,7 @@ async function main() {
       senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
       statusUser: true,
     },
-  })
+  });
 
   // 4. Vincular usuários às empresas com cargos
   await prisma.authCompany.createMany({
@@ -61,16 +61,16 @@ async function main() {
         cargo: 'admin',
       },
     ],
-  })
+  });
 
-  console.log('Seed realizado com sucesso!')
+  console.log('Seed realizado com sucesso!');
 }
 
 main()
-  .catch((e) => {
-    console.error('Erro ao rodar o seed:', e)
-    process.exit(1)
+  .catch(e => {
+    console.error('Erro ao rodar o seed:', e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

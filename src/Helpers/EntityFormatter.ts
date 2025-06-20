@@ -12,13 +12,13 @@ import { formatDateToBrazilian, formatDateTimeToBrazilian } from './DateHelper';
  * @returns Objeto EPI formatado para o frontend
  */
 export function formatEpiForFrontend(epi: any) {
-    return {
-        ...epi,
-        validade: formatDateToBrazilian(epi.validade),
-        dataCompra: formatDateToBrazilian(epi.dataCompra),
-        createdAt: formatDateTimeToBrazilian(epi.createdAt),
-        updatedAt: formatDateTimeToBrazilian(epi.updatedAt),
-    };
+  return {
+    ...epi,
+    validade: formatDateToBrazilian(epi.validade),
+    dataCompra: formatDateToBrazilian(epi.dataCompra),
+    createdAt: formatDateTimeToBrazilian(epi.createdAt),
+    updatedAt: formatDateTimeToBrazilian(epi.updatedAt),
+  };
 }
 
 /**
@@ -27,11 +27,11 @@ export function formatEpiForFrontend(epi: any) {
  * @returns Objeto Colaborador formatado para o frontend
  */
 export function formatCollaboratorForFrontend(colaborador: any) {
-    return {
-        ...colaborador,
-        createdAt: formatDateTimeToBrazilian(colaborador.createdAt),
-        updatedAt: formatDateTimeToBrazilian(colaborador.updatedAt),
-    };
+  return {
+    ...colaborador,
+    createdAt: formatDateTimeToBrazilian(colaborador.createdAt),
+    updatedAt: formatDateTimeToBrazilian(colaborador.updatedAt),
+  };
 }
 
 /**
@@ -40,11 +40,11 @@ export function formatCollaboratorForFrontend(colaborador: any) {
  * @returns Objeto Empresa formatado para o frontend
  */
 export function formatCompanyForFrontend(empresa: any) {
-    return {
-        ...empresa,
-        createdAt: formatDateTimeToBrazilian(empresa.createdAt),
-        updatedAt: formatDateTimeToBrazilian(empresa.updatedAt),
-    };
+  return {
+    ...empresa,
+    createdAt: formatDateTimeToBrazilian(empresa.createdAt),
+    updatedAt: formatDateTimeToBrazilian(empresa.updatedAt),
+  };
 }
 
 /**
@@ -53,14 +53,14 @@ export function formatCompanyForFrontend(empresa: any) {
  * @returns Objeto Processo formatado para o frontend
  */
 export function formatProcessForFrontend(processo: any) {
-    return {
-        ...processo,
-        dataAgendada: formatDateToBrazilian(processo.dataAgendada),
-        dataEntrega: formatDateTimeToBrazilian(processo.dataEntrega),
-        dataDevolucao: formatDateTimeToBrazilian(processo.dataDevolucao),
-        createdAt: formatDateTimeToBrazilian(processo.createdAt),
-        updatedAt: formatDateTimeToBrazilian(processo.updatedAt),
-    };
+  return {
+    ...processo,
+    dataAgendada: formatDateToBrazilian(processo.dataAgendada),
+    dataEntrega: formatDateTimeToBrazilian(processo.dataEntrega),
+    dataDevolucao: formatDateTimeToBrazilian(processo.dataDevolucao),
+    createdAt: formatDateTimeToBrazilian(processo.createdAt),
+    updatedAt: formatDateTimeToBrazilian(processo.updatedAt),
+  };
 }
 
 /**
@@ -69,14 +69,14 @@ export function formatProcessForFrontend(processo: any) {
  * @returns Objeto User formatado para o frontend (sem senha)
  */
 export function formatUserForFrontend(user: any) {
-    const { senha, ...userWithoutPassword } = user;
-    return {
-        ...userWithoutPassword,
-        lastLoginAt: formatDateTimeToBrazilian(user.lastLoginAt),
-        createdAt: formatDateTimeToBrazilian(user.createdAt),
-        updatedAt: formatDateTimeToBrazilian(user.updatedAt),
-        deletedAt: formatDateTimeToBrazilian(user.deletedAt),
-    };
+  const { senha, ...userWithoutPassword } = user;
+  return {
+    ...userWithoutPassword,
+    lastLoginAt: formatDateTimeToBrazilian(user.lastLoginAt),
+    createdAt: formatDateTimeToBrazilian(user.createdAt),
+    updatedAt: formatDateTimeToBrazilian(user.updatedAt),
+    deletedAt: formatDateTimeToBrazilian(user.deletedAt),
+  };
 }
 
 /**
@@ -86,7 +86,7 @@ export function formatUserForFrontend(user: any) {
  * @returns Array de itens formatados
  */
 export function formatListForFrontend<T>(items: T[], formatter: (item: T) => any): any[] {
-    return items.map(formatter);
+  return items.map(formatter);
 }
 
 /**
@@ -96,13 +96,9 @@ export function formatListForFrontend<T>(items: T[], formatter: (item: T) => any
  * @param formatter - Função de formatação específica
  * @returns Objeto de resposta formatado
  */
-export function formatPaginatedResponse<T>(
-    data: T[], 
-    meta: any, 
-    formatter: (item: T) => any
-) {
-    return {
-        data: formatListForFrontend(data, formatter),
-        pagination: meta,
-    };
+export function formatPaginatedResponse<T>(data: T[], meta: any, formatter: (item: T) => any) {
+  return {
+    data: formatListForFrontend(data, formatter),
+    pagination: meta,
+  };
 }

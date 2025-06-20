@@ -1,5 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { ChangePasswordSchema, ConnectUserToCompanyHandlerSchema, CreateUserSchema, DeleteUserSchema, GetUserByIdSchema, GetUsersSchema, UpdateUserStatusSchema } from '../Schemas/UserSchema';
+import {
+  ChangePasswordSchema,
+  ConnectUserToCompanyHandlerSchema,
+  CreateUserSchema,
+  DeleteUserSchema,
+  GetUserByIdSchema,
+  GetUsersSchema,
+  UpdateUserStatusSchema,
+} from '../Schemas/UserSchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import { UserService } from '../Services/userService';
 
@@ -36,16 +44,15 @@ export async function createUser(req: Request, res: Response, next: NextFunction
 
     CreateUserSchema.parse({
       params: { id },
-      body: { email, senha, cargo, status_user }
+      body: { email, senha, cargo, status_user },
     });
 
     const userData = await userService.createUser(id, { email, senha, cargo, status_user });
 
     return res.status(201).json({
       message: 'Usuário criado com sucesso',
-      data: userData
+      data: userData,
     });
-
   } catch (err) {
     console.error('Erro ao criar usuário:', err);
     if (err instanceof Error) {
@@ -78,9 +85,8 @@ export async function connectUserToCompanyHandler(req: Request, res: Response, n
 
     return res.status(201).json({
       message: 'Usuário vinculado com sucesso',
-      data: result
+      data: result,
     });
-
   } catch (err) {
     console.error('Erro ao conectar usuário à empresa:', err);
     if (err instanceof Error) {
@@ -99,7 +105,6 @@ export async function updatePassword(req: Request, res: Response) {
     const result = await userService.updatePassword(userId, senhaAtual, novaSenha);
 
     return res.status(200).json(result);
-
   } catch (err) {
     console.error('Erro ao atualizar senha:', err);
     return res.status(400).json({ error: 'Requisição inválida' });
@@ -118,9 +123,8 @@ export async function updateUserStatus(req: Request, res: Response) {
 
     return res.status(200).json({
       message: 'Usuário atualizado com sucesso',
-      data: result
+      data: result,
     });
-
   } catch (err) {
     console.error('Erro ao atualizar usuário:', err);
     return res.status(400).json({ error: 'Requisição inválida' });
@@ -145,4 +149,3 @@ export async function deleteUser(req: Request, res: Response, next: NextFunction
     next(err);
   }
 }
-

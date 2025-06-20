@@ -1,28 +1,26 @@
 import { PrismaClient } from '@prisma/client';
-import { 
-  CreateProcessType, 
-  UpdateProcessType, 
-  GetProcessesByEmpresaType, 
+import {
+  CreateProcessType,
+  UpdateProcessType,
+  GetProcessesByEmpresaType,
   GetProcessesByColaboradorType,
   ListProcessesType,
-  ProcessEpiType
+  ProcessEpiType,
 } from '../Schemas/ProcessSchema';
 import HttpError from '../Helpers/HttpError';
 
 const prisma = new PrismaClient();
 
 export class ProcessService {
-
   static async createProcess(data: CreateProcessType, idEmpresa: string) {
     const { idColaborador, dataAgendada, epis, observacoes } = data;
-
 
     const colaborador = await prisma.collaborator.findFirst({
       where: {
         idColaborador,
         idEmpresa,
-        status: true
-      }
+        status: true,
+      },
     });
 
     if (!colaborador) {
@@ -32,34 +30,34 @@ export class ProcessService {
     const episData = await prisma.epi.findMany({
       where: {
         idEpi: { in: epis.map(e => e.idEpi) },
-        idEmpresa
-      }
+        idEmpresa,
+      },
     });
 
     if (episData.length !== epis.length) {
       throw new HttpError('Um ou mais EPIs não foram encontrados', 404);
     }
 
-
     for (const epiRequest of epis) {
       const epiDB = episData.find(e => e.idEpi === epiRequest.idEpi);
       if (!epiDB) continue;
 
       if (epiDB.quantidade < epiRequest.quantidade) {
-        throw new HttpError(`Estoque insuficiente para EPI ${epiDB.nomeEpi}. Disponível: ${epiDB.quantidade}, Solicitado: ${epiRequest.quantidade}`, 400);
+        throw new HttpError(
+          `Estoque insuficiente para EPI ${epiDB.nomeEpi}. Disponível: ${epiDB.quantidade}, Solicitado: ${epiRequest.quantidade}`,
+          400,
+        );
       }
     }
 
-
-    const processo = await prisma.$transaction(async (tx) => {
-
+    const processo = await prisma.$transaction(async tx => {
       const novoProcesso = await tx.process.create({
         data: {
           idEmpresa,
           idColaborador,
           dataAgendada,
-          observacoes
-        }
+          observacoes,
+        },
       });
 
       for (const epiRequest of epis) {
@@ -67,27 +65,25 @@ export class ProcessService {
           data: {
             idProcesso: novoProcesso.idProcesso,
             idEpi: epiRequest.idEpi,
-            quantidade: epiRequest.quantidade
-          }
+            quantidade: epiRequest.quantidade,
+          },
         });
 
         await tx.epi.update({
           where: { idEpi: epiRequest.idEpi },
           data: {
             quantidade: {
-              decrement: epiRequest.quantidade
-            }
-          }
+              decrement: epiRequest.quantidade,
+            },
+          },
         });
       }
 
       return novoProcesso;
     });
 
-
     return await this.getProcessById(processo.idProcesso);
   }
-
 
   static async getProcessById(idProcesso: string) {
     const processo = await prisma.process.findUnique({
@@ -97,15 +93,15 @@ export class ProcessService {
           select: {
             idEmpresa: true,
             nomeFantasia: true,
-            razaoSocial: true
-          }
+            razaoSocial: true,
+          },
         },
         colaborador: {
           select: {
             idColaborador: true,
             nomeColaborador: true,
-            cpf: true
-          }
+            cpf: true,
+          },
         },
         processEpis: {
           include: {
@@ -114,12 +110,12 @@ export class ProcessService {
                 idEpi: true,
                 nomeEpi: true,
                 ca: true,
-                descricao: true
-              }
-            }
-          }
-        }
-      }
+                descricao: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!processo) {
@@ -129,17 +125,15 @@ export class ProcessService {
     return processo;
   }
 
-
   static async updateProcess(idProcesso: string, data: UpdateProcessType, idEmpresa: string) {
-
     const processoExistente = await prisma.process.findFirst({
       where: {
         idProcesso,
-        idEmpresa
+        idEmpresa,
       },
       include: {
-        processEpis: true
-      }
+        processEpis: true,
+      },
     });
 
     if (!processoExistente) {
@@ -153,33 +147,31 @@ export class ProcessService {
       const episData = await prisma.epi.findMany({
         where: {
           idEpi: { in: epis.map(e => e.idEpi) },
-          idEmpresa
-        }
+          idEmpresa,
+        },
       });
 
       if (episData.length !== epis.length) {
         throw new HttpError('Um ou mais EPIs não foram encontrados', 404);
       }
 
-
       const episAtuais = processoExistente.processEpis;
-      
 
       for (const epiAtual of episAtuais) {
         await prisma.epi.update({
           where: { idEpi: epiAtual.idEpi },
           data: {
             quantidade: {
-              increment: epiAtual.quantidade
-            }
-          }
+              increment: epiAtual.quantidade,
+            },
+          },
         });
       }
 
       const episAtualizados = await prisma.epi.findMany({
         where: {
-          idEpi: { in: epis.map(e => e.idEpi) }
-        }
+          idEpi: { in: epis.map(e => e.idEpi) },
+        },
       });
 
       for (const epiRequest of epis) {
@@ -187,22 +179,25 @@ export class ProcessService {
         if (!epiDB) continue;
 
         if (epiDB.quantidade < epiRequest.quantidade) {
-          throw new HttpError(`Estoque insuficiente para EPI ${epiDB.nomeEpi}. Disponível: ${epiDB.quantidade}, Solicitado: ${epiRequest.quantidade}`, 400);
+          throw new HttpError(
+            `Estoque insuficiente para EPI ${epiDB.nomeEpi}. Disponível: ${epiDB.quantidade}, Solicitado: ${epiRequest.quantidade}`,
+            400,
+          );
         }
       }
 
       novaListaEpis = epis;
     }
 
-    const processoAtualizado = await prisma.$transaction(async (tx) => {
+    const processoAtualizado = await prisma.$transaction(async tx => {
       const processo = await tx.process.update({
         where: { idProcesso },
-        data: dadosProcesso
+        data: dadosProcesso,
       });
 
       if (novaListaEpis) {
         await tx.processEpi.deleteMany({
-          where: { idProcesso }
+          where: { idProcesso },
         });
 
         for (const epiRequest of novaListaEpis) {
@@ -210,17 +205,17 @@ export class ProcessService {
             data: {
               idProcesso,
               idEpi: epiRequest.idEpi,
-              quantidade: epiRequest.quantidade
-            }
+              quantidade: epiRequest.quantidade,
+            },
           });
 
           await tx.epi.update({
             where: { idEpi: epiRequest.idEpi },
             data: {
               quantidade: {
-                decrement: epiRequest.quantidade
-              }
-            }
+                decrement: epiRequest.quantidade,
+              },
+            },
           });
         }
       }
@@ -235,46 +230,44 @@ export class ProcessService {
     const processo = await prisma.process.findFirst({
       where: {
         idProcesso,
-        idEmpresa
+        idEmpresa,
       },
       include: {
-        processEpis: true
-      }
+        processEpis: true,
+      },
     });
 
     if (!processo) {
       throw new HttpError('Processo não encontrado', 404);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       for (const processEpi of processo.processEpis) {
         await tx.epi.update({
           where: { idEpi: processEpi.idEpi },
           data: {
             quantidade: {
-              increment: processEpi.quantidade
-            }
-          }
+              increment: processEpi.quantidade,
+            },
+          },
         });
       }
 
       await tx.process.delete({
-        where: { idProcesso }
+        where: { idProcesso },
       });
     });
 
     return { message: 'Processo deletado com sucesso' };
   }
 
-
   static async getProcessesByEmpresa(params: GetProcessesByEmpresaType) {
     const { id_empresa, page, limit, status, dataInicio, dataFim } = params;
 
     const skip = (page - 1) * limit;
 
-
     const where: any = {
-      idEmpresa: id_empresa
+      idEmpresa: id_empresa,
     };
 
     if (status !== 'todos') {
@@ -295,8 +288,8 @@ export class ProcessService {
             select: {
               idColaborador: true,
               nomeColaborador: true,
-              cpf: true
-            }
+              cpf: true,
+            },
           },
           processEpis: {
             include: {
@@ -304,17 +297,17 @@ export class ProcessService {
                 select: {
                   idEpi: true,
                   nomeEpi: true,
-                  ca: true
-                }
-              }
-            }
-          }
+                  ca: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit
+        take: limit,
       }),
-      prisma.process.count({ where })
+      prisma.process.count({ where }),
     ]);
 
     return {
@@ -323,8 +316,8 @@ export class ProcessService {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -334,7 +327,7 @@ export class ProcessService {
     const skip = (page - 1) * limit;
 
     const where: any = {
-      idColaborador: id_colaborador
+      idColaborador: id_colaborador,
     };
 
     if (status !== 'todos') {
@@ -348,8 +341,8 @@ export class ProcessService {
           empresa: {
             select: {
               idEmpresa: true,
-              nomeFantasia: true
-            }
+              nomeFantasia: true,
+            },
           },
           processEpis: {
             include: {
@@ -357,17 +350,17 @@ export class ProcessService {
                 select: {
                   idEpi: true,
                   nomeEpi: true,
-                  ca: true
-                }
-              }
-            }
-          }
+                  ca: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit
+        take: limit,
       }),
-      prisma.process.count({ where })
+      prisma.process.count({ where }),
     ]);
 
     return {
@@ -376,12 +369,17 @@ export class ProcessService {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
-  static async confirmDelivery(idProcesso: string, dataEntrega?: Date, pdfUrl?: string, idEmpresa?: string) {
+  static async confirmDelivery(
+    idProcesso: string,
+    dataEntrega?: Date,
+    pdfUrl?: string,
+    idEmpresa?: string,
+  ) {
     const where: any = { idProcesso };
     if (idEmpresa) {
       where.idEmpresa = idEmpresa;
@@ -402,24 +400,29 @@ export class ProcessService {
       data: {
         statusEntrega: true,
         dataEntrega: dataEntrega || new Date(),
-        pdfUrl
-      }
+        pdfUrl,
+      },
     });
 
     return await this.getProcessById(idProcesso);
   }
 
-  static async registerReturn(idProcesso: string, dataDevolucao: Date, observacoes?: string, idEmpresa?: string) {
+  static async registerReturn(
+    idProcesso: string,
+    dataDevolucao: Date,
+    observacoes?: string,
+    idEmpresa?: string,
+  ) {
     const where: any = { idProcesso };
     if (idEmpresa) {
       where.idEmpresa = idEmpresa;
     }
 
-    const processo = await prisma.process.findFirst({ 
+    const processo = await prisma.process.findFirst({
       where,
       include: {
-        processEpis: true
-      }
+        processEpis: true,
+      },
     });
 
     if (!processo) {
@@ -434,13 +437,13 @@ export class ProcessService {
       throw new HttpError('Processo já foi devolvido', 400);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       await tx.process.update({
         where: { idProcesso },
         data: {
           dataDevolucao,
-          observacoes: observacoes || processo.observacoes
-        }
+          observacoes: observacoes || processo.observacoes,
+        },
       });
 
       for (const processEpi of processo.processEpis) {
@@ -448,16 +451,15 @@ export class ProcessService {
           where: { idEpi: processEpi.idEpi },
           data: {
             quantidade: {
-              increment: processEpi.quantidade
-            }
-          }
+              increment: processEpi.quantidade,
+            },
+          },
         });
       }
     });
 
     return await this.getProcessById(idProcesso);
   }
-
 
   static async listProcesses(params: ListProcessesType) {
     const { page, limit, search, status, dataInicio, dataFim } = params;
@@ -481,24 +483,24 @@ export class ProcessService {
         {
           colaborador: {
             nomeColaborador: {
-              contains: search
-            }
-          }
+              contains: search,
+            },
+          },
         },
         {
           colaborador: {
             cpf: {
-              contains: search
-            }
-          }
+              contains: search,
+            },
+          },
         },
         {
           empresa: {
             nomeFantasia: {
-              contains: search
-            }
-          }
-        }
+              contains: search,
+            },
+          },
+        },
       ];
     }
 
@@ -510,15 +512,15 @@ export class ProcessService {
             select: {
               idEmpresa: true,
               nomeFantasia: true,
-              razaoSocial: true
-            }
+              razaoSocial: true,
+            },
           },
           colaborador: {
             select: {
               idColaborador: true,
               nomeColaborador: true,
-              cpf: true
-            }
+              cpf: true,
+            },
           },
           processEpis: {
             include: {
@@ -526,17 +528,17 @@ export class ProcessService {
                 select: {
                   idEpi: true,
                   nomeEpi: true,
-                  ca: true
-                }
-              }
-            }
-          }
+                  ca: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: limit
+        take: limit,
       }),
-      prisma.process.count({ where })
+      prisma.process.count({ where }),
     ]);
 
     return {
@@ -545,8 +547,8 @@ export class ProcessService {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -554,8 +556,8 @@ export class ProcessService {
     const processo = await prisma.process.findFirst({
       where: {
         idProcesso,
-        idEmpresa
-      }
+        idEmpresa,
+      },
     });
 
     if (!processo) {

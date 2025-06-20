@@ -1,5 +1,5 @@
-import { Router } from "express";
-import RequestHandler from "../Helpers/RequestHandler";
+import { Router } from 'express';
+import RequestHandler from '../Helpers/RequestHandler';
 import * as CollaboratorController from '../Controllers/CollaboratorController';
 import { verifyToken, verifyPermission } from '../Middlewares/auth';
 
@@ -47,10 +47,10 @@ const collaborator = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.get(
-    '/get/all',
-    verifyToken,
-    verifyPermission(['collaborator:read']),
-    RequestHandler(CollaboratorController.getAllCollaborators),
+  '/get/all',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getAllCollaborators),
 );
 
 /**
@@ -94,11 +94,11 @@ collaborator.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.get(
-    '/get/:id',
-    verifyToken,
-    verifyPermission(['collaborator:read']),
-    RequestHandler(CollaboratorController.getCollaboratorById),
-)
+  '/get/:id',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getCollaboratorById),
+);
 
 /**
  * @swagger
@@ -153,10 +153,10 @@ collaborator.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.post(
-    '/create/:companyId',
-    verifyToken,
-    verifyPermission(['collaborator:create']),
-    RequestHandler(CollaboratorController.createCollaborator),
+  '/create/:companyId',
+  verifyToken,
+  verifyPermission(['collaborator:create']),
+  RequestHandler(CollaboratorController.createCollaborator),
 );
 
 /**
@@ -212,11 +212,11 @@ collaborator.post(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.put(
-    '/update/:id',
-    verifyToken,
-    verifyPermission(['collaborator:update']),
-    RequestHandler(CollaboratorController.updateCollaborator),
-)
+  '/update/:id',
+  verifyToken,
+  verifyPermission(['collaborator:update']),
+  RequestHandler(CollaboratorController.updateCollaborator),
+);
 
 /**
  * @swagger
@@ -254,11 +254,11 @@ collaborator.put(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.delete(
-    '/delete/:id',
-    verifyToken,
-    verifyPermission(['collaborator:delete']),
-    RequestHandler(CollaboratorController.deleteCollaborator),
-)
+  '/delete/:id',
+  verifyToken,
+  verifyPermission(['collaborator:delete']),
+  RequestHandler(CollaboratorController.deleteCollaborator),
+);
 
 /**
  * @swagger
@@ -328,11 +328,10 @@ collaborator.delete(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.get(
-    '/company/:companyId',
-    verifyToken,
-    verifyPermission(['collaborator:read']),
-    RequestHandler(CollaboratorController.getCollaboratorsByCompany),
+  '/company/:companyId',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getCollaboratorsByCompany),
 );
 
 export default collaborator;
-

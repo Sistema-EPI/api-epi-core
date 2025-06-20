@@ -48,10 +48,10 @@ const user = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.get(
-    '/get/all',
-    verifyToken,
-    verifyPermission(['user:read']),
-    RequestHandler(UserController.getAllUsers),
+  '/get/all',
+  verifyToken,
+  verifyPermission(['user:read']),
+  RequestHandler(UserController.getAllUsers),
 );
 
 /**
@@ -107,10 +107,10 @@ user.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.post(
-    '/create/:id',
-    verifyToken,
-    verifyPermission(['user:create']),
-    RequestHandler(UserController.createUser),
+  '/create/:id',
+  verifyToken,
+  verifyPermission(['user:create']),
+  RequestHandler(UserController.createUser),
 );
 
 /**
@@ -154,11 +154,11 @@ user.post(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.get(
-    '/get/:id',
-    verifyToken,
-    verifyPermission(['user:read']),
-    RequestHandler(UserController.getUserById),
-)
+  '/get/:id',
+  verifyToken,
+  verifyPermission(['user:read']),
+  RequestHandler(UserController.getUserById),
+);
 
 /**
  * @swagger
@@ -220,10 +220,10 @@ user.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.post(
-    '/:userId/connect/:companyId',
-    verifyToken,
-    verifyPermission(['user:update']),
-    RequestHandler(UserController.connectUserToCompanyHandler),
+  '/:userId/connect/:companyId',
+  verifyToken,
+  verifyPermission(['user:update']),
+  RequestHandler(UserController.connectUserToCompanyHandler),
 );
 
 /**
@@ -274,10 +274,10 @@ user.post(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.put(
-    '/:userId/update/password',
-    verifyToken,
-    verifyPermission(['user:update']),
-    RequestHandler(UserController.updatePassword)
+  '/:userId/update/password',
+  verifyToken,
+  verifyPermission(['user:update']),
+  RequestHandler(UserController.updatePassword),
 );
 
 /**
@@ -333,10 +333,10 @@ user.put(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.put(
-    '/:userId/update/status',
-    verifyToken,
-    verifyPermission(['user:update']),
-    RequestHandler(UserController.updateUserStatus)
+  '/:userId/update/status',
+  verifyToken,
+  verifyPermission(['user:update']),
+  RequestHandler(UserController.updateUserStatus),
 );
 
 /**
@@ -375,11 +375,10 @@ user.put(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 user.delete(
-    '/:userId/delete',
-    verifyToken,
-    verifyPermission(['user:delete']),
-    RequestHandler(UserController.deleteUser)
+  '/:userId/delete',
+  verifyToken,
+  verifyPermission(['user:delete']),
+  RequestHandler(UserController.deleteUser),
 );
-
 
 export default user;

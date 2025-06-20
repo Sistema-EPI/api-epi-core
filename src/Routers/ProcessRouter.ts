@@ -206,7 +206,12 @@ const router = Router();
  *       404:
  *         description: Colaborador ou EPI não encontrado
  */
-router.post('/create', verifyToken, verifyPermission(['process:create']), RequestHandler(ProcessController.createProcess));
+router.post(
+  '/create',
+  verifyToken,
+  verifyPermission(['process:create']),
+  RequestHandler(ProcessController.createProcess),
+);
 
 /**
  * @swagger
@@ -249,7 +254,12 @@ router.post('/create', verifyToken, verifyPermission(['process:create']), Reques
  *       404:
  *         description: Processo não encontrado
  */
-router.get('/:id', verifyToken, verifyPermission(['process:read']), ProcessController.getProcessById);
+router.get(
+  '/:id',
+  verifyToken,
+  verifyPermission(['process:read']),
+  ProcessController.getProcessById,
+);
 
 /**
  * @swagger
@@ -300,7 +310,12 @@ router.get('/:id', verifyToken, verifyPermission(['process:read']), ProcessContr
  *       404:
  *         description: Processo não encontrado
  */
-router.put('/:id', verifyToken, verifyPermission(['process:update']), ProcessController.updateProcess);
+router.put(
+  '/:id',
+  verifyToken,
+  verifyPermission(['process:update']),
+  ProcessController.updateProcess,
+);
 
 /**
  * @swagger
@@ -347,7 +362,12 @@ router.put('/:id', verifyToken, verifyPermission(['process:update']), ProcessCon
  *       404:
  *         description: Processo não encontrado
  */
-router.delete('/:id', verifyToken, verifyPermission(['process:delete']), ProcessController.deleteProcess);
+router.delete(
+  '/:id',
+  verifyToken,
+  verifyPermission(['process:delete']),
+  ProcessController.deleteProcess,
+);
 
 /**
  * @swagger
@@ -438,7 +458,12 @@ router.delete('/:id', verifyToken, verifyPermission(['process:delete']), Process
  *       403:
  *         description: Sem permissão
  */
-router.get('/empresa/:id_empresa', verifyToken, verifyPermission(['process:read']), ProcessController.getProcessesByEmpresa);
+router.get(
+  '/empresa/:id_empresa',
+  verifyToken,
+  verifyPermission(['process:read']),
+  ProcessController.getProcessesByEmpresa,
+);
 
 /**
  * @swagger
@@ -517,7 +542,12 @@ router.get('/empresa/:id_empresa', verifyToken, verifyPermission(['process:read'
  *       403:
  *         description: Sem permissão
  */
-router.get('/colaborador/:id_colaborador', verifyToken, verifyPermission(['process:read']), ProcessController.getProcessesByColaborador);
+router.get(
+  '/colaborador/:id_colaborador',
+  verifyToken,
+  verifyPermission(['process:read']),
+  ProcessController.getProcessesByColaborador,
+);
 
 /**
  * @swagger
@@ -566,7 +596,12 @@ router.get('/colaborador/:id_colaborador', verifyToken, verifyPermission(['proce
  *       404:
  *         description: Processo não encontrado
  */
-router.patch('/:id/confirm-delivery', verifyToken, verifyPermission(['process:update']), ProcessController.confirmDelivery);
+router.patch(
+  '/:id/confirm-delivery',
+  verifyToken,
+  verifyPermission(['process:update']),
+  ProcessController.confirmDelivery,
+);
 
 /**
  * @swagger
@@ -617,7 +652,12 @@ router.patch('/:id/confirm-delivery', verifyToken, verifyPermission(['process:up
  *       404:
  *         description: Processo não encontrado
  */
-router.patch('/:id/register-return', verifyToken, verifyPermission(['process:update']), ProcessController.registerReturn);
+router.patch(
+  '/:id/register-return',
+  verifyToken,
+  verifyPermission(['process:update']),
+  ProcessController.registerReturn,
+);
 
 /**
  * @swagger
@@ -705,6 +745,11 @@ router.patch('/:id/register-return', verifyToken, verifyPermission(['process:upd
  *       403:
  *         description: Acesso negado - apenas administradores
  */
-router.get('/list', verifyToken, verifyPermission(['process:read']), ProcessController.listProcesses);
+router.get(
+  '/list',
+  verifyToken,
+  verifyPermission(['process:read']),
+  ProcessController.listProcesses,
+);
 
 export default router;

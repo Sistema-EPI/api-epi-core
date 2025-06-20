@@ -51,10 +51,10 @@ export class CompanyService {
             select: {
               colaboradores: true,
               epis: true,
-              authCompanies: true
-            }
-          }
-        }
+              authCompanies: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -63,7 +63,7 @@ export class CompanyService {
       totalColaboradores: company._count.colaboradores,
       totalEpis: company._count.epis,
       totalUsuarios: company._count.authCompanies,
-      _count: undefined // Remove o _count do retorno
+      _count: undefined, // Remove o _count do retorno
     }));
 
     return {
@@ -71,7 +71,7 @@ export class CompanyService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
-      data: formattedData
+      data: formattedData,
     };
   }
 
@@ -84,16 +84,16 @@ export class CompanyService {
             idColaborador: true,
             nomeColaborador: true,
             cpf: true,
-            status: true
-          }
+            status: true,
+          },
         },
         epis: {
           select: {
             ca: true,
             nomeEpi: true,
             quantidade: true,
-            quantidadeMinima: true
-          }
+            quantidadeMinima: true,
+          },
         },
         authCompanies: {
           include: {
@@ -101,18 +101,18 @@ export class CompanyService {
               select: {
                 idUser: true,
                 email: true,
-                statusUser: true
-              }
+                statusUser: true,
+              },
             },
             role: {
               select: {
                 cargo: true,
-                permissao: true
-              }
-            }
-          }
-        }
-      }
+                permissao: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!existingCompany) {
@@ -125,17 +125,17 @@ export class CompanyService {
         id: auth.user.idUser,
         email: auth.user.email,
         cargo: auth.cargo,
-        status: auth.user.statusUser
+        status: auth.user.statusUser,
       })),
       totalColaboradores: existingCompany.colaboradores.length,
       totalEpis: existingCompany.epis.length,
-      totalUsuarios: existingCompany.authCompanies.length
+      totalUsuarios: existingCompany.authCompanies.length,
     };
   }
 
   async createCompany(data: CreateCompanyData) {
     const existingCompany = await prisma.company.findUnique({
-      where: { cnpj: data.cnpj }
+      where: { cnpj: data.cnpj },
     });
 
     if (existingCompany) {
@@ -163,7 +163,7 @@ export class CompanyService {
       id: company.idEmpresa,
       nomeFantasia: company.nomeFantasia,
       cnpj: company.cnpj,
-      statusEmpresa: company.statusEmpresa
+      statusEmpresa: company.statusEmpresa,
     };
   }
 
@@ -176,10 +176,9 @@ export class CompanyService {
       throw HttpError.NotFound('Empresa não encontrada');
     }
 
-
     if (data.cnpj && data.cnpj !== existingCompany.cnpj) {
       const cnpjExists = await prisma.company.findUnique({
-        where: { cnpj: data.cnpj }
+        where: { cnpj: data.cnpj },
       });
 
       if (cnpjExists) {
@@ -197,7 +196,7 @@ export class CompanyService {
       ...(data.logradouro !== undefined && { logradouro: data.logradouro }),
       ...(data.telefone !== undefined && { telefone: data.telefone }),
       ...(data.status_empresa !== undefined && {
-        statusEmpresa: data.status_empresa
+        statusEmpresa: data.status_empresa,
       }),
     };
 
@@ -205,7 +204,6 @@ export class CompanyService {
       where: { idEmpresa: companyId },
       data: dataToUpdate,
     });
-
 
     const changes: Record<string, { before: any; after: any }> = {};
     for (const key in dataToUpdate) {
@@ -218,23 +216,24 @@ export class CompanyService {
     }
 
     if (Object.keys(changes).length > 0) {
-      logger.info(`Empresa atualizada (id: ${companyId}) com as mudanças: ${JSON.stringify(changes)}`);
+      logger.info(
+        `Empresa atualizada (id: ${companyId}) com as mudanças: ${JSON.stringify(changes)}`,
+      );
     }
 
     return {
-      id: companyId
+      id: companyId,
     };
   }
 
   async deleteCompany(companyId: string) {
-
     const existingCompany = await prisma.company.findUnique({
       where: { idEmpresa: companyId },
       include: {
         colaboradores: true,
         epis: true,
-        authCompanies: true
-      }
+        authCompanies: true,
+      },
     });
 
     if (!existingCompany) {
@@ -262,7 +261,7 @@ export class CompanyService {
     return {
       id: existingCompany.idEmpresa,
       nomeFantasia: existingCompany.nomeFantasia,
-      cnpj: existingCompany.cnpj
+      cnpj: existingCompany.cnpj,
     };
   }
 
@@ -270,7 +269,7 @@ export class CompanyService {
     const company = await prisma.company.findUnique({
       where: {
         idEmpresa: companyId,
-        statusEmpresa: true
+        statusEmpresa: true,
       },
       select: {
         idEmpresa: true,
@@ -282,8 +281,8 @@ export class CompanyService {
         telefone: true,
         logradouro: true,
         cep: true,
-        uf: true
-      }
+        uf: true,
+      },
     });
 
     if (!company) {
@@ -300,7 +299,7 @@ export class CompanyService {
       telefone: company.telefone,
       logradouro: company.logradouro,
       cep: company.cep,
-      uf: company.uf
+      uf: company.uf,
     };
   }
 
@@ -311,8 +310,8 @@ export class CompanyService {
         idEmpresa: true,
         nomeFantasia: true,
         razaoSocial: true,
-        statusEmpresa: true
-      }
+        statusEmpresa: true,
+      },
     });
 
     return company;
@@ -325,8 +324,8 @@ export class CompanyService {
         idEmpresa: true,
         nomeFantasia: true,
         cnpj: true,
-        statusEmpresa: true
-      }
+        statusEmpresa: true,
+      },
     });
 
     if (!existingCompany) {
@@ -337,7 +336,6 @@ export class CompanyService {
       throw HttpError.BadRequest(`Empresa já está ${status ? 'ativa' : 'inativa'}`);
     }
 
-
     const updatedCompany = await prisma.company.update({
       where: { idEmpresa: companyId },
       data: { statusEmpresa: status },
@@ -345,18 +343,20 @@ export class CompanyService {
         idEmpresa: true,
         nomeFantasia: true,
         cnpj: true,
-        statusEmpresa: true
-      }
+        statusEmpresa: true,
+      },
     });
 
-    logger.info(`Status da empresa alterado (id: ${companyId}) de ${existingCompany.statusEmpresa} para ${status}`);
+    logger.info(
+      `Status da empresa alterado (id: ${companyId}) de ${existingCompany.statusEmpresa} para ${status}`,
+    );
 
     return {
       id: updatedCompany.idEmpresa,
       nomeFantasia: updatedCompany.nomeFantasia,
       cnpj: updatedCompany.cnpj,
       statusEmpresa: updatedCompany.statusEmpresa,
-      statusAnterior: existingCompany.statusEmpresa
+      statusAnterior: existingCompany.statusEmpresa,
     };
   }
 }

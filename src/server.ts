@@ -29,7 +29,7 @@ const app = express();
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-const ALLOWED_ORIGINS = ENV.CORS_ORIGIN.split(',').map((origin) => origin.trim());
+const ALLOWED_ORIGINS = ENV.CORS_ORIGIN.split(',').map(origin => origin.trim());
 
 app.use(
   cors({
@@ -44,7 +44,7 @@ app.use(
     },
     credentials: true,
     allowedHeaders: ['x-api-token', 'Authorization', 'Content-Type'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }),
 );
 

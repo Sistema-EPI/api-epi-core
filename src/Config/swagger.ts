@@ -662,10 +662,7 @@ const options: swaggerJSDoc.Options = {
       },
     ],
   },
-  apis: [
-    './dist/Routers/*.js',
-    './src/Routers/*.ts'
-  ],
+  apis: ['./dist/Routers/*.js', './src/Routers/*.ts'],
   paths: {
     '/v1/user/get/all': {
       get: {
@@ -685,29 +682,33 @@ const options: swaggerJSDoc.Options = {
                       properties: {
                         data: {
                           type: 'array',
-                          items: { $ref: '#/components/schemas/User' }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                          items: { $ref: '#/components/schemas/User' },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
 
 const specs = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express): void => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'API EPI Core - Documentação',
-  }));
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(specs, {
+      explorer: true,
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'API EPI Core - Documentação',
+    }),
+  );
 };
 
 export default specs;

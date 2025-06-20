@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   // 1. Cadastrar empresas com API Keys
@@ -17,7 +17,7 @@ async function main() {
       telefone: '21999999999',
       statusEmpresa: true,
     },
-  })
+  });
 
   const empresa2 = await prisma.company.create({
     data: {
@@ -32,7 +32,7 @@ async function main() {
       telefone: '11988888888',
       statusEmpresa: true,
     },
-  })
+  });
 
   const empresa3 = await prisma.company.create({
     data: {
@@ -47,7 +47,7 @@ async function main() {
       telefone: '31977777777',
       statusEmpresa: true,
     },
-  })
+  });
 
   const empresa4 = await prisma.company.create({
     data: {
@@ -62,7 +62,7 @@ async function main() {
       telefone: '51966666666',
       statusEmpresa: true,
     },
-  })
+  });
 
   const empresa5 = await prisma.company.create({
     data: {
@@ -77,7 +77,7 @@ async function main() {
       telefone: '47955555555',
       statusEmpresa: false,
     },
-  })
+  });
 
   // 2. Cadastrar cargos e permissões
   await prisma.role.createMany({
@@ -100,7 +100,7 @@ async function main() {
       },
     ],
     skipDuplicates: true,
-  })
+  });
 
   // 3. Cadastrar usuários com dados completos
   const user1 = await prisma.user.create({
@@ -111,7 +111,7 @@ async function main() {
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
     },
-  })
+  });
 
   const user2 = await prisma.user.create({
     data: {
@@ -121,7 +121,7 @@ async function main() {
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
     },
-  })
+  });
 
   const user3 = await prisma.user.create({
     data: {
@@ -131,7 +131,7 @@ async function main() {
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
     },
-  })
+  });
 
   const user4 = await prisma.user.create({
     data: {
@@ -141,7 +141,7 @@ async function main() {
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: true,
     },
-  })
+  });
 
   const user5 = await prisma.user.create({
     data: {
@@ -151,7 +151,7 @@ async function main() {
       senha: '$2b$12$M0MADXGOM.oVtwZHhmALeuSHH1JVG8FKxdnKkP9tacXi1X.w/acJ2', // "123456" hasheada com bcrypt
       statusUser: false,
     },
-  })
+  });
 
   // 4. Vincular usuários às empresas com cargos
   await prisma.authCompany.createMany({
@@ -182,7 +182,7 @@ async function main() {
         cargo: 'admin',
       },
     ],
-  })
+  });
 
   // 5. Cadastrar colaboradores
   const colab1 = await prisma.collaborator.create({
@@ -193,7 +193,7 @@ async function main() {
       cpf: '12345678901',
       status: true,
     },
-  })
+  });
 
   const colab2 = await prisma.collaborator.create({
     data: {
@@ -203,7 +203,7 @@ async function main() {
       cpf: '98765432100',
       status: true,
     },
-  })
+  });
 
   const colab3 = await prisma.collaborator.create({
     data: {
@@ -213,7 +213,7 @@ async function main() {
       cpf: '45678912300',
       status: true,
     },
-  })
+  });
 
   const colab4 = await prisma.collaborator.create({
     data: {
@@ -223,7 +223,7 @@ async function main() {
       cpf: '78912345600',
       status: false,
     },
-  })
+  });
 
   const colab5 = await prisma.collaborator.create({
     data: {
@@ -233,7 +233,7 @@ async function main() {
       cpf: '32165498700',
       status: true,
     },
-  })
+  });
 
   const colab6 = await prisma.collaborator.create({
     data: {
@@ -243,7 +243,7 @@ async function main() {
       cpf: '65432198700',
       status: true,
     },
-  })
+  });
 
   const colab7 = await prisma.collaborator.create({
     data: {
@@ -253,7 +253,7 @@ async function main() {
       cpf: '98765432101',
       status: true,
     },
-  })
+  });
 
   const colab8 = await prisma.collaborator.create({
     data: {
@@ -263,7 +263,7 @@ async function main() {
       cpf: '12398745600',
       status: true,
     },
-  })
+  });
 
   const colab9 = await prisma.collaborator.create({
     data: {
@@ -273,7 +273,7 @@ async function main() {
       cpf: '78945612300',
       status: true,
     },
-  })
+  });
 
   const colab10 = await prisma.collaborator.create({
     data: {
@@ -283,7 +283,7 @@ async function main() {
       cpf: '32178945600',
       status: true,
     },
-  })
+  });
 
   // 6. Cadastrar biometrias para alguns colaboradores
   await prisma.biometria.createMany({
@@ -319,7 +319,7 @@ async function main() {
         certificadoPath: '/storage/certificados/cert-marcos-oliveira.pdf',
       },
     ],
-  })
+  });
 
   // 7. Cadastrar EPIs
   const epi1 = await prisma.epi.create({
@@ -334,7 +334,7 @@ async function main() {
       quantidade: 20,
       quantidadeMinima: 5,
     },
-  })
+  });
 
   const epi2 = await prisma.epi.create({
     data: {
@@ -348,7 +348,7 @@ async function main() {
       quantidade: 50,
       quantidadeMinima: 10,
     },
-  })
+  });
 
   const epi3 = await prisma.epi.create({
     data: {
@@ -362,7 +362,7 @@ async function main() {
       quantidade: 30,
       quantidadeMinima: 8,
     },
-  })
+  });
 
   const epi4 = await prisma.epi.create({
     data: {
@@ -376,7 +376,7 @@ async function main() {
       quantidade: 100,
       quantidadeMinima: 20,
     },
-  })
+  });
 
   const epi5 = await prisma.epi.create({
     data: {
@@ -390,7 +390,7 @@ async function main() {
       quantidade: 25,
       quantidadeMinima: 5,
     },
-  })
+  });
 
   const epi6 = await prisma.epi.create({
     data: {
@@ -404,7 +404,7 @@ async function main() {
       quantidade: 40,
       quantidadeMinima: 15,
     },
-  })
+  });
 
   const epi7 = await prisma.epi.create({
     data: {
@@ -418,7 +418,7 @@ async function main() {
       quantidade: 10,
       quantidadeMinima: 3,
     },
-  })
+  });
 
   const epi8 = await prisma.epi.create({
     data: {
@@ -432,7 +432,7 @@ async function main() {
       quantidade: 60,
       quantidadeMinima: 12,
     },
-  })
+  });
 
   const epi9 = await prisma.epi.create({
     data: {
@@ -446,7 +446,7 @@ async function main() {
       quantidade: 15,
       quantidadeMinima: 4,
     },
-  })
+  });
 
   const epi10 = await prisma.epi.create({
     data: {
@@ -460,7 +460,7 @@ async function main() {
       quantidade: 12,
       quantidadeMinima: 3,
     },
-  })
+  });
 
   // 8. Cadastrar processos de entrega de EPIs
   const process1 = await prisma.process.create({
@@ -474,7 +474,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-capacete-joao.pdf',
       observacoes: 'Entrega de capacete para obra civil',
     },
-  })
+  });
 
   const process2 = await prisma.process.create({
     data: {
@@ -487,7 +487,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-luva-joao.pdf',
       observacoes: 'Entrega de luvas para manuseio químico',
     },
-  })
+  });
 
   const process3 = await prisma.process.create({
     data: {
@@ -500,7 +500,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-capacete-maria.pdf',
       observacoes: 'Entrega de capacete - colaboradora Maria',
     },
-  })
+  });
 
   const process4 = await prisma.process.create({
     data: {
@@ -514,7 +514,7 @@ async function main() {
       dataDevolucao: new Date('2024-08-15T11:20:00'),
       observacoes: 'Óculos entregue e devolvido por danificação',
     },
-  })
+  });
 
   const process5 = await prisma.process.create({
     data: {
@@ -527,7 +527,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-protetor-ana.pdf',
       observacoes: 'Protetor auricular para Ana Lima',
     },
-  })
+  });
 
   const process6 = await prisma.process.create({
     data: {
@@ -540,7 +540,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-bota-fernando.pdf',
       observacoes: 'Bota de segurança para Fernando Costa',
     },
-  })
+  });
 
   const process7 = await prisma.process.create({
     data: {
@@ -553,7 +553,7 @@ async function main() {
       pdfUrl: '/storage/termos/termo-entrega-mascara-roberta.pdf',
       observacoes: 'Máscara respiratória para Roberta Alves',
     },
-  })
+  });
 
   const process8 = await prisma.process.create({
     data: {
@@ -564,7 +564,7 @@ async function main() {
       statusEntrega: false,
       observacoes: 'Processo agendado - aguardando entrega',
     },
-  })
+  });
 
   const process9 = await prisma.process.create({
     data: {
@@ -575,7 +575,7 @@ async function main() {
       statusEntrega: false,
       observacoes: 'Processo agendado para colaboradora Juliana',
     },
-  })
+  });
 
   const process10 = await prisma.process.create({
     data: {
@@ -586,7 +586,7 @@ async function main() {
       statusEntrega: false,
       observacoes: 'Processo agendado para Ricardo Ferreira',
     },
-  })
+  });
 
   // 9. Criar relacionamentos ProcessEpi (processo-EPI com quantidades)
   await prisma.processEpi.createMany({
@@ -597,21 +597,21 @@ async function main() {
         idEpi: epi1.idEpi,
         quantidade: 2,
       },
-      
+
       // Processo 2: João Silva - Luvas (3 pares)
       {
         idProcesso: process2.idProcesso,
         idEpi: epi2.idEpi,
         quantidade: 3,
       },
-      
+
       // Processo 3: Maria Souza - Capacete (1 unidade)
       {
         idProcesso: process3.idProcesso,
         idEpi: epi1.idEpi,
         quantidade: 1,
       },
-      
+
       // Processo 4: Carlos Pereira - Óculos (2 unidades) + Protetor Auricular (5 unidades)
       {
         idProcesso: process4.idProcesso,
@@ -623,14 +623,14 @@ async function main() {
         idEpi: epi4.idEpi,
         quantidade: 5,
       },
-      
+
       // Processo 5: Ana Lima - Protetor Auricular (10 unidades)
       {
         idProcesso: process5.idProcesso,
         idEpi: epi4.idEpi,
         quantidade: 10,
       },
-      
+
       // Processo 6: Fernando Costa - Bota (1 par) + Máscara (2 unidades)
       {
         idProcesso: process6.idProcesso,
@@ -642,14 +642,14 @@ async function main() {
         idEpi: epi6.idEpi,
         quantidade: 2,
       },
-      
+
       // Processo 7: Roberta Alves - Máscara (1 unidade)
       {
         idProcesso: process7.idProcesso,
         idEpi: epi6.idEpi,
         quantidade: 1,
       },
-      
+
       // Processo 8: Marcos Oliveira - Cinto (1 unidade) + Luva Anti-Corte (4 pares)
       {
         idProcesso: process8.idProcesso,
@@ -661,14 +661,14 @@ async function main() {
         idEpi: epi8.idEpi,
         quantidade: 4,
       },
-      
+
       // Processo 9: Juliana Santos - Luva Anti-Corte (2 pares)
       {
         idProcesso: process9.idProcesso,
         idEpi: epi8.idEpi,
         quantidade: 2,
       },
-      
+
       // Processo 10: Ricardo Ferreira - Avental (1 unidade) + Mangote (2 unidades)
       {
         idProcesso: process10.idProcesso,
@@ -681,7 +681,7 @@ async function main() {
         quantidade: 2,
       },
     ],
-  })
+  });
 
   // 10. Registrar alguns logs
   await prisma.log.createMany({
@@ -692,11 +692,11 @@ async function main() {
         idColaborador: colab1.idColaborador,
         idProcesso: process1.idProcesso,
         idEpi: epi1.idEpi,
-        body: { 
-          acao: "entrega", 
-          detalhes: "Entrega de EPI realizada com sucesso" 
+        body: {
+          acao: 'entrega',
+          detalhes: 'Entrega de EPI realizada com sucesso',
         },
-        tipo: "ENTREGA",
+        tipo: 'ENTREGA',
         timestamp: new Date('2024-05-15T10:30:00'),
       },
       {
@@ -705,11 +705,11 @@ async function main() {
         idColaborador: colab1.idColaborador,
         idProcesso: process2.idProcesso,
         idEpi: epi2.idEpi,
-        body: { 
-          acao: "entrega", 
-          detalhes: "Entrega de EPI realizada com sucesso" 
+        body: {
+          acao: 'entrega',
+          detalhes: 'Entrega de EPI realizada com sucesso',
         },
-        tipo: "ENTREGA",
+        tipo: 'ENTREGA',
         timestamp: new Date('2024-05-15T10:35:00'),
       },
       {
@@ -718,11 +718,11 @@ async function main() {
         idColaborador: colab2.idColaborador,
         idProcesso: process3.idProcesso,
         idEpi: epi1.idEpi,
-        body: { 
-          acao: "entrega", 
-          detalhes: "Entrega de EPI realizada com sucesso" 
+        body: {
+          acao: 'entrega',
+          detalhes: 'Entrega de EPI realizada com sucesso',
         },
-        tipo: "ENTREGA",
+        tipo: 'ENTREGA',
         timestamp: new Date('2024-05-16T14:20:00'),
       },
       {
@@ -731,11 +731,11 @@ async function main() {
         idColaborador: colab3.idColaborador,
         idProcesso: process4.idProcesso,
         idEpi: epi3.idEpi,
-        body: { 
-          acao: "entrega", 
-          detalhes: "Entrega de EPI realizada com sucesso" 
+        body: {
+          acao: 'entrega',
+          detalhes: 'Entrega de EPI realizada com sucesso',
         },
-        tipo: "ENTREGA",
+        tipo: 'ENTREGA',
         timestamp: new Date('2024-05-20T09:15:00'),
       },
       {
@@ -744,11 +744,11 @@ async function main() {
         idColaborador: colab3.idColaborador,
         idProcesso: process4.idProcesso,
         idEpi: epi3.idEpi,
-        body: { 
-          acao: "devolução", 
-          detalhes: "Devolução de EPI por danificação" 
+        body: {
+          acao: 'devolução',
+          detalhes: 'Devolução de EPI por danificação',
         },
-        tipo: "DEVOLUCAO",
+        tipo: 'DEVOLUCAO',
         timestamp: new Date('2024-08-15T11:20:00'),
       },
       {
@@ -756,34 +756,34 @@ async function main() {
         idUser: user3.idUser,
         idColaborador: colab5.idColaborador,
         idEpi: epi5.idEpi,
-        body: { 
-          acao: "estoque", 
-          detalhes: "Atualização de estoque: +10 unidades" 
+        body: {
+          acao: 'estoque',
+          detalhes: 'Atualização de estoque: +10 unidades',
         },
-        tipo: "ESTOQUE",
+        tipo: 'ESTOQUE',
         timestamp: new Date('2024-04-10T09:25:00'),
       },
       {
         idLog: 'log-7',
         idUser: user4.idUser,
-        body: { 
-          acao: "login", 
-          detalhes: "Login no sistema" 
+        body: {
+          acao: 'login',
+          detalhes: 'Login no sistema',
         },
-        tipo: "SISTEMA",
+        tipo: 'SISTEMA',
         timestamp: new Date('2024-05-10T08:30:00'),
       },
     ],
-  })
+  });
 
-  console.log('Seed realizado com sucesso!')
+  console.log('Seed realizado com sucesso!');
 }
 
 main()
-  .catch((e) => {
-    console.error('Erro ao rodar o seed:', e)
-    process.exit(1)
+  .catch(e => {
+    console.error('Erro ao rodar o seed:', e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

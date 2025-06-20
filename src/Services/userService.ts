@@ -37,7 +37,7 @@ export class UserService {
 
     const [total, data] = await Promise.all([
       prisma.user.count({
-        where: { deletedAt: null }
+        where: { deletedAt: null },
       }),
       prisma.user.findMany({
         where: { deletedAt: null },
@@ -52,7 +52,7 @@ export class UserService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
-      data
+      data,
     };
   }
 
@@ -60,7 +60,7 @@ export class UserService {
     const user = await prisma.user.findUnique({
       where: {
         idUser: userId,
-        deletedAt: null
+        deletedAt: null,
       },
       include: {
         authCompanies: {
@@ -71,18 +71,18 @@ export class UserService {
                 razaoSocial: true,
                 nomeFantasia: true,
                 cnpj: true,
-                statusEmpresa: true
-              }
+                statusEmpresa: true,
+              },
             },
             role: {
               select: {
                 cargo: true,
-                permissao: true
-              }
-            }
-          }
-        }
-      }
+                permissao: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -95,7 +95,7 @@ export class UserService {
       statusUser: user.statusUser,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      empresas: user.authCompanies.map((auth) => ({
+      empresas: user.authCompanies.map(auth => ({
         idEmpresa: auth.idEmpresa,
         cargo: auth.cargo,
         permissoes: auth.role.permissao,
@@ -103,16 +103,15 @@ export class UserService {
           razaoSocial: auth.empresa.razaoSocial,
           nomeFantasia: auth.empresa.nomeFantasia,
           cnpj: auth.empresa.cnpj,
-          status: auth.empresa.statusEmpresa
-        }
-      }))
+          status: auth.empresa.statusEmpresa,
+        },
+      })),
     };
   }
 
   async createUser(companyId: string, data: CreateUserData) {
-    
     const empresa = await prisma.company.findUnique({
-      where: { idEmpresa: companyId }
+      where: { idEmpresa: companyId },
     });
 
     if (!empresa) {
@@ -120,7 +119,7 @@ export class UserService {
     }
 
     const isEmailAlreadyInUse = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
     });
 
     if (isEmailAlreadyInUse) {
@@ -152,8 +151,8 @@ export class UserService {
         idUser: userId,
         email,
         senha: hashedPassword,
-        statusUser
-      }
+        statusUser,
+      },
     });
 
     console.log(`Usuário criado com sucesso com o ID: ${newUser.idUser}`);
@@ -163,53 +162,49 @@ export class UserService {
   }
 
   async connectUserToCompany(userId: string, companyId: string, cargo: string) {
- 
     const company = await prisma.company.findUnique({
-      where: { idEmpresa: companyId }
+      where: { idEmpresa: companyId },
     });
 
     if (!company) {
       throw HttpError.NotFound(`Empresa com ID '${companyId}' não encontrada`);
     }
 
-
     const role = await prisma.role.findUnique({
-      where: { cargo }
+      where: { cargo },
     });
 
     if (!role) {
       throw HttpError.BadRequest(`Cargo '${cargo}' não existe`);
     }
 
-
     const user = await prisma.user.findUnique({
-      where: { idUser: userId }
+      where: { idUser: userId },
     });
 
     if (!user) {
       throw HttpError.NotFound(`Usuário com ID '${userId}' não encontrado`);
     }
 
-
     const existingConnection = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
           idUser: userId,
-          idEmpresa: companyId
-        }
-      }
+          idEmpresa: companyId,
+        },
+      },
     });
 
     if (existingConnection) {
-      throw HttpError.BadRequest(`Usuário já está vinculado a esta empresa`);
+      throw HttpError.BadRequest('Usuário já está vinculado a esta empresa');
     }
 
     const authCompany = await prisma.authCompany.create({
       data: {
         idUser: userId,
         idEmpresa: companyId,
-        cargo: cargo
-      }
+        cargo: cargo,
+      },
     });
 
     logger.info(`Usuário ${userId} conectado à empresa ${companyId} com cargo ${cargo}`);
@@ -217,19 +212,22 @@ export class UserService {
     return authCompany;
   }
 
-  async connectUserToCompanyHandler(userId: string, companyId: string, data: ConnectUserToCompanyData) {
-
+  async connectUserToCompanyHandler(
+    userId: string,
+    companyId: string,
+    data: ConnectUserToCompanyData,
+  ) {
     const existing = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
           idUser: userId,
-          idEmpresa: companyId
-        }
-      }
+          idEmpresa: companyId,
+        },
+      },
     });
 
     if (existing) {
-      throw HttpError.BadRequest(`Usuário já está vinculado a esta empresa`);
+      throw HttpError.BadRequest('Usuário já está vinculado a esta empresa');
     }
 
     const result = await this.connectUserToCompany(userId, companyId, data.cargo);
@@ -238,15 +236,13 @@ export class UserService {
   }
 
   async updatePassword(userId: string, senhaAtual: string, novaSenha: string) {
-
-    const user = await prisma.user.findUnique({ 
-      where: { idUser: userId } 
+    const user = await prisma.user.findUnique({
+      where: { idUser: userId },
     });
 
     if (!user) {
       throw HttpError.NotFound('Usuário não encontrado');
     }
-
 
     const senhaCorreta = await bcrypt.compare(senhaAtual, user.senha);
 
@@ -254,14 +250,13 @@ export class UserService {
       throw HttpError.Unauthorized('Senha atual incorreta');
     }
 
-
     const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
 
     console.log('Nova senha hasheada:', novaSenhaHash);
 
     await prisma.user.update({
       where: { idUser: userId },
-      data: { senha: novaSenhaHash }
+      data: { senha: novaSenhaHash },
     });
 
     logger.info(`Senha atualizada para usuário ${userId}`);
@@ -270,9 +265,8 @@ export class UserService {
   }
 
   async updateUserStatus(userId: string, data: UpdateUserStatusData) {
-
-    const user = await prisma.user.findUnique({ 
-      where: { idUser: userId } 
+    const user = await prisma.user.findUnique({
+      where: { idUser: userId },
     });
 
     if (!user) {
@@ -287,7 +281,7 @@ export class UserService {
       data: {
         ...(data.email !== undefined && { email: data.email }),
         statusUser: data.statusUser,
-      }
+      },
     });
 
     logger.info(`Usuário atualizado (id: ${userId})`);
@@ -300,13 +294,12 @@ export class UserService {
   }
 
   async deleteUser(userId: string) {
-
     const existingUser = await prisma.user.findUnique({
       where: { idUser: userId },
       include: {
         authCompanies: true,
-        logs: true
-      }
+        logs: true,
+      },
     });
 
     if (!existingUser) {
@@ -317,12 +310,11 @@ export class UserService {
       throw HttpError.BadRequest('Usuário já foi deletado');
     }
 
-
     const updatedUser = await prisma.user.update({
       where: { idUser: userId },
       data: {
         deletedAt: new Date(),
-        statusUser: false
+        statusUser: false,
       },
     });
 
@@ -331,25 +323,23 @@ export class UserService {
     return {
       idUser: updatedUser.idUser,
       email: updatedUser.email,
-      deletedAt: updatedUser.deletedAt
+      deletedAt: updatedUser.deletedAt,
     };
   }
 
-
   async isEmailAvailable(email: string, excludeUserId?: string) {
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (!existingUser) {
-      return true; 
+      return true;
     }
 
-   
     if (excludeUserId && existingUser.idUser === excludeUserId) {
-      return true; 
+      return true;
     }
 
-    return false; 
+    return false;
   }
 }

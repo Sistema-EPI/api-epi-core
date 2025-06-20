@@ -11,80 +11,76 @@ interface AuthRequest extends Request {
   userRole?: any;
 }
 
-
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const apiKey = req.headers['x-api-token'] as string;
     const authHeader = req.headers['authorization'] as string;
-    
+
     if (!apiKey || !authHeader) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Headers de autenticação obrigatórios',
-        message: 'x-api-token e Authorization são obrigatórios'
+        message: 'x-api-token e Authorization são obrigatórios',
       });
       return;
     }
-    
+
     const token = authHeader.split(' ')[1];
     if (!token) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Token inválido',
-        message: 'Formato do token deve ser: Bearer <token>'
+        message: 'Formato do token deve ser: Bearer <token>',
       });
       return;
     }
-    
 
     const company = await validateApiKey(apiKey);
     if (!company) {
-      res.status(403).json({ 
+      res.status(403).json({
         error: 'API Key inválida',
-        message: 'API Key não autorizada para este tenant'
-      });
-      return;
-    }
-    
- 
-    const decoded = jwtVerifyToken(token);
-    const user = await getUserById(decoded.userId);
-    
-    if (!user || !user.statusUser) {
-      res.status(401).json({ 
-        error: 'Token inválido',
-        message: 'Usuário inválido ou inativo'
+        message: 'API Key não autorizada para este tenant',
       });
       return;
     }
 
-  
+    const decoded = jwtVerifyToken(token);
+    const user = await getUserById(decoded.userId);
+
+    if (!user || !user.statusUser) {
+      res.status(401).json({
+        error: 'Token inválido',
+        message: 'Usuário inválido ou inativo',
+      });
+      return;
+    }
+
     const authCompany = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
           idUser: user.idUser,
-          idEmpresa: company.idEmpresa
-        }
+          idEmpresa: company.idEmpresa,
+        },
       },
       include: {
-        role: true
-      }
+        role: true,
+      },
     });
 
     if (!authCompany) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Token inválido',
-        message: 'Usuário não autorizado para esta empresa'
+        message: 'Usuário não autorizado para esta empresa',
       });
       return;
     }
-    
+
     req.user = user;
     req.company = company;
     req.userRole = authCompany.role;
     next();
   } catch (error) {
-    res.status(401).json({ 
+    res.status(401).json({
       error: 'Token inválido',
-      message: 'Token expirado ou inválido'
+      message: 'Token expirado ou inválido',
     });
   }
 };
@@ -93,10 +89,10 @@ const validateApiKey = async (apiKey: string) => {
   const company = await prisma.company.findFirst({
     where: {
       apiKey,
-      statusEmpresa: true
-    }
+      statusEmpresa: true,
+    },
   });
-  
+
   return company;
 };
 
@@ -104,54 +100,51 @@ const getUserById = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: {
       idUser: userId,
-      deletedAt: null
-    }
+      deletedAt: null,
+    },
   });
-  
+
   return user;
 };
-
 
 export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const apiKey = req.headers['x-api-token'] as string;
     const authHeader = req.headers['authorization'] as string;
-    
+
     if (!apiKey || !authHeader) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Headers de autenticação obrigatórios',
-        message: 'x-api-token e Authorization são obrigatórios'
+        message: 'x-api-token e Authorization são obrigatórios',
       });
       return;
     }
-    
+
     const token = authHeader.split(' ')[1];
     if (!token) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Token inválido',
-        message: 'Formato do token deve ser: Bearer <token>'
+        message: 'Formato do token deve ser: Bearer <token>',
       });
       return;
     }
-    
-    
+
     const company = await validateApiKey(apiKey);
     if (!company) {
-      res.status(403).json({ 
+      res.status(403).json({
         error: 'API Key inválida',
-        message: 'API Key não autorizada para este tenant'
+        message: 'API Key não autorizada para este tenant',
       });
       return;
     }
-    
- 
+
     const decoded = jwtVerifyToken(token);
     const user = await getUserById(decoded.userId);
-    
+
     if (!user || !user.statusUser) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Token inválido',
-        message: 'Usuário inválido ou inativo'
+        message: 'Usuário inválido ou inativo',
       });
       return;
     }
@@ -160,61 +153,58 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       where: {
         idUser_idEmpresa: {
           idUser: user.idUser,
-          idEmpresa: company.idEmpresa
-        }
+          idEmpresa: company.idEmpresa,
+        },
       },
       include: {
-        role: true
-      }
+        role: true,
+      },
     });
 
     if (!authCompany) {
-      res.status(401).json({ 
+      res.status(401).json({
         error: 'Token inválido',
-        message: 'Usuário não autorizado para esta empresa'
+        message: 'Usuário não autorizado para esta empresa',
       });
       return;
     }
-    
+
     req.user = user;
     req.company = company;
     req.userRole = authCompany.role;
     next();
   } catch (error) {
-    res.status(401).json({ 
+    res.status(401).json({
       error: 'Token inválido',
-      message: 'Token expirado ou inválido'
+      message: 'Token expirado ou inválido',
     });
   }
 };
-
 
 export const verifyPermission = (requiredActions: string[]) => {
   return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userRole = req.userRole;
-      
+
       if (!userRole) {
         res.status(403).json({
           error: 'Acesso negado',
-          message: 'Cargo do usuário não encontrado'
+          message: 'Cargo do usuário não encontrado',
         });
         return;
       }
 
       const permissions = userRole.permissao as any;
-      
 
       for (const action of requiredActions) {
         const [resource, operation] = action.split(':');
-        
-    
+
         switch (operation) {
           case 'create':
             if (!permissions.create) {
               res.status(403).json({
                 error: 'Acesso negado',
-                message: `Usuário não tem permissão para criar ${resource}`
+                message: `Usuário não tem permissão para criar ${resource}`,
               });
               return;
             }
@@ -223,7 +213,7 @@ export const verifyPermission = (requiredActions: string[]) => {
             if (!permissions.read) {
               res.status(403).json({
                 error: 'Acesso negado',
-                message: `Usuário não tem permissão para visualizar ${resource}`
+                message: `Usuário não tem permissão para visualizar ${resource}`,
               });
               return;
             }
@@ -232,7 +222,7 @@ export const verifyPermission = (requiredActions: string[]) => {
             if (!permissions.update) {
               res.status(403).json({
                 error: 'Acesso negado',
-                message: `Usuário não tem permissão para atualizar ${resource}`
+                message: `Usuário não tem permissão para atualizar ${resource}`,
               });
               return;
             }
@@ -241,7 +231,7 @@ export const verifyPermission = (requiredActions: string[]) => {
             if (!permissions.delete) {
               res.status(403).json({
                 error: 'Acesso negado',
-                message: `Usuário não tem permissão para excluir ${resource}`
+                message: `Usuário não tem permissão para excluir ${resource}`,
               });
               return;
             }
@@ -249,17 +239,17 @@ export const verifyPermission = (requiredActions: string[]) => {
           default:
             res.status(403).json({
               error: 'Acesso negado',
-              message: `Operação ${operation} não reconhecida`
+              message: `Operação ${operation} não reconhecida`,
             });
             return;
         }
       }
-      
+
       next();
     } catch (error) {
       res.status(500).json({
         error: 'Erro interno',
-        message: 'Erro ao verificar permissões'
+        message: 'Erro ao verificar permissões',
       });
     }
   };

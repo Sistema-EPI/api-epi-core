@@ -68,7 +68,7 @@ epi.get(
   verifyToken,
   verifyPermission(['epi:read']),
   RequestHandler(EpiController.getAllEpis),
-)
+);
 
 /**
  * @swagger
@@ -122,7 +122,7 @@ epi.get(
   verifyToken,
   verifyPermission(['epi:read']),
   RequestHandler(EpiController.getEpiById),
-)
+);
 
 /**
  * @swagger
@@ -211,7 +211,7 @@ epi.get(
   verifyToken,
   verifyPermission(['epi:read']),
   RequestHandler(EpiController.getEpisByEmpresa),
-)
+);
 
 /**
  * @swagger
@@ -437,7 +437,7 @@ epi.put(
   verifyToken,
   verifyPermission(['epi:update']),
   RequestHandler(EpiController.updateEpi),
-)
+);
 
 /**
  * @swagger
@@ -491,6 +491,6 @@ epi.delete(
   verifyToken,
   verifyPermission(['epi:delete']),
   RequestHandler(EpiController.deleteEpi),
-)
+);
 
 export default epi;

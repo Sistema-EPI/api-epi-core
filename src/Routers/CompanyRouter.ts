@@ -49,7 +49,7 @@ company.get(
   verifyToken,
   verifyPermission(['company:read']),
   RequestHandler(CompanyController.getAllCompanies),
-)
+);
 
 /**
  * @swagger
@@ -86,7 +86,7 @@ company.get(
   verifyToken,
   verifyPermission(['company:read']),
   RequestHandler(CompanyController.getCompanyById),
-)
+);
 
 /**
  * @swagger
@@ -174,7 +174,7 @@ company.put(
   verifyToken,
   verifyPermission(['company:update']),
   RequestHandler(CompanyController.updateCompany),
-)
+);
 
 /**
  * @swagger
@@ -202,7 +202,7 @@ company.delete(
   verifyToken,
   verifyPermission(['company:delete']),
   RequestHandler(CompanyController.deleteCompany),
-)
+);
 
 /**
  * @swagger
@@ -264,7 +264,7 @@ company.put(
   verifyToken,
   verifyPermission(['company:update']),
   RequestHandler(CompanyController.updateCompanyStatus),
-)
+);
 
 /**
  * @swagger
@@ -294,10 +294,6 @@ company.put(
  *       403:
  *         description: API Key inválida
  */
-company.get(
-  '/info',
-  authMiddleware,
-  RequestHandler(LoginController.getCompanyInfo),
-);
+company.get('/info', authMiddleware, RequestHandler(LoginController.getCompanyInfo));
 
 export default company;

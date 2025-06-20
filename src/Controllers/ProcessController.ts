@@ -1,18 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { ProcessService } from '../Services/processService';
-import { 
-  CreateProcessSchema, 
-  UpdateProcessSchema, 
+import {
+  CreateProcessSchema,
+  UpdateProcessSchema,
   GetProcessByIdSchema,
   GetProcessesByEmpresaSchema,
   GetProcessesByColaboradorSchema,
   ConfirmDeliverySchema,
   RegisterReturnSchema,
-  ListProcessesSchema
+  ListProcessesSchema,
 } from '../Schemas/ProcessSchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
-
 
 interface AuthRequest extends Request {
   company?: {
@@ -30,10 +29,10 @@ export class ProcessController {
       const validatedData = CreateProcessSchema.parse(req.body);
 
       const processo = await ProcessService.createProcess(validatedData, idEmpresa);
-      
+
       const response = HttpResponse.Created({
         message: 'Processo criado com sucesso',
-        data: processo
+        data: processo,
       });
 
       res.status(201).json(response);
@@ -47,16 +46,15 @@ export class ProcessController {
       const { id } = GetProcessByIdSchema.parse(req.params);
       const { idEmpresa } = req.company!;
 
-  
       if (req.userRole !== 'admin') {
         await ProcessService.validateProcessOwnership(id, idEmpresa);
       }
 
       const processo = await ProcessService.getProcessById(id);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processo encontrado',
-        data: processo
+        data: processo,
       });
 
       res.json(response);
@@ -72,10 +70,10 @@ export class ProcessController {
       const validatedData = UpdateProcessSchema.parse(req.body);
 
       const processo = await ProcessService.updateProcess(id, validatedData, idEmpresa);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processo atualizado com sucesso',
-        data: processo
+        data: processo,
       });
 
       res.json(response);
@@ -90,10 +88,10 @@ export class ProcessController {
       const { idEmpresa } = req.company!;
 
       const result = await ProcessService.deleteProcess(id, idEmpresa);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processo deletado com sucesso',
-        data: result
+        data: result,
       });
 
       res.json(response);
@@ -108,17 +106,16 @@ export class ProcessController {
       const queryParams = { ...req.query, id_empresa };
       const validatedParams = GetProcessesByEmpresaSchema.parse(queryParams);
 
-
       if (req.userRole !== 'admin' && req.company!.idEmpresa !== id_empresa) {
         throw new HttpError('Acesso negado', 403);
       }
 
       const result = await ProcessService.getProcessesByEmpresa(validatedParams);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
         data: result.processos,
-        pagination: result.pagination
+        pagination: result.pagination,
       });
 
       res.json(response);
@@ -127,7 +124,6 @@ export class ProcessController {
     }
   }
 
-
   static async getProcessesByColaborador(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id_colaborador } = req.params;
@@ -135,11 +131,11 @@ export class ProcessController {
       const validatedParams = GetProcessesByColaboradorSchema.parse(queryParams);
 
       const result = await ProcessService.getProcessesByColaborador(validatedParams);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
         data: result.processos,
-        pagination: result.pagination
+        pagination: result.pagination,
       });
 
       res.json(response);
@@ -153,16 +149,15 @@ export class ProcessController {
       const { id } = req.params;
       const validatedData = ConfirmDeliverySchema.parse({ id, ...req.body });
 
- 
       const processo = await ProcessService.confirmDelivery(
-        validatedData.id, 
+        validatedData.id,
         validatedData.dataEntrega,
-        validatedData.pdfUrl
+        validatedData.pdfUrl,
       );
-      
+
       const response = HttpResponse.Ok({
         message: 'Entrega confirmada com sucesso',
-        data: processo
+        data: processo,
       });
 
       res.json(response);
@@ -170,7 +165,6 @@ export class ProcessController {
       next(error);
     }
   }
-
 
   static async registerReturn(req: AuthRequest, res: Response, next: NextFunction) {
     try {
@@ -182,12 +176,12 @@ export class ProcessController {
         validatedData.id,
         validatedData.dataDevolucao,
         validatedData.observacoes,
-        idEmpresa
+        idEmpresa,
       );
-      
+
       const response = HttpResponse.Ok({
         message: 'Devolução registrada com sucesso',
-        data: processo
+        data: processo,
       });
 
       res.json(response);
@@ -205,11 +199,11 @@ export class ProcessController {
 
       const validatedParams = ListProcessesSchema.parse(req.query);
       const result = await ProcessService.listProcesses(validatedParams);
-      
+
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
         data: result.processos,
-        pagination: result.pagination
+        pagination: result.pagination,
       });
 
       res.json(response);
