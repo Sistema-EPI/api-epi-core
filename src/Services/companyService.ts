@@ -84,7 +84,7 @@ export class CompanyService {
             idColaborador: true,
             nomeColaborador: true,
             cpf: true,
-            statusColaborador: true
+            status: true
           }
         },
         epis: {
@@ -206,7 +206,7 @@ export class CompanyService {
       data: dataToUpdate,
     });
 
-    // Log das mudanças
+
     const changes: Record<string, { before: any; after: any }> = {};
     for (const key in dataToUpdate) {
       if ((existingCompany as any)[key] !== (updatedCompany as any)[key]) {

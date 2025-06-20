@@ -32,13 +32,13 @@ model Company {
 }
 
 model Collaborator {
-  idColaborador     String   @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
-  idEmpresa         String   @map("id_empresa") @db.VarChar(36)
-  nomeColaborador   String   @map("nome_colaborador") @db.VarChar(255)
-  cpf               String   @unique @map("cpf") @db.VarChar(11)
-  statusColaborador Boolean  @default(true) @map("status_colaborador")
-  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt         DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  idColaborador     String    @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
+  idEmpresa         String    @map("id_empresa") @db.VarChar(36)
+  nomeColaborador   String    @map("nome_colaborador") @db.VarChar(255)
+  cpf               String    @unique @map("cpf") @db.VarChar(11)
+  status            Boolean   @default(true) @map("status")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
   empresa    Company     @relation("EmpresaColaboradores", fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   processos  Process[]

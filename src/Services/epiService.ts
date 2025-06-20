@@ -5,11 +5,6 @@ const prisma = new PrismaClient();
 const companyService = new CompanyService();
 
 export class EpiService {
-    /**
-     * Busca um EPI pelo ID (apenas ativos)
-     * @param id - UUID do EPI
-     * @returns EPI encontrado ou null
-     */
     static async getEpiById(id: string) {
         return await prisma.epi.findUnique({
             where: { 
@@ -28,13 +23,6 @@ export class EpiService {
         });
     }
 
-    /**
-     * Lista todos os EPIs de uma empresa específica (apenas ativos)
-     * @param idEmpresa - UUID da empresa
-     * @param page - Número da página (opcional)
-     * @param limit - Limite de registros por página (opcional)
-     * @returns Lista de EPIs da empresa com metadados de paginação
-     */
     static async getEpisByEmpresa(idEmpresa: string, page?: number, limit?: number) {
         const skip = page && limit ? (page - 1) * limit : undefined;
         const take = limit;
@@ -82,13 +70,7 @@ export class EpiService {
         };
     }
 
-    /**
-     * Lista todos os EPIs com paginação opcional (apenas ativos)
-     * @param page - Número da página (opcional)
-     * @param limit - Limite de registros por página (opcional)
-     * @param idEmpresa - UUID da empresa para filtrar (opcional)
-     * @returns Lista de EPIs com metadados de paginação
-     */
+
     static async getAllEpis(page?: number, limit?: number, idEmpresa?: string) {
         const skip = page && limit ? (page - 1) * limit : undefined;
         const take = limit;
@@ -135,11 +117,6 @@ export class EpiService {
         };
     }
 
-    /**
-     * Cria um novo EPI ou reativa um EPI existente com o mesmo CA
-     * @param epiData - Dados do EPI a ser criado
-     * @returns EPI criado ou reativado
-     */
     static async createEpi(epiData: {
         ca: string;
         idEmpresa: string;
@@ -207,12 +184,6 @@ export class EpiService {
         });
     }
 
-    /**
-     * Atualiza um EPI existente (apenas ativos)
-     * @param id - UUID do EPI
-     * @param epiData - Dados do EPI a serem atualizados
-     * @returns EPI atualizado ou null se não encontrado
-     */
     static async updateEpi(id: string, epiData: {
         ca?: string;
         idEmpresa?: string;
@@ -263,11 +234,6 @@ export class EpiService {
         });
     }
 
-    /**
-     * Soft delete - desativa um EPI ao invés de deletar
-     * @param id - UUID do EPI
-     * @returns EPI desativado ou null se não encontrado
-     */
     static async deleteEpi(id: string) {
         const existingEpi = await prisma.epi.findUnique({
             where: { idEpi: id },
@@ -311,11 +277,6 @@ export class EpiService {
         });
     }
 
-    /**
-     * Verifica se um EPI existe pelo ID (apenas ativos)
-     * @param id - UUID do EPI
-     * @returns true se existe e está ativo, false caso contrário
-     */
     static async epiExists(id: string): Promise<boolean> {
         const epi = await prisma.epi.findUnique({
             where: { idEpi: id },
@@ -324,13 +285,6 @@ export class EpiService {
         return !!(epi && epi.status);
     }
 
-    /**
-     * Verifica se um CA já está em uso por outra empresa (apenas EPIs ativos)
-     * @param ca - Número do CA
-     * @param idEmpresa - UUID da empresa
-     * @param excludeEpiId - UUID do EPI a ser excluído da verificação (para updates)
-     * @returns true se CA está disponível, false se já está em uso
-     */
     static async isCaAvailable(ca: string, idEmpresa: string, excludeEpiId?: string): Promise<boolean> {
         const where: any = {
             ca,
@@ -350,11 +304,6 @@ export class EpiService {
         return !existingEpi;
     }
 
-    /**
-     * Reativa um EPI inativo
-     * @param id - UUID do EPI
-     * @returns EPI reativado ou null se não encontrado
-     */
     static async reactivateEpi(id: string) {
         const existingEpi = await prisma.epi.findUnique({
             where: { idEpi: id },

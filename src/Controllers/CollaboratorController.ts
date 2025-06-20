@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateCollaboratorSchema, DeleteCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema, UpdateCollaboratorSchema } from "../Schemas/CollaboratorSchema";
+import { CreateCollaboratorSchema, DeleteCollaboratorSchema, GetCollaboratorByIdSchema, GetCollaboratorSchema, GetCollaboratorsByCompanySchema, UpdateCollaboratorSchema } from "../Schemas/CollaboratorSchema";
 import HttpResponse from '../Helpers/HttpResponse';
 import { CollaboratorService } from '../Services/collaboratorService';
 import { formatCollaboratorForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
@@ -100,13 +100,39 @@ export async function deleteCollaborator(req: Request, res: Response, next: Next
         const result = await collaboratorService.deleteCollaborator(collaboratorId);
 
         const response = HttpResponse.Ok({
-            message: 'Colaborador deletado com sucesso',
+            message: 'Colaborador removido com sucesso',
             data: result,
         });
 
         return res.status(response.statusCode).json(response.payload);
     } catch (err) {
         console.error('Error in deleteCollaborator:', err);
+        next(err);
+    }
+}
+
+export async function getCollaboratorsByCompany(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { params, query } = GetCollaboratorsByCompanySchema.parse(req);
+        const companyId = params.companyId;
+
+        const result = await collaboratorService.getCollaboratorsByCompany(companyId, query);
+
+        const response = HttpResponse.Ok({
+            message: `Colaboradores da empresa ${result.company.nomeFantasia} recuperados com sucesso`,
+            pagination: {
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+                totalPages: result.totalPages,
+            },
+            data: formatListForFrontend(result.data, formatCollaboratorForFrontend),
+            company: result.company
+        });
+
+        return res.status(response.statusCode).json(response.payload);
+    } catch (err) {
+        console.error('Error in getCollaboratorsByCompany:', err);
         next(err);
     }
 }

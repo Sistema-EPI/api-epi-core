@@ -9,13 +9,13 @@ const companyService = new CompanyService();
 interface CreateCollaboratorData {
   nome_colaborador: string;
   cpf: string;
-  status_colaborador: boolean;
+  status: boolean;
 }
 
 interface UpdateCollaboratorData {
   nome_colaborador?: string;
   cpf?: string;
-  status_colaborador?: boolean;
+  status?: boolean;
 }
 
 interface GetCollaboratorsParams {
@@ -29,9 +29,14 @@ export class CollaboratorService {
     const limit = parseInt(params.limit || '10', 10);
     const skip = (page - 1) * limit;
 
+    const where = {
+      status: true 
+    };
+
     const [total, data] = await Promise.all([
-      prisma.collaborator.count(),
+      prisma.collaborator.count({ where }),
       prisma.collaborator.findMany({
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -74,7 +79,10 @@ export class CollaboratorService {
 
   async getCollaboratorById(collaboratorId: string) {
     const existingCollaborator = await prisma.collaborator.findUnique({
-      where: { idColaborador: collaboratorId },
+      where: { 
+        idColaborador: collaboratorId,
+        status: true 
+      },
       include: {
         empresa: {
           select: {
@@ -139,13 +147,59 @@ export class CollaboratorService {
       throw HttpError.NotFound('Empresa não encontrada');
     }
 
- 
-    const existingCpf = await prisma.collaborator.findUnique({
-      where: { cpf: data.cpf }
+    const existingCollaborator = await prisma.collaborator.findFirst({
+      where: {
+        cpf: data.cpf,
+        idEmpresa: companyId
+      }
     });
 
-    if (existingCpf) {
-      throw HttpError.BadRequest('CPF já cadastrado');
+    if (existingCollaborator) {
+      if (existingCollaborator.status === true) {
+
+        throw HttpError.BadRequest('Colaborador com este CPF já está cadastrado e ativo nesta empresa');
+      } else {
+
+        const reactivatedCollaborator = await prisma.collaborator.update({
+          where: { idColaborador: existingCollaborator.idColaborador },
+          data: {
+            status: true,
+            nomeColaborador: data.nome_colaborador,
+            updatedAt: new Date()
+          },
+          include: {
+            empresa: {
+              select: {
+                idEmpresa: true,
+                nomeFantasia: true,
+                statusEmpresa: true
+              }
+            }
+          }
+        });
+
+        logger.info(`Colaborador reativado (id: ${reactivatedCollaborator.idColaborador}) para empresa ${existingCompany.nomeFantasia}`);
+
+        return {
+          id: reactivatedCollaborator.idColaborador,
+          nome: reactivatedCollaborator.nomeColaborador,
+          cpf: reactivatedCollaborator.cpf,
+          status: reactivatedCollaborator.status,
+          empresa: reactivatedCollaborator.empresa.nomeFantasia,
+          reactivated: true 
+        };
+      }
+    }
+
+    const existingCpfOtherCompany = await prisma.collaborator.findFirst({
+      where: { 
+        cpf: data.cpf,
+        idEmpresa: { not: companyId }
+      }
+    });
+
+    if (existingCpfOtherCompany) {
+      throw HttpError.BadRequest('CPF já cadastrado em outra empresa');
     }
 
     const collaborator = await prisma.collaborator.create({
@@ -153,7 +207,7 @@ export class CollaboratorService {
         idEmpresa: companyId,
         nomeColaborador: data.nome_colaborador,
         cpf: data.cpf,
-        statusColaborador: data.status_colaborador,
+        status: data.status,
       },
       include: {
         empresa: {
@@ -172,8 +226,9 @@ export class CollaboratorService {
       id: collaborator.idColaborador,
       nome: collaborator.nomeColaborador,
       cpf: collaborator.cpf,
-      status: collaborator.statusColaborador,
-      empresa: collaborator.empresa.nomeFantasia
+      status: collaborator.status,
+      empresa: collaborator.empresa.nomeFantasia,
+      reactivated: false 
     };
   }
 
@@ -201,7 +256,7 @@ export class CollaboratorService {
     const dataToUpdate = {
       ...(data.nome_colaborador !== undefined && { nomeColaborador: data.nome_colaborador }),
       ...(data.cpf !== undefined && { cpf: data.cpf }),
-      ...(data.status_colaborador !== undefined && { statusColaborador: data.status_colaborador }),
+      ...(data.status !== undefined && { status: data.status }),
     };
 
     const updatedCollaborator = await prisma.collaborator.update({
@@ -230,13 +285,17 @@ export class CollaboratorService {
   }
 
   async deleteCollaborator(collaboratorId: string) {
-
     const existingCollaborator = await prisma.collaborator.findUnique({
-      where: { idColaborador: collaboratorId },
+      where: { 
+        idColaborador: collaboratorId,
+        status: true 
+      },
       include: {
-        processos: true,
-        biometrias: true,
-        logs: true,
+        processos: {
+          where: {
+            statusEntrega: false 
+          }
+        },
         empresa: {
           select: {
             nomeFantasia: true
@@ -251,20 +310,35 @@ export class CollaboratorService {
 
 
     if (existingCollaborator.processos.length > 0) {
-      throw HttpError.BadRequest('Não é possível deletar colaborador com processos vinculados');
+      throw HttpError.BadRequest('Não é possível remover colaborador com processos de entrega pendentes');
     }
 
 
-    await prisma.collaborator.delete({
+    const deletedCollaborator = await prisma.collaborator.update({
       where: { idColaborador: collaboratorId },
+      data: { 
+        status: false,
+        updatedAt: new Date()
+      },
+      select: {
+        idColaborador: true,
+        nomeColaborador: true,
+        status: true,
+        empresa: {
+          select: {
+            nomeFantasia: true
+          }
+        }
+      }
     });
 
     logger.info(`Colaborador ${existingCollaborator.nomeColaborador} removido da empresa ${existingCollaborator.empresa.nomeFantasia} (id: ${collaboratorId})`);
 
     return {
-      id: collaboratorId,
-      nome: existingCollaborator.nomeColaborador,
-      empresa: existingCollaborator.empresa.nomeFantasia
+      idColaborador: deletedCollaborator.idColaborador,
+      nome: deletedCollaborator.nomeColaborador,
+      status: deletedCollaborator.status,
+      empresa: deletedCollaborator.empresa.nomeFantasia
     };
   }
 
@@ -284,5 +358,77 @@ export class CollaboratorService {
     }
 
     return false; 
+  }
+
+  /**
+   * Busca todos os colaboradores de uma empresa específica
+   * @param companyId - UUID da empresa
+   * @param params - Parâmetros de paginação
+   * @returns Lista paginada de colaboradores da empresa
+   */
+  async getCollaboratorsByCompany(companyId: string, params: GetCollaboratorsParams) {
+
+    const existingCompany = await companyService.getCompanyByIdSimple(companyId);
+    if (!existingCompany) {
+      throw HttpError.NotFound('Empresa não encontrada');
+    }
+
+    const page = parseInt(params.page || '1', 10);
+    const limit = parseInt(params.limit || '10', 10);
+    const skip = (page - 1) * limit;
+
+    const where = {
+      idEmpresa: companyId,
+      status: true 
+    };
+
+    const [total, data] = await Promise.all([
+      prisma.collaborator.count({ where }),
+      prisma.collaborator.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          empresa: {
+            select: {
+              idEmpresa: true,
+              nomeFantasia: true,
+              razaoSocial: true,
+              statusEmpresa: true
+            }
+          },
+          _count: {
+            select: {
+              processos: true,
+              biometrias: true,
+              logs: true
+            }
+          }
+        }
+      }),
+    ]);
+
+    const formattedData = data.map(collaborator => ({
+      ...collaborator,
+      empresa: collaborator.empresa,
+      totalProcessos: collaborator._count.processos,
+      totalBiometrias: collaborator._count.biometrias,
+      totalLogs: collaborator._count.logs,
+      _count: undefined
+    }));
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: formattedData,
+      company: {
+        idEmpresa: existingCompany.idEmpresa,
+        nomeFantasia: existingCompany.nomeFantasia,
+        razaoSocial: existingCompany.razaoSocial
+      }
+    };
   }
 }

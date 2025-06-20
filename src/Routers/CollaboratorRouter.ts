@@ -260,5 +260,79 @@ collaborator.delete(
     RequestHandler(CollaboratorController.deleteCollaborator),
 )
 
+/**
+ * @swagger
+ * /v1/collaborator/company/{companyId}:
+ *   get:
+ *     summary: Buscar colaboradores por empresa
+ *     description: Retorna uma lista paginada de colaboradores de uma empresa específica
+ *     tags: [Collaborator]
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID único da empresa
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Número da página (opcional)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *         description: Limite de registros por página (opcional)
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Filtro por status ativo/inativo (opcional)
+ *     responses:
+ *       200:
+ *         description: Lista de colaboradores da empresa retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Collaborator'
+ *                     company:
+ *                       type: object
+ *                       properties:
+ *                         idEmpresa:
+ *                           type: string
+ *                         nomeFantasia:
+ *                           type: string
+ *                         razaoSocial:
+ *                           type: string
+ *       404:
+ *         description: Empresa não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+collaborator.get(
+    '/company/:companyId',
+    verifyToken,
+    verifyPermission(['collaborator:read']),
+    RequestHandler(CollaboratorController.getCollaboratorsByCompany),
+);
+
 export default collaborator;
 

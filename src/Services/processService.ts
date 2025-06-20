@@ -12,16 +12,16 @@ import HttpError from '../Helpers/HttpError';
 const prisma = new PrismaClient();
 
 export class ProcessService {
-  // Criar novo processo
+
   static async createProcess(data: CreateProcessType, idEmpresa: string) {
     const { idColaborador, dataAgendada, epis, observacoes } = data;
 
-    // Verificar se o colaborador existe e pertence à empresa
+
     const colaborador = await prisma.collaborator.findFirst({
       where: {
         idColaborador,
         idEmpresa,
-        statusColaborador: true
+        status: true
       }
     });
 
@@ -29,7 +29,6 @@ export class ProcessService {
       throw new HttpError('Colaborador não encontrado ou inativo', 404);
     }
 
-    // Verificar se todos os EPIs existem e têm estoque disponível
     const episData = await prisma.epi.findMany({
       where: {
         idEpi: { in: epis.map(e => e.idEpi) },
@@ -41,7 +40,7 @@ export class ProcessService {
       throw new HttpError('Um ou mais EPIs não foram encontrados', 404);
     }
 
-    // Verificar estoque
+
     for (const epiRequest of epis) {
       const epiDB = episData.find(e => e.idEpi === epiRequest.idEpi);
       if (!epiDB) continue;
@@ -51,9 +50,9 @@ export class ProcessService {
       }
     }
 
-    // Criar processo e atualizar estoque em transação
+
     const processo = await prisma.$transaction(async (tx) => {
-      // Criar processo
+
       const novoProcesso = await tx.process.create({
         data: {
           idEmpresa,
@@ -63,7 +62,6 @@ export class ProcessService {
         }
       });
 
-      // Criar relações process_epi
       for (const epiRequest of epis) {
         await tx.processEpi.create({
           data: {
@@ -73,7 +71,6 @@ export class ProcessService {
           }
         });
 
-        // Debitar estoque
         await tx.epi.update({
           where: { idEpi: epiRequest.idEpi },
           data: {
@@ -87,11 +84,11 @@ export class ProcessService {
       return novoProcesso;
     });
 
-    // Buscar processo completo com relacionamentos
+
     return await this.getProcessById(processo.idProcesso);
   }
 
-  // Buscar processo por ID
+
   static async getProcessById(idProcesso: string) {
     const processo = await prisma.process.findUnique({
       where: { idProcesso },
@@ -132,9 +129,9 @@ export class ProcessService {
     return processo;
   }
 
-  // Atualizar processo
+
   static async updateProcess(idProcesso: string, data: UpdateProcessType, idEmpresa: string) {
-    // Verificar se o processo existe e pertence à empresa
+
     const processoExistente = await prisma.process.findFirst({
       where: {
         idProcesso,
@@ -151,10 +148,8 @@ export class ProcessService {
 
     const { epis, ...dadosProcesso } = data;
 
-    // Se está atualizando EPIs, fazer validações de estoque
     let novaListaEpis: ProcessEpiType[] | undefined;
     if (epis) {
-      // Verificar se todos os EPIs existem
       const episData = await prisma.epi.findMany({
         where: {
           idEpi: { in: epis.map(e => e.idEpi) },
@@ -166,10 +161,10 @@ export class ProcessService {
         throw new HttpError('Um ou mais EPIs não foram encontrados', 404);
       }
 
-      // Calcular diferenças de estoque
+
       const episAtuais = processoExistente.processEpis;
       
-      // Primeiro, devolver estoque dos EPIs atuais
+
       for (const epiAtual of episAtuais) {
         await prisma.epi.update({
           where: { idEpi: epiAtual.idEpi },
@@ -181,7 +176,6 @@ export class ProcessService {
         });
       }
 
-      // Verificar estoque para novos EPIs
       const episAtualizados = await prisma.epi.findMany({
         where: {
           idEpi: { in: epis.map(e => e.idEpi) }
@@ -200,22 +194,17 @@ export class ProcessService {
       novaListaEpis = epis;
     }
 
-    // Atualizar em transação
     const processoAtualizado = await prisma.$transaction(async (tx) => {
-      // Atualizar dados do processo
       const processo = await tx.process.update({
         where: { idProcesso },
         data: dadosProcesso
       });
 
-      // Se está atualizando EPIs
       if (novaListaEpis) {
-        // Remover EPIs atuais
         await tx.processEpi.deleteMany({
           where: { idProcesso }
         });
 
-        // Adicionar novos EPIs e debitar estoque
         for (const epiRequest of novaListaEpis) {
           await tx.processEpi.create({
             data: {
@@ -239,13 +228,10 @@ export class ProcessService {
       return processo;
     });
 
-    // Retornar processo completo
     return await this.getProcessById(idProcesso);
   }
 
-  // Deletar processo
   static async deleteProcess(idProcesso: string, idEmpresa: string) {
-    // Verificar se o processo existe e pertence à empresa
     const processo = await prisma.process.findFirst({
       where: {
         idProcesso,
@@ -260,9 +246,7 @@ export class ProcessService {
       throw new HttpError('Processo não encontrado', 404);
     }
 
-    // Deletar e devolver estoque em transação
     await prisma.$transaction(async (tx) => {
-      // Devolver estoque dos EPIs
       for (const processEpi of processo.processEpis) {
         await tx.epi.update({
           where: { idEpi: processEpi.idEpi },
@@ -274,7 +258,6 @@ export class ProcessService {
         });
       }
 
-      // Deletar processo (CASCADE vai deletar processEpis automaticamente)
       await tx.process.delete({
         where: { idProcesso }
       });
@@ -283,13 +266,13 @@ export class ProcessService {
     return { message: 'Processo deletado com sucesso' };
   }
 
-  // Listar processos por empresa
+
   static async getProcessesByEmpresa(params: GetProcessesByEmpresaType) {
     const { id_empresa, page, limit, status, dataInicio, dataFim } = params;
 
     const skip = (page - 1) * limit;
 
-    // Construir filtros
+
     const where: any = {
       idEmpresa: id_empresa
     };
@@ -345,7 +328,6 @@ export class ProcessService {
     };
   }
 
-  // Listar processos por colaborador
   static async getProcessesByColaborador(params: GetProcessesByColaboradorType) {
     const { id_colaborador, page, limit, status } = params;
 
@@ -399,7 +381,6 @@ export class ProcessService {
     };
   }
 
-  // Confirmar entrega (para biometria)
   static async confirmDelivery(idProcesso: string, dataEntrega?: Date, pdfUrl?: string, idEmpresa?: string) {
     const where: any = { idProcesso };
     if (idEmpresa) {
@@ -428,7 +409,6 @@ export class ProcessService {
     return await this.getProcessById(idProcesso);
   }
 
-  // Registrar devolução
   static async registerReturn(idProcesso: string, dataDevolucao: Date, observacoes?: string, idEmpresa?: string) {
     const where: any = { idProcesso };
     if (idEmpresa) {
@@ -454,9 +434,7 @@ export class ProcessService {
       throw new HttpError('Processo já foi devolvido', 400);
     }
 
-    // Registrar devolução e devolver estoque
     await prisma.$transaction(async (tx) => {
-      // Atualizar processo
       await tx.process.update({
         where: { idProcesso },
         data: {
@@ -465,7 +443,6 @@ export class ProcessService {
         }
       });
 
-      // Devolver estoque
       for (const processEpi of processo.processEpis) {
         await tx.epi.update({
           where: { idEpi: processEpi.idEpi },
@@ -481,7 +458,7 @@ export class ProcessService {
     return await this.getProcessById(idProcesso);
   }
 
-  // Listar todos os processos (admin)
+
   static async listProcesses(params: ListProcessesType) {
     const { page, limit, search, status, dataInicio, dataFim } = params;
 
@@ -573,7 +550,6 @@ export class ProcessService {
     };
   }
 
-  // Validar se processo existe e pertence à empresa
   static async validateProcessOwnership(idProcesso: string, idEmpresa: string) {
     const processo = await prisma.process.findFirst({
       where: {

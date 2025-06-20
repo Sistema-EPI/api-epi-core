@@ -319,10 +319,9 @@ const options: swaggerJSDoc.Options = {
               pattern: '^[0-9]{11}$',
               description: 'CPF do colaborador (11 dígitos)',
             },
-            statusColaborador: {
-              type: 'string',
-              enum: ['Ativo', 'Inativo', 'Afastado', 'Férias'],
-              description: 'Status atual do colaborador',
+            status: {
+              type: 'boolean',
+              description: 'Status do colaborador (true=ativo, false=inativo)',
             },
             createdAt: {
               type: 'string',
@@ -341,7 +340,7 @@ const options: swaggerJSDoc.Options = {
         },
         CreateCollaboratorRequest: {
           type: 'object',
-          required: ['nome_colaborador', 'cpf', 'status_colaborador'],
+          required: ['nome_colaborador', 'cpf', 'status'],
           properties: {
             nome_colaborador: {
               type: 'string',
@@ -357,11 +356,10 @@ const options: swaggerJSDoc.Options = {
               description: 'CPF do colaborador (exatamente 11 dígitos)',
               example: '12345678901',
             },
-            status_colaborador: {
-              type: 'string',
-              enum: ['ATIVO', 'INATIVO'],
-              description: 'Status inicial do colaborador',
-              example: 'ATIVO',
+            status: {
+              type: 'boolean',
+              description: 'Status inicial do colaborador (true=ativo, false=inativo)',
+              example: true,
             },
           },
         },
@@ -380,10 +378,9 @@ const options: swaggerJSDoc.Options = {
               maxLength: 11,
               description: 'CPF do colaborador (exatamente 11 dígitos)',
             },
-            status_colaborador: {
-              type: 'string',
-              enum: ['ATIVO', 'INATIVO'],
-              description: 'Status do colaborador',
+            status: {
+              type: 'boolean',
+              description: 'Status do colaborador (true=ativo, false=inativo)',
             },
           },
         },
@@ -594,6 +591,44 @@ const options: swaggerJSDoc.Options = {
               $ref: '#/components/schemas/Company',
             },
           },
+        },
+        CreateCollaboratorResponse: {
+          type: 'object',
+          description: 'Resposta da criação ou reativação de colaborador',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID único do colaborador',
+              example: 'cb4a3087-114f-49be-abcf-ebed5f1f706c',
+            },
+            nome: {
+              type: 'string',
+              description: 'Nome completo do colaborador',
+              example: 'João da Silva',
+            },
+            cpf: {
+              type: 'string',
+              description: 'CPF do colaborador',
+              example: '12345678901',
+            },
+            status: {
+              type: 'boolean',
+              description: 'Status atual do colaborador',
+              example: true,
+            },
+            empresa: {
+              type: 'string',
+              description: 'Nome fantasia da empresa',
+              example: 'JG Tech',
+            },
+            reactivated: {
+              type: 'boolean',
+              description: 'Indica se o colaborador foi reativado (true) ou criado novo (false)',
+              example: false,
+            },
+          },
+          required: ['id', 'nome', 'cpf', 'status', 'empresa', 'reactivated'],
         },
       },
       securitySchemes: {
