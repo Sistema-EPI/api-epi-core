@@ -129,6 +129,13 @@ const options: swaggerJSDoc.Options = {
               description: 'Data de compra do EPI',
               nullable: true,
             },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI',
+              nullable: true,
+            },
             createdAt: {
               type: 'string',
               format: 'date-time',
@@ -197,6 +204,13 @@ const options: swaggerJSDoc.Options = {
               description: 'Data de compra do EPI (opcional)',
               example: '2025-01-01',
             },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI (opcional)',
+              example: 22.8,
+            },
           },
         },
         UpdateEpiRequest: {
@@ -236,6 +250,12 @@ const options: swaggerJSDoc.Options = {
               type: 'string',
               format: 'date',
               description: 'Data de compra do EPI',
+            },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI',
             },
           },
         },

@@ -121,6 +121,7 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
       quantidade: body.quantidade,
       quantidadeMinima: body.quantidade_minima,
       dataCompra: parseDate(body.data_compra),
+      preco: body.preco,
       vidaUtil: body.vida_util,
     };
 
@@ -175,6 +176,7 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
       ...(body.data_compra !== undefined && {
         dataCompra: parseDate(body.data_compra),
       }),
+      ...(body.preco !== undefined && { preco: body.preco }),
       ...(body.vida_util !== undefined && {
         vidaUtil: body.vida_util,
       }),

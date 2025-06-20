@@ -127,6 +127,7 @@ export class EpiService {
     quantidade: number;
     quantidadeMinima: number;
     dataCompra?: Date;
+    preco?: number;
     vidaUtil?: number;
   }) {
     const existingEpi = await prisma.epi.findFirst({
@@ -150,6 +151,7 @@ export class EpiService {
             quantidade: epiData.quantidade,
             quantidadeMinima: epiData.quantidadeMinima,
             dataCompra: epiData.dataCompra,
+            preco: epiData.preco,
             vidaUtil: epiData.vidaUtil,
             updatedAt: new Date(),
           },
@@ -194,6 +196,7 @@ export class EpiService {
       quantidade?: number;
       quantidadeMinima?: number;
       dataCompra?: Date;
+      preco?: number;
       vidaUtil?: number;
     },
   ) {

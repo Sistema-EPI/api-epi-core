@@ -26,6 +26,7 @@ export const CreateEpiSchema = z.object({
     .int()
     .nonnegative('Quantidade mínima deve ser um número não negativo'),
   data_compra: z.string().optional(),
+  preco: z.number().positive('Preço deve ser um número positivo').optional(),
   vida_util: z.number().int().positive('Vida útil deve ser um número positivo'),
 });
 
@@ -42,6 +43,7 @@ export const UpdateEpiSchema = z.object({
     quantidade: z.number().int().nonnegative().optional(),
     quantidade_minima: z.number().int().nonnegative().optional(),
     data_compra: z.string().optional(),
+    preco: z.number().positive('Preço deve ser um número positivo').optional(),
     vida_util: z.number().int().positive('Vida útil deve ser um número positivo').optional(),
   }),
 });

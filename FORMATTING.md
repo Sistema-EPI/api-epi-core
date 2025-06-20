@@ -182,10 +182,3 @@ npm run lint
 2. Corrija erros restantes manualmente
 3. Adicione arquivos corrigidos: `git add .`
 4. Faça commit novamente
-
-## 📚 Documentação Adicional
-
-- [Prettier Documentation](https://prettier.io/docs/en/)
-- [ESLint Documentation](https://eslint.org/docs/)
-- [TypeScript ESLint](https://typescript-eslint.io/)
-- [Husky Documentation](https://typicode.github.io/husky/)
