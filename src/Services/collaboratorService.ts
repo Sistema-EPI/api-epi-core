@@ -380,7 +380,7 @@ export class CollaboratorService {
 
     const where = {
       idEmpresa: companyId,
-      status: true,
+      // status: true,
     };
 
     const [total, data] = await Promise.all([

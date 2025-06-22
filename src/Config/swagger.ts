@@ -358,6 +358,118 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        Biometria: {
+          type: 'object',
+          properties: {
+            idBiometria: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID único da biometria',
+            },
+            idColaborador: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID do colaborador proprietário da biometria',
+            },
+            biometriaPath: {
+              type: 'string',
+              description: 'Caminho do arquivo de biometria',
+              nullable: true,
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Caminho do certificado biométrico',
+              nullable: true,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data de criação',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data de atualização',
+            },
+            colaborador: {
+              $ref: '#/components/schemas/Collaborator',
+            },
+          },
+        },
+        CreateBiometriaRequest: {
+          type: 'object',
+          required: ['idColaborador'],
+          properties: {
+            idColaborador: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID do colaborador',
+              example: 'd6931647-7d5e-46cf-81f7-e784aa6e1a7c',
+            },
+            biometriaPath: {
+              type: 'string',
+              description: 'Caminho do arquivo de biometria',
+              example: '/storage/biometrias/colaborador-123-bio1.dat',
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Caminho do certificado biométrico',
+              example: '/storage/certificados/colaborador-123-cert1.pem',
+            },
+          },
+        },
+        UpdateBiometriaRequest: {
+          type: 'object',
+          properties: {
+            biometriaPath: {
+              type: 'string',
+              description: 'Novo caminho do arquivo de biometria',
+              example: '/storage/biometrias/colaborador-123-bio1-updated.dat',
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Novo caminho do certificado biométrico',
+              example: '/storage/certificados/colaborador-123-cert1-updated.pem',
+            },
+          },
+        },
+        BiometriaVerificationResponse: {
+          type: 'object',
+          properties: {
+            colaborador: {
+              type: 'object',
+              properties: {
+                idColaborador: {
+                  type: 'string',
+                  format: 'uuid',
+                },
+                nomeColaborador: {
+                  type: 'string',
+                },
+                cpf: {
+                  type: 'string',
+                },
+              },
+            },
+            hasBiometria: {
+              type: 'boolean',
+              description: 'Se possui biometria cadastrada',
+            },
+            totalBiometrias: {
+              type: 'number',
+              description: 'Quantidade de biometrias cadastradas',
+            },
+            maxBiometrias: {
+              type: 'number',
+              description: 'Máximo de biometrias permitidas',
+              example: 2,
+            },
+            canAddMore: {
+              type: 'boolean',
+              description: 'Se pode adicionar mais biometrias',
+            },
+          },
+        },
         CreateCollaboratorRequest: {
           type: 'object',
           required: ['nome_colaborador', 'cpf', 'status'],
