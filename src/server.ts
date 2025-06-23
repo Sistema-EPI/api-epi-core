@@ -1,15 +1,22 @@
 import dotenv from 'dotenv';
-// Carrega .env apenas se o arquivo existir (desenvolvimento)
-try {
+import fs from 'fs';
+import path from 'path';
+
+console.log('=== Iniciando aplicação ===');
+
+// Verifica se arquivo .env existe antes de tentar carregá-lo
+const envPath = path.join(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  console.log('📄 Carregando variáveis do arquivo .env...');
   dotenv.config();
-} catch (error) {
-  // Em produção as variáveis vêm do sistema de deploy
-  console.log('📄 Usando variáveis de ambiente do sistema');
+  console.log('✅ Arquivo .env carregado com sucesso');
+} else {
+  console.log('📄 Arquivo .env não encontrado, usando variáveis de ambiente do sistema');
 }
 
 import express from 'express';
 
-console.log('📄 Carregando variáveis de ambiente...');
+console.log('� Verificando variáveis de ambiente disponíveis...');
 console.log('🔍 Variáveis disponíveis:', {
   NODE_ENV: process.env.NODE_ENV,
   ENV: process.env.ENV,
@@ -19,6 +26,7 @@ console.log('🔍 Variáveis disponíveis:', {
   JWT_SECRET: process.env.JWT_SECRET ? 'DEFINIDA' : 'NÃO DEFINIDA',
 });
 
+console.log('📋 Carregando schema de validação...');
 import EnvSchema from './Schemas/EnvSchema';
 console.log('✅ Schema carregado, validando variáveis...');
 export const ENV = EnvSchema.parse(process.env);

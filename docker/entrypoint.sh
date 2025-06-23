@@ -2,17 +2,7 @@
 
 set -e
 
-echo "=== Iniciando aplicação ==="
-
-# Em produção, as variáveis são passadas pelo sistema de deploy
-echo "📄 Verificando variáveis de ambiente..."
-echo "🔍 DEBUG - Variáveis recebidas:"
-echo "  DATABASE_URL: ${DATABASE_URL:0:20}..."
-echo "  NODE_ENV: $NODE_ENV"
-echo "  ENV: $ENV"
-echo "  PORT: $PORT"
-echo "  CORS_ORIGIN: $CORS_ORIGIN"
-
+echo "=== Iniciando aplicação no Docker ==="
 
 # Verifica se DATABASE_URL está definida
 if [ -z "$DATABASE_URL" ]; then
@@ -33,10 +23,10 @@ fi
 if [ "$ENV" == "prod" ]; then
 
     echo "Aplicando migrations..."
-    npx prisma migrate deploy
+    npx prisma migrate deploy || echo "⚠️  Falha nas migrations, mas continuando..."
 
     echo "Executando seed..."
-    npx prisma db seed-prd || true
+    npx prisma db seed-prd || echo "⚠️  Seed falhou, mas continuando..."
 
     echo "Iniciando aplicação..."
     node dist/server.js
