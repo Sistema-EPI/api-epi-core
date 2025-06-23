@@ -12,6 +12,7 @@ import {
 } from '../Schemas/ProcessSchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
+import { formatProcessForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
 
 interface AuthRequest extends Request {
   company?: {
@@ -32,7 +33,7 @@ export class ProcessController {
 
       const response = HttpResponse.Created({
         message: 'Processo criado com sucesso',
-        data: processo,
+        data: formatProcessForFrontend(processo),
       });
 
       res.status(201).json(response);
@@ -54,7 +55,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Processo encontrado',
-        data: processo,
+        data: formatProcessForFrontend(processo),
       });
 
       res.json(response);
@@ -73,7 +74,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Processo atualizado com sucesso',
-        data: processo,
+        data: formatProcessForFrontend(processo),
       });
 
       res.json(response);
@@ -114,7 +115,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
-        data: result.processos,
+        data: formatListForFrontend(result.processos, formatProcessForFrontend),
         pagination: result.pagination,
       });
 
@@ -134,7 +135,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
-        data: result.processos,
+        data: formatListForFrontend(result.processos, formatProcessForFrontend),
         pagination: result.pagination,
       });
 
@@ -157,7 +158,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Entrega confirmada com sucesso',
-        data: processo,
+        data: formatProcessForFrontend(processo),
       });
 
       res.json(response);
@@ -181,7 +182,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Devolução registrada com sucesso',
-        data: processo,
+        data: formatProcessForFrontend(processo),
       });
 
       res.json(response);
@@ -202,7 +203,7 @@ export class ProcessController {
 
       const response = HttpResponse.Ok({
         message: 'Processos encontrados',
-        data: result.processos,
+        data: formatListForFrontend(result.processos, formatProcessForFrontend),
         pagination: result.pagination,
       });
 

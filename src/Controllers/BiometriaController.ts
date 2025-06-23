@@ -8,6 +8,11 @@ import {
 } from '../Schemas/BiometriaSchema';
 import HttpResponse from '../Helpers/HttpResponse';
 import HttpError from '../Helpers/HttpError';
+import {
+  formatBiometriaForFrontend,
+  formatListForFrontend,
+  maskCpf,
+} from '../Helpers/EntityFormatter';
 
 interface AuthRequest extends Request {
   company?: {
@@ -19,9 +24,6 @@ interface AuthRequest extends Request {
 }
 
 export class BiometriaController {
-  /**
-   * Cria uma nova biometria para um colaborador
-   */
   static async createBiometria(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -29,26 +31,21 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Validar dados de entrada
       const validatedData = CreateBiometriaSchema.parse(req.body);
 
-      // Criar biometria
       const biometria = await BiometriaService.createBiometria(validatedData, company.idEmpresa);
 
       const response = HttpResponse.Created({
         message: 'Biometria criada com sucesso',
-        data: biometria,
+        data: formatBiometriaForFrontend(biometria),
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Atualiza uma biometria existente
-   */
   static async updateBiometria(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -58,10 +55,8 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Validar dados de entrada
       const validatedData = UpdateBiometriaSchema.parse(req.body);
 
-      // Atualizar biometria
       const biometriaAtualizada = await BiometriaService.updateBiometria(
         id,
         validatedData,
@@ -70,18 +65,15 @@ export class BiometriaController {
 
       const response = HttpResponse.Ok({
         message: 'Biometria atualizada com sucesso',
-        data: biometriaAtualizada,
+        data: formatBiometriaForFrontend(biometriaAtualizada),
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Deleta uma biometria específica
-   */
   static async deleteBiometria(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -91,7 +83,6 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Deletar biometria
       const result = await BiometriaService.deleteBiometria(id, company.idEmpresa);
 
       const response = HttpResponse.Ok({
@@ -99,15 +90,12 @@ export class BiometriaController {
         data: result,
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Lista todas as biometrias de um colaborador
-   */
   static async getBiometriasByColaborador(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -117,7 +105,6 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Buscar biometrias do colaborador
       const biometrias = await BiometriaService.getBiometriasByColaborador(
         idColaborador,
         company.idEmpresa,
@@ -125,19 +112,15 @@ export class BiometriaController {
 
       const response = HttpResponse.Ok({
         message: 'Biometrias encontradas',
-        data: biometrias,
+        data: formatListForFrontend(biometrias, formatBiometriaForFrontend),
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Verifica se um colaborador tem biometria cadastrada
-   * FUNCIONALIDADE PRINCIPAL SOLICITADA
-   */
   static async hasBiometria(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -147,23 +130,27 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Verificar se colaborador tem biometria
       const result = await BiometriaService.hasBiometria(idColaborador, company.idEmpresa);
+
+      const maskedResult = {
+        ...result,
+        colaborador: {
+          ...result.colaborador,
+          cpf: maskCpf(result.colaborador.cpf),
+        },
+      };
 
       const response = HttpResponse.Ok({
         message: 'Verificação de biometria realizada',
-        data: result,
+        data: maskedResult,
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Busca uma biometria específica por ID
-   */
   static async getBiometriaById(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company } = req;
@@ -173,23 +160,19 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Buscar biometria
       const biometria = await BiometriaService.getBiometriaById(id, company.idEmpresa);
 
       const response = HttpResponse.Ok({
         message: 'Biometria encontrada',
-        data: biometria,
+        data: formatBiometriaForFrontend(biometria),
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  /**
-   * Lista todas as biometrias da empresa (apenas admin)
-   */
   static async getAllBiometriasByEmpresa(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { company, userRole } = req;
@@ -198,96 +181,65 @@ export class BiometriaController {
         throw new HttpError('Empresa não identificada', 401);
       }
 
-      // Verificar se é admin (caso necessário restringir acesso)
-      // if (userRole !== 'admin') {
-      //   throw new HttpError('Acesso negado - apenas administradores', 403);
-      // }
-
-      // Buscar todas as biometrias da empresa
       const biometrias = await BiometriaService.getAllBiometriasByEmpresa(company.idEmpresa);
 
       const response = HttpResponse.Ok({
         message: 'Biometrias da empresa encontradas',
-        data: biometrias,
+        data: formatListForFrontend(biometrias, formatBiometriaForFrontend),
       });
 
-      return res.status(response.statusCode).json(response.payload);
+      return res.status(response.statusCode).json(response.toJSON());
     } catch (error) {
       next(error);
     }
   }
 
-  // =====================================================
-  // FUNCIONALIDADES COMENTADAS PARA IMPLEMENTAÇÃO FUTURA
-  // =====================================================
+  static async verifyBiometria(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { company } = req;
 
-  /**
-   * Verifica/compara dados biométricos
-   * TODO: Implementar quando algoritmo biométrico estiver pronto
-   */
-  // static async verifyBiometria(
-  //   req: AuthRequest,
-  //   res: Response,
-  //   next: NextFunction
-  // ) {
-  //   try {
-  //     const { company } = req;
+      if (!company) {
+        throw new HttpError('Empresa não identificada', 401);
+      }
 
-  //     if (!company) {
-  //       throw new HttpError('Empresa não identificada', 401);
-  //     }
+      const validatedData = VerifyBiometriaSchema.parse(req.body);
 
-  //     // Validar dados de entrada
-  //     const validatedData = VerifyBiometriaSchema.parse(req.body);
+      const result = await BiometriaService.verifyBiometria(validatedData, company.idEmpresa);
 
-  //     // Verificar biometria
-  //     const result = await BiometriaService.verifyBiometria(
-  //       validatedData,
-  //       company.idEmpresa
-  //     );
+      const response = HttpResponse.Ok({
+        message: 'Verificação biométrica realizada',
+        data: result,
+      });
 
-  //     return HttpResponse.success(
-  //       res,
-  //       'Verificação biométrica realizada',
-  //       result
-  //     );
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+      return res.status(response.statusCode).json(response.toJSON());
+    } catch (error) {
+      next(error);
+    }
+  }
 
-  /**
-   * Realiza match biométrico para confirmação de entrega
-   * TODO: Implementar integração com processo de entrega
-   */
-  // static async matchBiometriaForProcess(
-  //   req: AuthRequest,
-  //   res: Response,
-  //   next: NextFunction
-  // ) {
-  //   try {
-  //     const { company } = req;
+  static async matchBiometriaForProcess(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { company } = req;
 
-  //     if (!company) {
-  //       throw new HttpError('Empresa não identificada', 401);
-  //     }
+      if (!company) {
+        throw new HttpError('Empresa não identificada', 401);
+      }
 
-  //     // Validar dados de entrada
-  //     const validatedData = MatchBiometriaSchema.parse(req.body);
+      const validatedData = MatchBiometriaSchema.parse(req.body);
 
-  //     // Realizar match para processo
-  //     const result = await BiometriaService.matchBiometriaForProcess(
-  //       validatedData,
-  //       company.idEmpresa
-  //     );
+      const result = await BiometriaService.matchBiometriaForProcess(
+        validatedData,
+        company.idEmpresa,
+      );
 
-  //     return HttpResponse.success(
-  //       res,
-  //       'Match biométrico realizado com sucesso',
-  //       result
-  //     );
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
+      const response = HttpResponse.Ok({
+        message: 'Match biométrico realizado com sucesso',
+        data: result,
+      });
+
+      return res.status(response.statusCode).json(response.toJSON());
+    } catch (error) {
+      next(error);
+    }
+  }
 }

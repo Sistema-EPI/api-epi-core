@@ -6,6 +6,23 @@
 import { formatDateToBrazilian, formatDateTimeToBrazilian } from './DateHelper';
 
 /**
+ * Mascara o CPF para exibição segura
+ * Mostra apenas os 3 primeiros e 2 últimos dígitos
+ * @param cpf - CPF com 11 dígitos
+ * @returns CPF mascarado no formato 123.***.***-**45
+ */
+export function maskCpf(cpf: string): string {
+  if (!cpf || cpf.length !== 11) {
+    return cpf; // Retorna o valor original se não for um CPF válido
+  }
+
+  const firstThree = cpf.substring(0, 3);
+  const lastTwo = cpf.substring(9, 11);
+
+  return `${firstThree}.***.***-**${lastTwo}`;
+}
+
+/**
  * Formata dados de EPI para o frontend
  * Converte datas para formato brasileiro e garante consistência dos dados
  * @param epi - Objeto EPI do banco de dados
@@ -23,12 +40,14 @@ export function formatEpiForFrontend(epi: any) {
 
 /**
  * Formata dados de Colaborador para o frontend
+ * Mascara o CPF para segurança, mostrando apenas os 3 primeiros e 2 últimos dígitos
  * @param colaborador - Objeto Colaborador do banco de dados
  * @returns Objeto Colaborador formatado para o frontend
  */
 export function formatCollaboratorForFrontend(colaborador: any) {
   return {
     ...colaborador,
+    cpf: maskCpf(colaborador.cpf),
     createdAt: formatDateTimeToBrazilian(colaborador.createdAt),
     updatedAt: formatDateTimeToBrazilian(colaborador.updatedAt),
   };
@@ -49,11 +68,12 @@ export function formatCompanyForFrontend(empresa: any) {
 
 /**
  * Formata dados de Processo para o frontend
+ * Mascara o CPF do colaborador quando presente
  * @param processo - Objeto Processo do banco de dados
  * @returns Objeto Processo formatado para o frontend
  */
 export function formatProcessForFrontend(processo: any) {
-  return {
+  const formattedProcess = {
     ...processo,
     dataAgendada: formatDateToBrazilian(processo.dataAgendada),
     dataEntrega: formatDateTimeToBrazilian(processo.dataEntrega),
@@ -61,6 +81,16 @@ export function formatProcessForFrontend(processo: any) {
     createdAt: formatDateTimeToBrazilian(processo.createdAt),
     updatedAt: formatDateTimeToBrazilian(processo.updatedAt),
   };
+
+  // Mascarar CPF do colaborador se existir
+  if (formattedProcess.colaborador && formattedProcess.colaborador.cpf) {
+    formattedProcess.colaborador = {
+      ...formattedProcess.colaborador,
+      cpf: maskCpf(formattedProcess.colaborador.cpf),
+    };
+  }
+
+  return formattedProcess;
 }
 
 /**
@@ -101,4 +131,28 @@ export function formatPaginatedResponse<T>(data: T[], meta: any, formatter: (ite
     data: formatListForFrontend(data, formatter),
     pagination: meta,
   };
+}
+
+/**
+ * Formata dados de Biometria para o frontend
+ * Mascara o CPF do colaborador quando presente
+ * @param biometria - Objeto Biometria do banco de dados
+ * @returns Objeto Biometria formatado para o frontend
+ */
+export function formatBiometriaForFrontend(biometria: any) {
+  const formattedBiometria = {
+    ...biometria,
+    createdAt: formatDateTimeToBrazilian(biometria.createdAt),
+    updatedAt: formatDateTimeToBrazilian(biometria.updatedAt),
+  };
+
+  // Mascarar CPF do colaborador se existir
+  if (formattedBiometria.colaborador && formattedBiometria.colaborador.cpf) {
+    formattedBiometria.colaborador = {
+      ...formattedBiometria.colaborador,
+      cpf: maskCpf(formattedBiometria.colaborador.cpf),
+    };
+  }
+
+  return formattedBiometria;
 }

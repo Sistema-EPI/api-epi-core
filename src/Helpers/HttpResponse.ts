@@ -14,24 +14,32 @@ type Payload = {
 
 export default class HttpResponse {
   public payload: Payload;
-
   public statusCode: number;
+  public success: boolean;
 
-  constructor(payload: Payload, statusCode: number = ResponseCodes.OK) {
+  constructor(payload: Payload, statusCode: number = ResponseCodes.OK, success: boolean = true) {
     this.payload = payload;
-
     this.statusCode = statusCode;
+    this.success = success;
   }
 
   static Created(payload: Payload) {
-    return new HttpResponse(payload, ResponseCodes.CREATED);
+    return new HttpResponse(payload, ResponseCodes.CREATED, true);
   }
 
   static Ok(payload: Payload) {
-    return new HttpResponse(payload, ResponseCodes.OK);
+    return new HttpResponse(payload, ResponseCodes.OK, true);
   }
 
   static NoContent() {
-    return new HttpResponse({}, ResponseCodes.NO_CONTENT);
+    return new HttpResponse({}, ResponseCodes.NO_CONTENT, true);
+  }
+
+  // Método para formatar a resposta incluindo o success
+  toJSON() {
+    return {
+      success: this.success,
+      ...this.payload,
+    };
   }
 }
