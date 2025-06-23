@@ -10,6 +10,8 @@ const EnvSchema = z
     API_CONSULTA_URL: z.string().optional(),
     API_KEY: z.string().optional(),
     API_TOKEN: z.string().optional(),
+    LOG_LEVEL: z.string().optional().default('info'),
+    ENV: z.string().optional(),
     //DEV
     NODE_ENV: z.enum(['development', 'test', 'production']).optional(),
     PORT: z

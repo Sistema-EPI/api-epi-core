@@ -13,3 +13,8 @@ services:
       - ENV=${ENV}
       - PORT=${PORT}
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - API_CONSULTA_URL=${API_CONSULTA_URL}
+      - API_KEY=${API_KEY}
+      - API_TOKEN=${API_TOKEN}
+      - LOG_LEVEL=${LOG_LEVEL}
