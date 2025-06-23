@@ -26,7 +26,7 @@ if [ "$ENV" == "prod" ]; then
     npx prisma migrate deploy || echo "⚠️  Falha nas migrations, mas continuando..."
 
     echo "Executando seed..."
-    npx prisma db seed-prd || echo "⚠️  Seed falhou, mas continuando..."
+    npx tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando..."
 
     echo "Iniciando aplicação..."
     node dist/server.js
@@ -40,7 +40,7 @@ if [ "$ENV" == "homolog" ]; then
 
     # Executa o seed (opcional - remova se não quiser sempre executar)
     echo "🌱 Executando seed..."
-    npx prisma db seed || true || echo "⚠️  Seed falhou, mas continuando..."
+    npx tsx prisma/seed.ts || true || echo "⚠️  Seed falhou, mas continuando..."
 
     # Inicia a aplicação
     echo "🚀 Iniciando servidor..."
