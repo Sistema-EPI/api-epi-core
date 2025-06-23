@@ -38,7 +38,7 @@ npx prisma migrate dev --name init --skip-seed || true
 
 # Executa o seed (opcional - remova se não quiser sempre executar)
 echo "🌱 Executando seed..."
-npx prisma db seed || true || echo "⚠️  Seed falhou, mas continuando..."
+npx tsx prisma/seed.ts || true || echo "⚠️  Seed falhou, mas continuando..."
 
 # Inicia a aplicação
 echo "🚀 Iniciando servidor..."

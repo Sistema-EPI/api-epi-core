@@ -9,9 +9,11 @@ export class CAService {
 
   constructor() {
     if (!ENV.API_CONSULTA_URL || !ENV.API_KEY || !ENV.API_TOKEN) {
-      throw new Error('Variáveis de ambiente da API externa não configuradas: API_CONSULTA_URL, API_KEY, API_TOKEN');
+      throw new Error(
+        'Variáveis de ambiente da API externa não configuradas: API_CONSULTA_URL, API_KEY, API_TOKEN',
+      );
     }
-    
+
     this.apiUrl = ENV.API_CONSULTA_URL;
     this.apiKey = ENV.API_KEY;
     this.apiToken = ENV.API_TOKEN;
@@ -20,7 +22,7 @@ export class CAService {
   async consultarCA(ca: string): Promise<CAResponse> {
     try {
       const url = `${this.apiUrl}/ca/${ca}`;
-      
+
       logger.info(`Consultando CA: ${ca} na URL: ${url}`);
 
       const response = await fetch(url, {
@@ -37,13 +39,15 @@ export class CAService {
       }
 
       const data = await response.json();
-      
+
       logger.info(`Resposta recebida da API externa para CA: ${ca}`);
-      
+
       return data;
     } catch (error) {
       logger.error(`Erro ao consultar CA ${ca}:`, error);
-      throw new Error(`Falha na consulta do CA: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+      throw new Error(
+        `Falha na consulta do CA: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+      );
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as LoginController from '../Controllers/LoginController'
+import * as LoginController from '../Controllers/LoginController';
 import RequestHandler from '../Helpers/RequestHandler';
 import { rateLimitMiddleware } from '../Middlewares/rateLimit';
 import { authMiddleware } from '../Middlewares/auth';
@@ -43,11 +43,7 @@ const auth = Router();
  *       403:
  *         description: API Key inválida
  */
-auth.post(
-  '/login',
-  rateLimitMiddleware,
-  RequestHandler(LoginController.login),
-);
+auth.post('/login', rateLimitMiddleware, RequestHandler(LoginController.login));
 
 /**
  * @swagger
@@ -75,9 +71,6 @@ auth.post(
  *       401:
  *         description: Token expirado ou inválido
  */
-auth.post(
-  '/refresh',
-  RequestHandler(LoginController.refresh),
-);
+auth.post('/refresh', RequestHandler(LoginController.refresh));
 
 export default auth;

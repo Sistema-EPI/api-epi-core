@@ -2,8 +2,7 @@ import { Router } from 'express';
 import * as CompanyController from '../Controllers/CompanyController';
 import * as LoginController from '../Controllers/LoginController';
 import RequestHandler from '../Helpers/RequestHandler';
-import { authMiddleware } from '../Middlewares/auth';
-// import { verifyToken, verifyPermission } from '../Middlewares/Auth'; // todo: add later
+import { authMiddleware, verifyToken, verifyPermission } from '../Middlewares/auth';
 // import { createLog } from '../Middlewares/createLog'; // todo: add later
 
 const company = Router();
@@ -47,10 +46,10 @@ const company = Router();
  */
 company.get(
   '/get/all',
-  // verifyToken,
-  // verifyPermission(['companies:read']),
+  verifyToken,
+  verifyPermission(['company:read']),
   RequestHandler(CompanyController.getAllCompanies),
-)
+);
 
 /**
  * @swagger
@@ -84,10 +83,10 @@ company.get(
  */
 company.get(
   '/get/:id',
-  // verifyToken,
-  // verifyPermission(['companies:read']),
+  verifyToken,
+  verifyPermission(['company:read']),
   RequestHandler(CompanyController.getCompanyById),
-)
+);
 
 /**
  * @swagger
@@ -144,8 +143,8 @@ company.get(
  */
 company.post(
   '/create',
-  // verifyToken,
-  // verifyPermission(['companies:create']),
+  verifyToken,
+  verifyPermission(['company:create']),
   RequestHandler(CompanyController.createCompany),
 );
 
@@ -172,10 +171,10 @@ company.post(
  */
 company.put(
   '/update/:id',
-  // verifyToken,
-  // verifyPermission(['companies:update']),
+  verifyToken,
+  verifyPermission(['company:update']),
   RequestHandler(CompanyController.updateCompany),
-)
+);
 
 /**
  * @swagger
@@ -200,10 +199,72 @@ company.put(
  */
 company.delete(
   '/delete/:id',
-  // verifyToken,
-  // verifyPermission(['companies:delete']),
+  verifyToken,
+  verifyPermission(['company:delete']),
   RequestHandler(CompanyController.deleteCompany),
-)
+);
+
+/**
+ * @swagger
+ * /v1/company/status/{id}:
+ *   put:
+ *     summary: Alterar status da empresa
+ *     description: Ativa ou desativa uma empresa específica
+ *     tags: [Company]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID da empresa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [status_empresa]
+ *             properties:
+ *               status_empresa:
+ *                 type: boolean
+ *                 description: Novo status da empresa (true = ativo, false = inativo)
+ *     responses:
+ *       200:
+ *         description: Status da empresa alterado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                           format: uuid
+ *                         nomeFantasia:
+ *                           type: string
+ *                         cnpj:
+ *                           type: string
+ *                         statusEmpresa:
+ *                           type: boolean
+ *                         statusAnterior:
+ *                           type: boolean
+ *       400:
+ *         description: Status já é o mesmo ou dados inválidos
+ *       404:
+ *         description: Empresa não encontrada
+ */
+company.put(
+  '/status/:id',
+  verifyToken,
+  verifyPermission(['company:update']),
+  RequestHandler(CompanyController.updateCompanyStatus),
+);
 
 /**
  * @swagger
@@ -233,10 +294,6 @@ company.delete(
  *       403:
  *         description: API Key inválida
  */
-company.get(
-  '/info',
-  authMiddleware,
-  RequestHandler(LoginController.getCompanyInfo),
-);
+company.get('/info', authMiddleware, RequestHandler(LoginController.getCompanyInfo));
 
 export default company;

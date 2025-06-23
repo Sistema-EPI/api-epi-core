@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: epi
@@ -15,9 +15,9 @@ services:
       - epi-network
   api:
     ports:
-      - "8081:8081"
+      - '8081:8081'
     build:
-      context: ..   
+      context: ..
       dockerfile: docker/Dockerfile.local
     environment:
       - DATABASE_URL=${DATABASE_URL}

@@ -129,6 +129,13 @@ const options: swaggerJSDoc.Options = {
               description: 'Data de compra do EPI',
               nullable: true,
             },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI',
+              nullable: true,
+            },
             createdAt: {
               type: 'string',
               format: 'date-time',
@@ -197,6 +204,13 @@ const options: swaggerJSDoc.Options = {
               description: 'Data de compra do EPI (opcional)',
               example: '2025-01-01',
             },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI (opcional)',
+              example: 22.8,
+            },
           },
         },
         UpdateEpiRequest: {
@@ -236,6 +250,12 @@ const options: swaggerJSDoc.Options = {
               type: 'string',
               format: 'date',
               description: 'Data de compra do EPI',
+            },
+            preco: {
+              type: 'number',
+              format: 'decimal',
+              minimum: 0,
+              description: 'Preço de compra do EPI',
             },
           },
         },
@@ -319,10 +339,9 @@ const options: swaggerJSDoc.Options = {
               pattern: '^[0-9]{11}$',
               description: 'CPF do colaborador (11 dígitos)',
             },
-            statusColaborador: {
-              type: 'string',
-              enum: ['Ativo', 'Inativo', 'Afastado', 'Férias'],
-              description: 'Status atual do colaborador',
+            status: {
+              type: 'boolean',
+              description: 'Status do colaborador (true=ativo, false=inativo)',
             },
             createdAt: {
               type: 'string',
@@ -339,9 +358,121 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        Biometria: {
+          type: 'object',
+          properties: {
+            idBiometria: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID único da biometria',
+            },
+            idColaborador: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID do colaborador proprietário da biometria',
+            },
+            biometriaPath: {
+              type: 'string',
+              description: 'Caminho do arquivo de biometria',
+              nullable: true,
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Caminho do certificado biométrico',
+              nullable: true,
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data de criação',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data de atualização',
+            },
+            colaborador: {
+              $ref: '#/components/schemas/Collaborator',
+            },
+          },
+        },
+        CreateBiometriaRequest: {
+          type: 'object',
+          required: ['idColaborador'],
+          properties: {
+            idColaborador: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID do colaborador',
+              example: 'd6931647-7d5e-46cf-81f7-e784aa6e1a7c',
+            },
+            biometriaPath: {
+              type: 'string',
+              description: 'Caminho do arquivo de biometria',
+              example: '/storage/biometrias/colaborador-123-bio1.dat',
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Caminho do certificado biométrico',
+              example: '/storage/certificados/colaborador-123-cert1.pem',
+            },
+          },
+        },
+        UpdateBiometriaRequest: {
+          type: 'object',
+          properties: {
+            biometriaPath: {
+              type: 'string',
+              description: 'Novo caminho do arquivo de biometria',
+              example: '/storage/biometrias/colaborador-123-bio1-updated.dat',
+            },
+            certificadoPath: {
+              type: 'string',
+              description: 'Novo caminho do certificado biométrico',
+              example: '/storage/certificados/colaborador-123-cert1-updated.pem',
+            },
+          },
+        },
+        BiometriaVerificationResponse: {
+          type: 'object',
+          properties: {
+            colaborador: {
+              type: 'object',
+              properties: {
+                idColaborador: {
+                  type: 'string',
+                  format: 'uuid',
+                },
+                nomeColaborador: {
+                  type: 'string',
+                },
+                cpf: {
+                  type: 'string',
+                },
+              },
+            },
+            hasBiometria: {
+              type: 'boolean',
+              description: 'Se possui biometria cadastrada',
+            },
+            totalBiometrias: {
+              type: 'number',
+              description: 'Quantidade de biometrias cadastradas',
+            },
+            maxBiometrias: {
+              type: 'number',
+              description: 'Máximo de biometrias permitidas',
+              example: 2,
+            },
+            canAddMore: {
+              type: 'boolean',
+              description: 'Se pode adicionar mais biometrias',
+            },
+          },
+        },
         CreateCollaboratorRequest: {
           type: 'object',
-          required: ['nome_colaborador', 'cpf', 'status_colaborador'],
+          required: ['nome_colaborador', 'cpf', 'status'],
           properties: {
             nome_colaborador: {
               type: 'string',
@@ -357,11 +488,10 @@ const options: swaggerJSDoc.Options = {
               description: 'CPF do colaborador (exatamente 11 dígitos)',
               example: '12345678901',
             },
-            status_colaborador: {
-              type: 'string',
-              enum: ['ATIVO', 'INATIVO'],
-              description: 'Status inicial do colaborador',
-              example: 'ATIVO',
+            status: {
+              type: 'boolean',
+              description: 'Status inicial do colaborador (true=ativo, false=inativo)',
+              example: true,
             },
           },
         },
@@ -380,10 +510,9 @@ const options: swaggerJSDoc.Options = {
               maxLength: 11,
               description: 'CPF do colaborador (exatamente 11 dígitos)',
             },
-            status_colaborador: {
-              type: 'string',
-              enum: ['ATIVO', 'INATIVO'],
-              description: 'Status do colaborador',
+            status: {
+              type: 'boolean',
+              description: 'Status do colaborador (true=ativo, false=inativo)',
             },
           },
         },
@@ -595,6 +724,44 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        CreateCollaboratorResponse: {
+          type: 'object',
+          description: 'Resposta da criação ou reativação de colaborador',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+              description: 'ID único do colaborador',
+              example: 'cb4a3087-114f-49be-abcf-ebed5f1f706c',
+            },
+            nome: {
+              type: 'string',
+              description: 'Nome completo do colaborador',
+              example: 'João da Silva',
+            },
+            cpf: {
+              type: 'string',
+              description: 'CPF do colaborador',
+              example: '12345678901',
+            },
+            status: {
+              type: 'boolean',
+              description: 'Status atual do colaborador',
+              example: true,
+            },
+            empresa: {
+              type: 'string',
+              description: 'Nome fantasia da empresa',
+              example: 'JG Tech',
+            },
+            reactivated: {
+              type: 'boolean',
+              description: 'Indica se o colaborador foi reativado (true) ou criado novo (false)',
+              example: false,
+            },
+          },
+          required: ['id', 'nome', 'cpf', 'status', 'empresa', 'reactivated'],
+        },
       },
       securitySchemes: {
         bearerAuth: {
@@ -627,10 +794,7 @@ const options: swaggerJSDoc.Options = {
       },
     ],
   },
-  apis: [
-    './dist/Routers/*.js',
-    './src/Routers/*.ts'
-  ],
+  apis: ['./dist/Routers/*.js', './src/Routers/*.ts'],
   paths: {
     '/v1/user/get/all': {
       get: {
@@ -650,29 +814,33 @@ const options: swaggerJSDoc.Options = {
                       properties: {
                         data: {
                           type: 'array',
-                          items: { $ref: '#/components/schemas/User' }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                          items: { $ref: '#/components/schemas/User' },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
 
 const specs = swaggerJSDoc(options);
 
 export const setupSwagger = (app: Express): void => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
-    explorer: true,
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'API EPI Core - Documentação',
-  }));
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(specs, {
+      explorer: true,
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'API EPI Core - Documentação',
+    }),
+  );
 };
 
 export default specs;

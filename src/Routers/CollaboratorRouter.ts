@@ -1,6 +1,7 @@
-import { Router } from "express";
-import RequestHandler from "../Helpers/RequestHandler";
+import { Router } from 'express';
+import RequestHandler from '../Helpers/RequestHandler';
 import * as CollaboratorController from '../Controllers/CollaboratorController';
+import { verifyToken, verifyPermission } from '../Middlewares/auth';
 
 const collaborator = Router();
 
@@ -46,10 +47,10 @@ const collaborator = Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.get(
-    '/get/all',
-    // verifyToken,
-    // verifyPermission(['collaborator:read']),
-    RequestHandler(CollaboratorController.getAllCollaborators),
+  '/get/all',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getAllCollaborators),
 );
 
 /**
@@ -93,11 +94,11 @@ collaborator.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.get(
-    '/get/:id',
-    // verifyToken,
-    // verifyPermission(['collaborator:read']),
-    RequestHandler(CollaboratorController.getCollaboratorById),
-)
+  '/get/:id',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getCollaboratorById),
+);
 
 /**
  * @swagger
@@ -152,10 +153,10 @@ collaborator.get(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.post(
-    '/create/:companyId',
-    // verifyToken,
-    // verifyPermission(['collaborator:create']),
-    RequestHandler(CollaboratorController.createCollaborator),
+  '/create/:companyId',
+  verifyToken,
+  verifyPermission(['collaborator:create']),
+  RequestHandler(CollaboratorController.createCollaborator),
 );
 
 /**
@@ -211,11 +212,11 @@ collaborator.post(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.put(
-    '/update/:id',
-    // verifyToken,
-    // verifyPermission(['collaborator:update']),
-    RequestHandler(CollaboratorController.updateCollaborator),
-)
+  '/update/:id',
+  verifyToken,
+  verifyPermission(['collaborator:update']),
+  RequestHandler(CollaboratorController.updateCollaborator),
+);
 
 /**
  * @swagger
@@ -253,11 +254,84 @@ collaborator.put(
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 collaborator.delete(
-    '/delete/:id',
-    // verifyToken,
-    // verifyPermission(['companies:delete']),
-    RequestHandler(CollaboratorController.deleteCollaborator),
-)
+  '/delete/:id',
+  verifyToken,
+  verifyPermission(['collaborator:delete']),
+  RequestHandler(CollaboratorController.deleteCollaborator),
+);
+
+/**
+ * @swagger
+ * /v1/collaborator/company/{companyId}:
+ *   get:
+ *     summary: Buscar colaboradores por empresa
+ *     description: Retorna uma lista paginada de colaboradores de uma empresa específica
+ *     tags: [Collaborator]
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID único da empresa
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Número da página (opcional)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *         description: Limite de registros por página (opcional)
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Filtro por status ativo/inativo (opcional)
+ *     responses:
+ *       200:
+ *         description: Lista de colaboradores da empresa retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Collaborator'
+ *                     company:
+ *                       type: object
+ *                       properties:
+ *                         idEmpresa:
+ *                           type: string
+ *                         nomeFantasia:
+ *                           type: string
+ *                         razaoSocial:
+ *                           type: string
+ *       404:
+ *         description: Empresa não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+collaborator.get(
+  '/company/:companyId',
+  verifyToken,
+  verifyPermission(['collaborator:read']),
+  RequestHandler(CollaboratorController.getCollaboratorsByCompany),
+);
 
 export default collaborator;
-

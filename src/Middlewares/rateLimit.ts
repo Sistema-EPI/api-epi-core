@@ -14,7 +14,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
   } catch (rejRes) {
     res.status(429).json({
       error: 'Muitas tentativas',
-      message: 'Tente novamente em alguns segundos'
+      message: 'Tente novamente em alguns segundos',
     });
   }
 };

@@ -1,5 +1,4 @@
-import { z } from "zod";
-
+import { z } from 'zod';
 
 export const GetUsersSchema = z.object({
   query: z.object({
@@ -45,8 +44,8 @@ export const ChangePasswordSchema = z.object({
   }),
   body: z.object({
     senhaAtual: z.string().min(6, 'Senha atual é obrigatória'),
-    novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres')
-  })
+    novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
+  }),
 });
 
 export const UpdateUserStatusSchema = z.object({
@@ -56,7 +55,7 @@ export const UpdateUserStatusSchema = z.object({
   body: z.object({
     email: z.string().email().optional(),
     statusUser: z.boolean(),
-  })
+  }),
 });
 
 export const DeleteUserSchema = z.object({

@@ -18,8 +18,8 @@ export class AuthService {
     const user = await prisma.user.findUnique({
       where: {
         email,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     if (!user) {
@@ -42,12 +42,12 @@ export class AuthService {
       where: {
         idUser_idEmpresa: {
           idUser: user.idUser,
-          idEmpresa: company.idEmpresa
-        }
+          idEmpresa: company.idEmpresa,
+        },
       },
       include: {
-        role: true
-      }
+        role: true,
+      },
     });
 
     if (!authCompany) {
@@ -69,17 +69,14 @@ export class AuthService {
         email: user.email,
         role: authCompany.cargo,
         permissions: authCompany.role.permissao,
-        avatar: user.avatar || null,
-        department: user.department || null,
-        position: user.position || null
       },
       apiToken: apiKey,
       company: {
         id: company.idEmpresa,
         razao_social: company.razaoSocial,
         cnpj: company.cnpj,
-        status_empresa: company.statusEmpresa
-      }
+        status_empresa: company.statusEmpresa,
+      },
     };
   }
 
@@ -100,8 +97,8 @@ export class AuthService {
     const user = await prisma.user.findUnique({
       where: {
         idUser: decoded.userId,
-        deletedAt: null
-      }
+        deletedAt: null,
+      },
     });
 
     if (!user || !user.statusUser) {
@@ -113,12 +110,12 @@ export class AuthService {
       where: {
         idUser_idEmpresa: {
           idUser: user.idUser,
-          idEmpresa: company.idEmpresa
-        }
+          idEmpresa: company.idEmpresa,
+        },
       },
       include: {
-        role: true
-      }
+        role: true,
+      },
     });
 
     if (!authCompany) {
@@ -136,10 +133,7 @@ export class AuthService {
         email: user.email,
         role: authCompany.cargo,
         permissions: authCompany.role.permissao,
-        avatar: user.avatar || null,
-        department: user.department || null,
-        position: user.position || null
-      }
+      },
     };
   }
 
@@ -147,11 +141,10 @@ export class AuthService {
     const company = await prisma.company.findFirst({
       where: {
         apiKey: apiKey,
-        active: true,
-        statusEmpresa: 'ATIVO'
-      }
+        statusEmpresa: true,
+      },
     });
-    
+
     return company;
   }
 
@@ -162,9 +155,9 @@ export class AuthService {
         companyId: company.idEmpresa,
         email: user.email,
         role: role.cargo,
-        permissions: role.permissao
+        permissions: role.permissao,
       },
-      ENV.JWT_EXPIRATION
+      ENV.JWT_EXPIRATION,
     );
   }
 
@@ -180,7 +173,7 @@ export class AuthService {
   private async updateLastLogin(userId: string) {
     await prisma.user.update({
       where: { idUser: userId },
-      data: { lastLoginAt: new Date() }
+      data: { lastLoginAt: new Date() },
     });
   }
 }

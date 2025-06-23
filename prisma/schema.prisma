@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -8,41 +9,36 @@ datasource db {
 }
 
 model Company {
-  idEmpresa     String        @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
-  nomeFantasia  String        @map("nome_fantasia") @db.VarChar(255)
-  razaoSocial   String?       @map("razao_social") @db.VarChar(255)
-  cnpj          String        @unique @map("cnpj") @db.VarChar(14)
-  apiKey        String        @unique @map("api_key") @db.VarChar(255)
-  uf            String?       @map("uf") @db.VarChar(2)
-  cep           String        @map("cep") @db.VarChar(8)
-  logradouro    String?       @map("logradouro") @db.VarChar(255)
-  email         String?       @map("email") @db.VarChar(255)
-  telefone      String?       @map("telefone") @db.VarChar(20)
-  statusEmpresa CompanyStatus @default(ATIVO) @map("status_empresa")
-  active        Boolean       @default(true) @map("active")
-  createdAt     DateTime      @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt     DateTime      @updatedAt @map("updated_at") @db.DateTime(0)
+  idEmpresa        String   @id @default(uuid()) @map("id_empresa") @db.VarChar(36)
+  nomeFantasia     String   @map("nome_fantasia") @db.VarChar(255)
+  razaoSocial      String?  @map("razao_social") @db.VarChar(255)
+  cnpj             String   @unique @map("cnpj") @db.VarChar(14)
+  apiKey           String   @unique @map("api_key") @db.VarChar(255)
+  uf               String?  @map("uf") @db.VarChar(2)
+  cep              String   @map("cep") @db.VarChar(8)
+  logradouro       String?  @map("logradouro") @db.VarChar(255)
+  email            String?  @map("email") @db.VarChar(255)
+  telefone         String?  @map("telefone") @db.VarChar(20)
+  statusEmpresa    Boolean  @default(true) @map("status_empresa")
+  createdAt        DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.DateTime(0)
 
   colaboradores Collaborator[] @relation("EmpresaColaboradores")
   epis          Epi[]
+  processos     Process[]
   authCompanies AuthCompany[]
 
   @@map("company")
 }
 
-enum CompanyStatus {
-  ATIVO
-  INATIVO
-}
-
 model Collaborator {
-  idColaborador     String   @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
-  idEmpresa         String   @map("id_empresa") @db.VarChar(36)
-  nomeColaborador   String   @map("nome_colaborador") @db.VarChar(255)
-  cpf               String   @unique @map("cpf") @db.VarChar(11)
-  statusColaborador String?  @map("status_colaborador") @db.VarChar(50)
-  createdAt         DateTime @default(now()) @map("created_at") @db.DateTime(0)
-  updatedAt         DateTime @updatedAt @map("updated_at") @db.DateTime(0)
+  idColaborador     String    @id @default(uuid()) @map("id_colaborador") @db.VarChar(36)
+  idEmpresa         String    @map("id_empresa") @db.VarChar(36)
+  nomeColaborador   String    @map("nome_colaborador") @db.VarChar(255)
+  cpf               String    @unique @map("cpf") @db.VarChar(11)
+  status            Boolean   @default(true) @map("status")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
   empresa    Company     @relation("EmpresaColaboradores", fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   processos  Process[]
@@ -54,7 +50,7 @@ model Collaborator {
 
 model Epi {
   idEpi            String    @id @default(uuid()) @map("id_epi") @db.VarChar(36)
-  ca               String    @unique @db.VarChar(20)
+  ca               String    @db.VarChar(20)
   idEmpresa        String    @map("id_empresa") @db.VarChar(36)
   nomeEpi          String    @map("nome_epi") @db.VarChar(255)
   validade         DateTime? @db.Date
@@ -62,35 +58,52 @@ model Epi {
   quantidade       Int
   quantidadeMinima Int       @map("quantidade_minima")
   dataCompra       DateTime? @map("data_compra") @db.Date
-  vidaUtil         DateTime? @map("vida_util") @db.Date
+  preco            Decimal?  @map("preco") @db.Decimal(10, 2)
+  vidaUtil         Int?      @map("vida_util")
+  status           Boolean   @default(true) @map("status")
   createdAt        DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
-  empresa   Company   @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
-  processos Process[]
-  logs      Log[]
+  empresa     Company      @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  processEpis ProcessEpi[]
+  logs        Log[]
 
   @@map("epi")
 }
 
 model Process {
   idProcesso    String    @id @default(uuid()) @map("id_processo") @db.VarChar(36)
-  idColaborador String?   @map("id_colaborador") @db.VarChar(36)
-  idEpi         String?   @map("id_epi") @db.VarChar(36)
+  idEmpresa     String    @map("id_empresa") @db.VarChar(36)
+  idColaborador String    @map("id_colaborador") @db.VarChar(36)
   dataAgendada  DateTime  @map("data_agendada") @db.Date
   dataEntrega   DateTime? @map("data_entrega") @db.Timestamp(0)
   statusEntrega Boolean   @default(false) @map("status_entrega")
   pdfUrl        String?   @map("pdf_url") @db.VarChar(255)
   dataDevolucao DateTime? @map("data_devolucao") @db.Timestamp(0)
-  vidaUtil      DateTime? @map("vida_util") @db.Date
+  observacoes   String?   @map("observacoes") @db.Text
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
 
-  colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: SetNull)
-  epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: SetNull)
+  empresa     Company           @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
+  colaborador Collaborator      @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
+  processEpis ProcessEpi[]
   logs        Log[]
 
   @@map("process")
+}
+
+model ProcessEpi {
+  idProcessEpi String @id @default(uuid()) @map("id_process_epi") @db.VarChar(36)
+  idProcesso   String @map("id_processo") @db.VarChar(36)
+  idEpi        String @map("id_epi") @db.VarChar(36)
+  quantidade   Int    @default(1)
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  processo Process @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
+  epi      Epi     @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
+
+  @@unique([idProcesso, idEpi])
+  @@map("process_epi")
 }
 
 model Biometria {
@@ -112,9 +125,6 @@ model User {
   email         String    @unique @db.VarChar(255)
   senha         String    @db.VarChar(255)
   statusUser    Boolean   @map("status_user")
-  avatar        String?   @map("avatar") @db.VarChar(255)
-  department    String?   @map("department") @db.VarChar(100)
-  position      String?   @map("position") @db.VarChar(100)
   lastLoginAt   DateTime? @map("last_login_at") @db.DateTime(0)
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(0)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.DateTime(0)
@@ -124,11 +134,6 @@ model User {
   authCompanies AuthCompany[]
 
   @@map("user")
-}
-
-enum UserStatus {
-  ATIVO
-  INATIVO
 }
 
 model Log {

@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+
+# Coverage reports
+coverage/
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env*
+
+# Prisma
+prisma/migrations/
+node_modules/.prisma/
+
+# Generated files
+*.min.js
+*.min.css
+*.bundle.js
+
+# Documentation that should maintain original formatting
+CHANGELOG.md
+LICENSE
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+*.zip
+*.tar.gz

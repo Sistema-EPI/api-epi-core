@@ -5,12 +5,11 @@ import { randomUUID } from 'crypto';
 import logger from './Logger';
 import {
   PrismaClientKnownRequestError,
-  PrismaClientValidationError
+  PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
 
-
 export default function RequestHandler(
-  controller: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  controller: (req: Request, res: Response, next: NextFunction) => Promise<any>,
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -25,23 +24,26 @@ export function ErrorMiddleware(
   error: unknown,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
-
   if (error instanceof ZodError) {
-    res.status(400).json({ error: error.errors });
+    res.status(400).json({ success: false, error: error.errors });
     return;
   }
 
   if (error instanceof PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       res.status(409).json({
+        success: false,
         message: 'Duplicated entry',
-        errors: error.meta?.target ? [`Unique constraint failed on: ${error.meta.target}`] : ['Duplicate entry detected'],
+        errors: error.meta?.target
+          ? [`Unique constraint failed on: ${error.meta.target}`]
+          : ['Duplicate entry detected'],
       });
       return;
     }
     res.status(400).json({
+      success: false,
       message: 'Database error',
       errors: [error.message],
     });
@@ -50,6 +52,7 @@ export function ErrorMiddleware(
 
   if (error instanceof PrismaClientValidationError) {
     res.status(400).json({
+      success: false,
       message: 'Validation error',
       errors: [error.message],
     });
@@ -57,13 +60,14 @@ export function ErrorMiddleware(
   }
 
   if (error instanceof HttpError) {
-    res.status(error.statusCode).json({ message: error.message });
+    res.status(error.statusCode).json({ success: false, message: error.message });
     return;
   }
 
   const errorId = randomUUID();
   logger.error(`Error ${errorId}:`, error);
   res.status(500).json({
-    message: `Internal server error. Ref: ${errorId}`
+    success: false,
+    message: `Internal server error. Ref: ${errorId}`,
   });
 }
