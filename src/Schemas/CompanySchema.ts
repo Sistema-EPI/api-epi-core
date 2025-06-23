@@ -21,7 +21,7 @@ export const CreateCompanySchema = z.object({
   cep: z.string().length(8),
   logradouro: z.string().optional(),
   email: z.string().email(),
-  telefone: z.string().min(10).max(20).optional(),
+  telefone: z.string().optional(),
   status_empresa: z.boolean().default(true),
 });
 
