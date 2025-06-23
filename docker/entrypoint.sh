@@ -4,13 +4,14 @@ set -e
 
 echo "=== Iniciando aplicação ==="
 
-# Carrega variáveis do arquivo .env
-if [ -f .env ]; then
-    echo "📄 Carregando variáveis do arquivo .env..."
-    export $(cat .env | grep -v '^#' | xargs)
-else
-    echo "⚠️  Arquivo .env não encontrado"
-fi
+# Em produção, as variáveis são passadas pelo sistema de deploy
+echo "📄 Verificando variáveis de ambiente..."
+echo "🔍 DEBUG - Variáveis recebidas:"
+echo "  DATABASE_URL: ${DATABASE_URL:0:20}..."
+echo "  NODE_ENV: $NODE_ENV"
+echo "  ENV: $ENV"
+echo "  PORT: $PORT"
+echo "  CORS_ORIGIN: $CORS_ORIGIN"
 
 
 # Verifica se DATABASE_URL está definida
@@ -25,8 +26,8 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$ENV" ]; then
-    echo "❌ ERRO: ENVIRONMENT não está definido!"
-    exit 1
+    echo "⚠️  AVISO: ENV não está definida, usando NODE_ENV como fallback"
+    export ENV=$NODE_ENV
 fi
 
 if [ "$ENV" == "prod" ]; then
@@ -39,7 +40,6 @@ if [ "$ENV" == "prod" ]; then
 
     echo "Iniciando aplicação..."
     node dist/server.js
-    exit 1
 fi
 
 if [ "$ENV" == "homolog" ]; then
@@ -55,7 +55,12 @@ if [ "$ENV" == "homolog" ]; then
     # Inicia a aplicação
     echo "🚀 Iniciando servidor..."
     node dist/server.js
-    exit 1
+fi
+
+# Se nenhum ENV específico, inicia direto
+if [ "$ENV" != "prod" ] && [ "$ENV" != "homolog" ]; then
+    echo "🚀 Iniciando servidor (ENV: $ENV)..."
+    node dist/server.js
 fi
 
 
