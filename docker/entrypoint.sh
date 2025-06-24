@@ -48,9 +48,9 @@ if [ "$ENV" == "homolog" ]; then
 fi
 
 # Se nenhum ENV específico, inicia direto
-# if [ "$ENV" != "prod" ] && [ "$ENV" != "homolog" ]; then
-#     echo "🚀 Iniciando servidor (ENV: $ENV)..."
-#     node dist/server.js
+if [ "$ENV" != "prod" ] && [ "$ENV" != "homolog" ]; then
+    echo "🚀 Iniciando servidor (ENV: $ENV)..."
+    node dist/server.js
 fi
 
 

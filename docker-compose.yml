@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   api-epi-core:
     container_name: api-epi-core

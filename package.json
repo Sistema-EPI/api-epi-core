@@ -6,7 +6,7 @@
     "clear:prod": "rm -rf dist",
     "build": "npm run clear:prod && tsc",
     "build-local": "npm run clear && tsc",
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --ignore-watch node_modules --no-notify src/server.ts",
+    "dev": "tsx watch --inspect src/server.ts",
     "test": "npm run clear && tsc && node --test tests/index.test.mjs",
     "lint": "eslint . --ext .ts,.js",
     "lint:fix": "eslint . --ext .ts,.js --fix",
@@ -15,11 +15,11 @@
     "typecheck": "tsc --noEmit",
     "code:check": "npm run typecheck && npm run lint && npm run format:check",
     "code:fix": "npm run lint:fix && npm run format",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts",
-    "seed-prd": "ts-node prisma/seed-prd.ts"
+    "seed": "tsx prisma/seed.ts",
+    "seed-prd": "tsx prisma/seed-prd.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -28,17 +28,17 @@
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^22.15.3",
-    "@types/pino": "^7.0.5",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
-    "eslint": "^8.57.1",
+    "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.5.3",
-    "ts-node-dev": "^2.0.0",
+    "rimraf": "^6.0.1",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
@@ -56,7 +56,7 @@
     "pino-pretty": "^13.0.0",
     "prisma": "^6.7.0",
     "rate-limiter-flexible": "^7.1.1",
-    "swagger-jsdoc": "^6.2.8",
+    "swagger-jsdoc": "^7.0.0-rc.6",
     "swagger-ui-express": "^5.0.1",
     "zod": "^3.24.3"
   },
