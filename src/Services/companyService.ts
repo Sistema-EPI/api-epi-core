@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
-import crypto from 'crypto';
+import { generateAndSetApiKey } from '../Helpers/GenerateApiKey';
 
 const prisma = new PrismaClient();
 
@@ -153,9 +153,11 @@ export class CompanyService {
         logradouro: data.logradouro,
         telefone: data.telefone,
         statusEmpresa: data.status_empresa,
-        apiKey: crypto.randomUUID(),
+        apiKey: '',
       },
     });
+
+    const apiKey = await generateAndSetApiKey(company.idEmpresa);
 
     logger.info(`Nova empresa criada (id: ${company.idEmpresa})`);
 
@@ -164,6 +166,7 @@ export class CompanyService {
       nomeFantasia: company.nomeFantasia,
       cnpj: company.cnpj,
       statusEmpresa: company.statusEmpresa,
+      apiKey
     };
   }
 
