@@ -1,7 +1,6 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
-import path from 'path';
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -623,6 +622,24 @@ const options: swaggerJSDoc.Options = {
               type: 'boolean',
               description: 'Novo status do usuário',
               example: true,
+            },
+          },
+        },
+        CreateAdminUserRequest: {
+          type: 'object',
+          required: ['email', 'senha'],
+          properties: {
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email do usuário administrador',
+              example: 'admin@sistema.com',
+            },
+            senha: {
+              type: 'string',
+              minLength: 6,
+              description: 'Senha do usuário administrador (mínimo 6 caracteres)',
+              example: 'adminPassword123',
             },
           },
         },

@@ -23,6 +23,18 @@ async function main() {
   console.log('👥 Criando roles...');
   const roles = [
     {
+      cargo: 'master',
+      permissao: {
+        read: true,
+        create: true,
+        delete: true,
+        update: true,
+        admin: true,
+        company: true,
+        system: true,
+      },
+    },
+    {
       cargo: 'admin',
       permissao: {
         read: true,
@@ -103,9 +115,21 @@ async function main() {
     empresasCriadas.push(empresaCriada);
   }
 
-  // Criar usuários (3 por empresa)
+  // Criar usuários (3 por empresa + 1 master)
   console.log('👤 Criando usuários...');
   const senhaHash = await bcrypt.hash('123456', 10);
+
+  // Criar usuário master primeiro
+  const masterUser = await prisma.user.create({
+    data: {
+      name: 'Administrador Master',
+      email: 'master@system.admin',
+      senha: senhaHash,
+      statusUser: true,
+    },
+  });
+
+  console.log('👑 Usuário master criado:', masterUser.email);
 
   const usuariosData = [
     // TechSafe Solutions
@@ -152,6 +176,18 @@ async function main() {
         idUser: usuario.idUser,
         idEmpresa: empresasCriadas[empresaIndex].idEmpresa,
         cargo: userData.cargo,
+      },
+    });
+  }
+
+  // Criar relacionamentos master (acesso a todas as empresas)
+  console.log('👑 Criando relacionamentos master...');
+  for (const empresa of empresasCriadas) {
+    await prisma.authCompany.create({
+      data: {
+        idUser: masterUser.idUser,
+        idEmpresa: empresa.idEmpresa,
+        cargo: 'master',
       },
     });
   }
