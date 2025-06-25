@@ -13,7 +13,6 @@ interface DashboardStats {
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
-      // Verificar se a empresa existe
       const empresa = await prisma.company.findUnique({
         where: { idEmpresa: companyId },
       });
