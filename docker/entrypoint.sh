@@ -2,16 +2,7 @@
 
 set -e
 
-echo "=== Iniciando aplicação ==="
-
-# Carrega variáveis do arquivo .env
-if [ -f .env ]; then
-    echo "📄 Carregando variáveis do arquivo .env..."
-    export $(cat .env | grep -v '^#' | xargs)
-else
-    echo "⚠️  Arquivo .env não encontrado"
-fi
-
+echo "=== Iniciando aplicação no Docker ==="
 
 # Verifica se DATABASE_URL está definida
 if [ -z "$DATABASE_URL" ]; then
@@ -25,21 +16,20 @@ if [ -z "$NODE_ENV" ]; then
 fi
 
 if [ -z "$ENV" ]; then
-    echo "❌ ERRO: ENVIRONMENT não está definido!"
-    exit 1
+    echo "⚠️  AVISO: ENV não está definida, usando NODE_ENV como fallback"
+    export ENV=$NODE_ENV
 fi
 
 if [ "$ENV" == "prod" ]; then
 
     echo "Aplicando migrations..."
-    npx prisma migrate deploy
+    npx prisma migrate deploy || echo "⚠️  Falha nas migrations, mas continuando..."
 
     echo "Executando seed..."
-    npx prisma db seed-prd || true
+    npx tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando..."
 
     echo "Iniciando aplicação..."
     node dist/server.js
-    exit 1
 fi
 
 if [ "$ENV" == "homolog" ]; then
@@ -50,12 +40,17 @@ if [ "$ENV" == "homolog" ]; then
 
     # Executa o seed (opcional - remova se não quiser sempre executar)
     echo "🌱 Executando seed..."
-    npx prisma db seed || true || echo "⚠️  Seed falhou, mas continuando..."
+    npx tsx prisma/seed.ts || true || echo "⚠️  Seed falhou, mas continuando..."
 
     # Inicia a aplicação
     echo "🚀 Iniciando servidor..."
     node dist/server.js
-    exit 1
+fi
+
+# Se nenhum ENV específico, inicia direto
+if [ "$ENV" != "prod" ] && [ "$ENV" != "homolog" ]; then
+    echo "🚀 Iniciando servidor (ENV: $ENV)..."
+    node dist/server.js
 fi
 
 

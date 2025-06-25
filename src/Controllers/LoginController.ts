@@ -2,13 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { LoginSchema } from '../Schemas/LoginSchema';
 import { AuthService } from '../Services/authService';
 import { CompanyService } from '../Services/companyService';
-import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 
 const authService = new AuthService();
 const companyService = new CompanyService();
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response, _next: NextFunction) {
   try {
     const { email, password } = LoginSchema.parse(req.body);
     const apiKey = req.headers['x-api-token'] as string;
@@ -45,7 +44,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function refresh(req: Request, res: Response, next: NextFunction) {
+export async function refresh(req: Request, res: Response, _next: NextFunction) {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     const apiKey = req.headers['x-api-token'] as string;
@@ -78,7 +77,7 @@ export async function refresh(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export async function getCompanyInfo(req: Request, res: Response, next: NextFunction) {
+export async function getCompanyInfo(req: Request, res: Response, _next: NextFunction) {
   try {
     const companyId = (req as any).company?.idEmpresa;
 

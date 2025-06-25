@@ -1,28 +1,3 @@
-# Workflow de Formatação e Linting
-
-Este projeto utiliza **Prettier** e **ESLint** para manter um código consistente
-e de alta qualidade.
-
-## 🛠 Ferramentas Utilizadas
-
-### Prettier (Formatador de Código)
-
-- **Função**: Formatar automaticamente o código para manter consistência visual
-- **Configuração**: `.prettierrc`
-- **Arquivos ignorados**: `.prettierignore`
-
-### ESLint (Linter)
-
-- **Função**: Analisar o código em busca de erros, problemas de qualidade e
-  padrões
-- **Configuração**: `.eslintrc.json`
-- **Arquivos ignorados**: `.eslintignore`
-
-### Husky + lint-staged
-
-- **Função**: Executar formatação e linting automaticamente nos commits
-- **Configuração**: `.husky/pre-commit` e `package.json` (lint-staged)
-
 ## 🚀 Scripts Disponíveis
 
 ```bash
@@ -40,77 +15,6 @@ npm run typecheck       # Verificar tipos TypeScript
 # Comandos combinados
 npm run code:check      # Verificar tipos + lint + formatação
 npm run code:fix        # Corrigir tipos + lint + formatação
-```
-
-## ⚙️ Configurações
-
-### Prettier (`.prettierrc`)
-
-```json
-{
-  "printWidth": 100,
-  "tabWidth": 2,
-  "useTabs": false,
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "arrowParens": "avoid"
-}
-```
-
-### ESLint (`.eslintrc.json`)
-
-- Extends: `eslint:recommended`, `@typescript-eslint/recommended`, `prettier`
-- Parser: `@typescript-eslint/parser`
-- Plugins: `@typescript-eslint`, `prettier`
-
-### Regras Principais
-
-- ✅ Prettier formatting é obrigatório
-- ⚠️ Console.log permitido apenas para warn/error
-- ❌ Variáveis não utilizadas (exceto se começarem com `_`)
-- ❌ Uso de `var` (usar `const`/`let`)
-- ❌ Uso de `any` explícito
-
-## 🔧 VS Code Integration
-
-### Extensões Recomendadas
-
-O arquivo `.vscode/extensions.json` inclui:
-
-- ESLint
-- Prettier - Code formatter
-
-### Configurações do Workspace
-
-O arquivo `.vscode/settings.json` configura:
-
-- Formatação automática ao salvar
-- ESLint como formatador padrão para TypeScript
-- Correção automática ao salvar
-
-## 🎯 Git Hooks
-
-### Pre-commit Hook
-
-Automaticamente executa:
-
-1. **Prettier** - Formatar arquivos modificados
-2. **ESLint** - Verificar e corrigir problemas quando possível
-
-Se houver erros de linting que não podem ser corrigidos automaticamente, o
-commit será **bloqueado**.
-
-### Como funciona o lint-staged
-
-```json
-{
-  "lint-staged": {
-    "*.{ts,js}": ["eslint --fix", "prettier --write"],
-    "*.{json,md,yml,yaml}": ["prettier --write"]
-  }
-}
 ```
 
 ## 📝 Workflow para Desenvolvedores

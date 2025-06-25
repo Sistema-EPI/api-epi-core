@@ -223,7 +223,7 @@ user.post(
   '/:userId/connect/:companyId',
   verifyToken,
   verifyPermission(['user:update']),
-  RequestHandler(UserController.connectUserToCompanyHandler),
+  RequestHandler(UserController.connectUserToCompany),
 );
 
 /**
@@ -277,7 +277,7 @@ user.put(
   '/:userId/update/password',
   verifyToken,
   verifyPermission(['user:update']),
-  RequestHandler(UserController.updatePassword),
+  RequestHandler(UserController.updateUserPassword),
 );
 
 /**
@@ -379,6 +379,116 @@ user.delete(
   verifyToken,
   verifyPermission(['user:delete']),
   RequestHandler(UserController.deleteUser),
+);
+
+/**
+ * @swagger
+ * /v1/user/company/{companyId}:
+ *   get:
+ *     summary: Buscar usuários por empresa
+ *     description: Retorna uma lista de usuários vinculados a uma empresa específica
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: companyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID único da empresa
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: string
+ *         description: Número da página (opcional)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: string
+ *         description: Limite de registros por página (opcional)
+ *     responses:
+ *       200:
+ *         description: Lista de usuários da empresa retornada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Empresa não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+user.get(
+  '/company/:companyId',
+  verifyToken,
+  verifyPermission(['user:read']),
+  RequestHandler(UserController.getUsersByCompany),
+);
+
+/**
+ * @swagger
+ * /v1/user/admin/create:
+ *   post:
+ *     summary: Criar usuário administrador
+ *     description: Cria um novo usuário com privilégios de administrador do sistema
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateAdminUserRequest'
+ *     responses:
+ *       201:
+ *         description: Usuário administrador criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Dados inválidos fornecidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Usuário com email já existe
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+user.post(
+  '/admin/create',
+  verifyToken,
+  verifyPermission(['admin:create']),
+  RequestHandler(UserController.createAdminUser),
 );
 
 export default user;

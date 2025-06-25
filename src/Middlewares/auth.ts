@@ -199,6 +199,10 @@ export const verifyPermission = (requiredActions: string[]) => {
       for (const action of requiredActions) {
         const [resource, operation] = action.split(':');
 
+        if (userRole.cargo === 'master') {
+          continue; // Pula para próxima validação - master tem acesso a tudo
+        }
+
         switch (operation) {
           case 'create':
             if (!permissions.create) {
@@ -232,6 +236,33 @@ export const verifyPermission = (requiredActions: string[]) => {
               res.status(403).json({
                 error: 'Acesso negado',
                 message: `Usuário não tem permissão para excluir ${resource}`,
+              });
+              return;
+            }
+            break;
+          case 'admin':
+            if (!permissions.admin && userRole.cargo !== 'master') {
+              res.status(403).json({
+                error: 'Acesso negado',
+                message: `Usuário não tem permissão de administrador para ${resource}`,
+              });
+              return;
+            }
+            break;
+          case 'company':
+            if (!permissions.company && userRole.cargo !== 'master') {
+              res.status(403).json({
+                error: 'Acesso negado',
+                message: `Usuário não tem permissão para gerenciar ${resource}`,
+              });
+              return;
+            }
+            break;
+          case 'system':
+            if (!permissions.system && userRole.cargo !== 'master') {
+              res.status(403).json({
+                error: 'Acesso negado',
+                message: `Usuário não tem permissão de sistema para ${resource}`,
               });
               return;
             }
