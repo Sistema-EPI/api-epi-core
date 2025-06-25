@@ -8,6 +8,7 @@ import {
   GetUsersSchema,
   GetUsersByCompanySchema,
   UpdateUserStatusSchema,
+  UpdateUserSchema,
   CreateAdminUserSchema,
 } from '../Schemas/UserSchema';
 import HttpResponse from '../Helpers/HttpResponse';
@@ -84,6 +85,23 @@ export async function updateUserStatus(req: Request, res: Response, _next: NextF
     return res.status(response.statusCode).json(response.payload);
   } catch (err) {
     console.error('Error in updateUserStatus:', err);
+    _next(err);
+  }
+}
+
+export async function updateUser(req: Request, res: Response, _next: NextFunction) {
+  try {
+    const { params, body } = UpdateUserSchema.parse(req);
+    const result = await userService.updateUser(params.userId, body);
+
+    const response = HttpResponse.Ok({
+      message: 'Usuário atualizado com sucesso',
+      data: result,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in updateUser:', err);
     _next(err);
   }
 }

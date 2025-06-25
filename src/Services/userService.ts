@@ -39,6 +39,12 @@ interface UpdatePasswordData {
   novaSenha: string;
 }
 
+interface UpdateUserData {
+  name?: string;
+  email?: string;
+  senha?: string;
+}
+
 export class UserService {
   async getAllUsers(params: GetUsersParams) {
     const page = parseInt(params.page || '1', 10);
@@ -187,6 +193,63 @@ export class UserService {
       `Status do usuário alterado: ${user.email} - ${data.statusUser ? 'ativado' : 'desativado'}`,
       { userId },
     );
+
+    return {
+      idUser: updatedUser.idUser,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      statusUser: updatedUser.statusUser,
+    };
+  }
+
+  async updateUser(userId: string, data: UpdateUserData) {
+    const user = await prisma.user.findUnique({
+      where: { idUser: userId, deletedAt: null },
+    });
+
+    if (!user) {
+      throw HttpError.NotFound('Usuário não encontrado');
+    }
+
+    // Verificar se o email já existe (se estiver sendo alterado)
+    if (data.email && data.email !== user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: data.email, deletedAt: null },
+      });
+
+      if (existingUser) {
+        throw HttpError.BadRequest('Email já está em uso por outro usuário');
+      }
+    }
+
+    // Preparar dados para atualização
+    const updateData: {
+      name?: string;
+      email?: string;
+      senha?: string;
+    } = {};
+
+    if (data.name !== undefined) {
+      updateData.name = data.name;
+    }
+
+    if (data.email !== undefined) {
+      updateData.email = data.email;
+    }
+
+    if (data.senha !== undefined) {
+      updateData.senha = await bcrypt.hash(data.senha, 10);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { idUser: userId },
+      data: updateData,
+    });
+
+    logger.info(`Usuário atualizado: ${updatedUser.email}`, {
+      userId,
+      updatedFields: Object.keys(updateData),
+    });
 
     return {
       idUser: updatedUser.idUser,

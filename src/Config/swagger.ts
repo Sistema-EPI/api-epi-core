@@ -625,6 +625,30 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        UpdateUserRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              minLength: 1,
+              description: 'Nome do usuário',
+              example: 'João Silva',
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Email do usuário',
+              example: 'joao.silva@empresa.com',
+            },
+            senha: {
+              type: 'string',
+              minLength: 6,
+              description: 'Nova senha do usuário (mínimo 6 caracteres)',
+              example: 'novaSenha123',
+            },
+          },
+          description: 'Pelo menos um campo deve ser fornecido',
+        },
         CreateAdminUserRequest: {
           type: 'object',
           required: ['email', 'senha'],

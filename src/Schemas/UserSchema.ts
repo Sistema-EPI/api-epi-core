@@ -81,3 +81,21 @@ export const CreateAdminUserSchema = z.object({
 });
 
 export const ConnectUserToCompanyHandlerSchema = ConnectUserToCompanySchema;
+
+export const UpdateUserSchema = z.object({
+  params: z.object({
+    userId: z.string().uuid(),
+  }),
+  body: z
+    .object({
+      name: z.string().min(1, 'Nome não pode estar vazio').optional(),
+      email: z.string().email('Email deve ter formato válido').optional(),
+      senha: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres').optional(),
+    })
+    .refine(
+      data => data.name !== undefined || data.email !== undefined || data.senha !== undefined,
+      {
+        message: 'Pelo menos um campo deve ser fornecido (name, email ou senha)',
+      },
+    ),
+});
