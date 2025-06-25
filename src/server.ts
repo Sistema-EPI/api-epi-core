@@ -1,48 +1,13 @@
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-
-console.log('=== Iniciando aplicação ===');
-
-// Verifica se arquivo .env existe antes de tentar carregá-lo
-const envPath = path.join(process.cwd(), '.env');
-if (fs.existsSync(envPath)) {
-  console.log('📄 Carregando variáveis do arquivo .env...');
-  dotenv.config();
-  console.log('✅ Arquivo .env carregado com sucesso');
-} else {
-  console.log('📄 Arquivo .env não encontrado, usando variáveis de ambiente do sistema');
-}
-
+import { env } from './Schemas/EnvSchema';
 import express from 'express';
-
-console.log('� Verificando variáveis de ambiente disponíveis...');
-console.log('🔍 Variáveis disponíveis:', {
-  NODE_ENV: process.env.NODE_ENV,
-  ENV: process.env.ENV,
-  DATABASE_URL: process.env.DATABASE_URL ? 'DEFINIDA' : 'NÃO DEFINIDA',
-  PORT: process.env.PORT,
-  CORS_ORIGIN: process.env.CORS_ORIGIN ? 'DEFINIDA' : 'NÃO DEFINIDA',
-  JWT_SECRET: process.env.JWT_SECRET ? 'DEFINIDA' : 'NÃO DEFINIDA',
-});
-
-console.log('📋 Carregando schema de validação...');
-import EnvSchema from './Schemas/EnvSchema';
-console.log('✅ Schema carregado, validando variáveis...');
-export const ENV = EnvSchema.parse(process.env);
-console.log('✅ Variáveis validadas com sucesso!');
-
 import logger from './Helpers/Logger';
-console.log('✅ Logger carregado');
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { PrismaClient } from '@prisma/client';
 import { setupSwagger } from './Config/swagger';
-console.log('✅ Imports carregados, inicializando Prisma...');
-export const prisma = new PrismaClient();
-console.log('✅ Prisma inicializado!');
 
-// Rotas
+export const prisma = new PrismaClient();
+
 import CompanyRouter from './Routers/CompanyRouter';
 import CollaboratorRouter from './Routers/CollaboratorRouter';
 import EpiRouter from './Routers/EpiRouter';
@@ -52,7 +17,6 @@ import BiometriaRouter from './Routers/BiometriaRouter';
 import CARouter from './Routers/CARouter';
 import ProcessRouter from './Routers/ProcessRouter';
 
-// Middlewares
 import { ErrorMiddleware } from './Helpers/RequestHandler';
 
 const app = express();
@@ -60,7 +24,7 @@ const app = express();
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-const ALLOWED_ORIGINS = ENV.CORS_ORIGIN.split(',').map(origin => origin.trim());
+const ALLOWED_ORIGINS = env.CORS_ORIGIN.split(',').map((origin: string) => origin.trim());
 
 app.use(
   cors({
@@ -84,7 +48,6 @@ app.use(cookieParser());
 const apiV1Router = express.Router();
 app.use('/v1', apiV1Router);
 
-// Rotas
 apiV1Router.use('/auth', AuthRouter);
 apiV1Router.use('/company', CompanyRouter);
 apiV1Router.use('/collaborator', CollaboratorRouter);
@@ -94,30 +57,27 @@ apiV1Router.use('/user', UserRouter);
 apiV1Router.use('/consulta-epi', CARouter);
 apiV1Router.use('/process', ProcessRouter);
 
-// Configurar Swagger
 setupSwagger(app);
 
-// Erros
 app.use(ErrorMiddleware);
 
 async function startServer() {
   try {
-    console.log('🔌 Tentando conectar ao banco de dados...');
+    logger.info('Conectando ao banco de dados...');
     await prisma.$connect();
-    console.log('✅ Conectado ao banco de dados com sucesso!');
     logger.info('Conectado ao banco de dados com sucesso.');
 
-    console.log(`🚀 Iniciando servidor na porta ${ENV.PORT}...`);
-    app.listen(ENV.PORT, () => {
-      console.log(`✅ API rodando na porta ${ENV.PORT}`);
-      logger.info(`API is running on port ${ENV.PORT}`);
+    logger.info(`Iniciando servidor na porta ${env.PORT}...`);
+    app.listen(env.PORT, () => {
+      logger.info(`API is running on port ${env.PORT}`);
     });
   } catch (error) {
-    console.error('❌ Erro ao conectar com o banco de dados:', error);
     logger.error('Erro ao conectar com o banco de dados:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
-console.log('🚀 Iniciando startServer()...');
-startServer();
+startServer().catch(error => {
+  logger.error('Falha ao iniciar servidor:', error);
+  process.exit(1);
+});

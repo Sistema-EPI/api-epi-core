@@ -1,25 +1,37 @@
-import { ENV } from '../server';
+import { env } from '../Schemas/EnvSchema';
 import logger from '../Helpers/Logger';
 import { CAResponse } from '../Schemas/CASchema';
 
 export class CAService {
-  private apiUrl: string;
-  private apiKey: string;
-  private apiToken: string;
+  private apiUrl?: string;
+  private apiKey?: string;
+  private apiToken?: string;
+  private isConfigured: boolean;
 
   constructor() {
-    if (!ENV.API_CONSULTA_URL || !ENV.API_KEY || !ENV.API_TOKEN) {
-      throw new Error(
-        'Variáveis de ambiente da API externa não configuradas: API_CONSULTA_URL, API_KEY, API_TOKEN',
+    this.isConfigured = !!(env.API_CONSULTA_URL && env.API_KEY && env.API_TOKEN);
+
+    if (!this.isConfigured) {
+      logger.warn(
+        'Serviço de consulta CA não configurado - variáveis API_CONSULTA_URL, API_KEY ou API_TOKEN ausentes',
       );
+      return;
     }
 
-    this.apiUrl = ENV.API_CONSULTA_URL;
-    this.apiKey = ENV.API_KEY;
-    this.apiToken = ENV.API_TOKEN;
+    this.apiUrl = env.API_CONSULTA_URL!;
+    this.apiKey = env.API_KEY!;
+    this.apiToken = env.API_TOKEN!;
+
+    logger.info('Serviço de consulta CA configurado com sucesso');
   }
 
   async consultarCA(ca: string): Promise<CAResponse> {
+    if (!this.isConfigured || !this.apiUrl || !this.apiKey || !this.apiToken) {
+      throw new Error(
+        'Serviço de consulta CA não está configurado. Verifique as variáveis de ambiente: API_CONSULTA_URL, API_KEY, API_TOKEN',
+      );
+    }
+
     try {
       const url = `${this.apiUrl}/ca/${ca}`;
 
@@ -38,7 +50,7 @@ export class CAService {
         throw new Error(`Erro na API externa: ${response.status} - ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as CAResponse;
 
       logger.info(`Resposta recebida da API externa para CA: ${ca}`);
 

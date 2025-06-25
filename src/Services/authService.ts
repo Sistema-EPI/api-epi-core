@@ -1,20 +1,26 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { generateToken } from '../Helpers/Jwt';
-import EnvSchema from '../Schemas/EnvSchema';
+import { env } from '../Schemas/EnvSchema';
+
+interface JWTPayload {
+  userId: string;
+  companyId: string;
+  email: string;
+  role: string;
+  permissions: any;
+}
 
 const prisma = new PrismaClient();
-const ENV = EnvSchema.parse(process.env);
 
 export class AuthService {
   async authenticate(email: string, password: string, apiKey: string) {
-    // 1. Validar API Key e obter company
     const company = await this.validateApiKey(apiKey);
     if (!company) {
       throw new Error('API Key inválida');
     }
 
-    // 2. Buscar usuário
     const user = await prisma.user.findUnique({
       where: {
         email,
@@ -26,18 +32,15 @@ export class AuthService {
       throw new Error('Credenciais inválidas');
     }
 
-    // 3. Validar senha
     const isPasswordValid = await bcrypt.compare(password, user.senha);
     if (!isPasswordValid) {
       throw new Error('Credenciais inválidas');
     }
 
-    // 4. Verificar se usuário está ativo
     if (!user.statusUser) {
       throw new Error('Usuário inativo');
     }
 
-    // 5. Verificar se usuário pertence à empresa da API Key
     const authCompany = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -54,13 +57,10 @@ export class AuthService {
       throw new Error('Usuário não autorizado para esta empresa');
     }
 
-    // 6. Gerar JWT
     const token = this.generateJWT(user, company, authCompany.role);
 
-    // 7. Atualizar último login
     await this.updateLastLogin(user.idUser);
 
-    // 8. Retornar dados
     return {
       token,
       user: {
@@ -81,19 +81,16 @@ export class AuthService {
   }
 
   async refreshToken(token: string, apiKey: string) {
-    // 1. Validar API Key
     const company = await this.validateApiKey(apiKey);
     if (!company) {
       throw new Error('API Key inválida');
     }
 
-    // 2. Verificar JWT
-    const decoded = this.verifyJWT(token);
+    const decoded = this.verifyJWT(token) as JWTPayload;
     if (decoded.companyId !== company.idEmpresa) {
       throw new Error('Token inválido para esta empresa');
     }
 
-    // 3. Buscar usuário atualizado
     const user = await prisma.user.findUnique({
       where: {
         idUser: decoded.userId,
@@ -105,7 +102,6 @@ export class AuthService {
       throw new Error('Usuário inválido ou inativo');
     }
 
-    // 4. Buscar role atualizada
     const authCompany = await prisma.authCompany.findUnique({
       where: {
         idUser_idEmpresa: {
@@ -122,7 +118,6 @@ export class AuthService {
       throw new Error('Usuário não autorizado para esta empresa');
     }
 
-    // 5. Gerar novo token
     const newToken = this.generateJWT(user, company, authCompany.role);
 
     return {
@@ -157,15 +152,14 @@ export class AuthService {
         role: role.cargo,
         permissions: role.permissao,
       },
-      ENV.JWT_EXPIRATION,
+      env.JWT_EXPIRATION,
     );
   }
 
   private verifyJWT(token: string) {
     try {
-      const jwt = require('jsonwebtoken');
-      return jwt.verify(token, ENV.JWT_SECRET);
-    } catch (error) {
+      return jwt.verify(token, env.JWT_SECRET);
+    } catch {
       throw new Error('Token inválido ou expirado');
     }
   }
