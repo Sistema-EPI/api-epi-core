@@ -20,37 +20,49 @@ if [ -z "$ENV" ]; then
     export ENV=$NODE_ENV
 fi
 
-if [ "$ENV" == "prod" ]; then
+echo "🔧 Ambiente: $ENV"
+echo "🗄️  Database URL: ${DATABASE_URL%%@*}@***"
 
-    echo "Aplicando migrations..."
-    npx prisma migrate deploy || echo "⚠️  Falha nas migrations, mas continuando..."
+# Gera o cliente Prisma (garantindo que está atualizado)
+echo "🔄 Gerando cliente Prisma..."
+npx prisma generate
 
-    echo "Executando seed..."
-    npx tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando..."
+if [ "$ENV" = "prod" ]; then
+    echo "🚀 Ambiente de PRODUÇÃO"
 
-    echo "Iniciando aplicação..."
-    node dist/server.js
-fi
+    echo "📦 Aplicando migrations..."
+    npx prisma migrate deploy
 
-if [ "$ENV" == "homolog" ]; then
-    # Executa as migrações do Prisma
-    echo "🗄️  Executando migrações do Prisma..."
-    npx prisma migrate reset --force --skip-seed || true
-    npx prisma migrate dev --name init --skip-seed || true
-
-    # Executa o seed (opcional - remova se não quiser sempre executar)
     echo "🌱 Executando seed..."
-    npx tsx prisma/seed.ts || true || echo "⚠️  Seed falhou, mas continuando..."
+    npx tsx prisma/seed.ts
 
-    # Inicia a aplicação
-    echo "🚀 Iniciando servidor..."
-    node dist/server.js
+    echo "✅ Iniciando aplicação..."
+    exec node dist/server.js
+
+elif [ "$ENV" = "homolog" ]; then
+    echo "🧪 Ambiente de HOMOLOGAÇÃO"
+
+    echo "🗄️  Resetando database..."
+    npx prisma migrate reset --force --skip-seed
+
+    echo "📦 Aplicando migrations..."
+    npx prisma migrate dev --name "init-homolog" --skip-seed
+
+    echo "🌱 Executando seed..."
+    npx tsx prisma/seed.ts
+
+    echo "✅ Iniciando aplicação..."
+    exec node dist/server.js
+
+else
+    echo "🔧 Ambiente: $ENV"
+
+    echo "📦 Aplicando migrations..."
+    npx prisma migrate deploy || true
+
+    echo "🌱 Executando seed..."
+    npx tsx prisma/seed.ts || true
+
+    echo "✅ Iniciando aplicação..."
+    exec node dist/server.js
 fi
-
-# Se nenhum ENV específico, inicia direto
-if [ "$ENV" != "prod" ] && [ "$ENV" != "homolog" ]; then
-    echo "🚀 Iniciando servidor (ENV: $ENV)..."
-    node dist/server.js
-fi
-
-

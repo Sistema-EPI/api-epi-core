@@ -341,6 +341,65 @@ user.put(
 
 /**
  * @swagger
+ * /v1/user/{userId}/update:
+ *   put:
+ *     summary: Atualizar dados do usuário
+ *     description: Atualiza nome, email e/ou senha do usuário
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: ID único do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserRequest'
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/ApiResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Dados inválidos ou email já em uso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Usuário não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Erro interno do servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+user.put(
+  '/:userId/update',
+  verifyToken,
+  verifyPermission(['user:update']),
+  RequestHandler(UserController.updateUser),
+);
+
+/**
+ * @swagger
  * /v1/user/{userId}/delete:
  *   delete:
  *     summary: Excluir usuário
