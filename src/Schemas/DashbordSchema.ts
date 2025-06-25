@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const GetGeneralStatsSchema = z.object({
+export const GetDashboardSchema = z.object({
   params: z.object({
     companyId: z.string(),
   }),

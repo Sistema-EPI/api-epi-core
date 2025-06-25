@@ -15,4 +15,11 @@ dashboard.get(
   RequestHandler(DashboardController.getGeneralStats),
 );
 
+dashboard.get(
+  '/epis-by-category/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getEpisByCategory),
+);
+
 export default dashboard;

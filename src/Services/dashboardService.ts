@@ -10,6 +10,10 @@ interface DashboardStats {
   valorMedioPorEpi: number;
 }
 
+interface EpisByCategory {
+  [key: string]: number;
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -72,6 +76,39 @@ export class DashboardService {
       };
     } catch (error) {
       console.error('Erro ao buscar estatísticas do dashboard:', error);
+      throw error;
+    }
+  }
+
+  async getEpisByCategory(companyId: string): Promise<EpisByCategory> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      // Buscar EPIs agrupados por nome (categoria) e somar as quantidades
+      const episAgrupados = await prisma.epi.groupBy({
+        by: ['nomeEpi'],
+        where: {
+          idEmpresa: companyId,
+          status: true,
+        },
+        _sum: {
+          quantidade: true,
+        },
+      });
+
+      const resultado: EpisByCategory = {};
+
+      episAgrupados.forEach(epi => {
+        resultado[epi.nomeEpi] = epi._sum.quantidade || 0;
+      });
+
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao buscar EPIs por categoria:', error);
       throw error;
     }
   }

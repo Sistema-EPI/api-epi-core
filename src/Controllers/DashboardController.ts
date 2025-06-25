@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpResponse from '../Helpers/HttpResponse';
 import { DashboardService } from '../Services/dashboardService';
-import { GetGeneralStatsSchema } from '../Schemas/DashbordSchema';
+import { GetDashboardSchema } from '../Schemas/DashbordSchema';
 
 const dashboardService = new DashboardService();
 
 export async function getGeneralStats(req: Request, res: Response, next: NextFunction) {
   try {
-    const { params } = GetGeneralStatsSchema.parse(req);
+    const { params } = GetDashboardSchema.parse(req);
     const companyId = params.companyId;
 
     const stats = await dashboardService.getGeneralStats(companyId);
@@ -20,6 +20,25 @@ export async function getGeneralStats(req: Request, res: Response, next: NextFun
     return res.status(response.statusCode).json(response.payload);
   } catch (err) {
     console.error('Error in getGeneralStats:', err);
+    next(err);
+  }
+}
+
+export async function getEpisByCategory(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const episByCategory = await dashboardService.getEpisByCategory(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'EPIs por categoria recuperados com sucesso',
+      data: episByCategory,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getEpisByCategory:', err);
     next(err);
   }
 }
