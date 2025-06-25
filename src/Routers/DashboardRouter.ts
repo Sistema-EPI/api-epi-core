@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { verifyToken } from '../Helpers/Jwt';
+import { verifyPermission } from '../Middlewares/auth';
+import RequestHandler from '../Helpers/RequestHandler';
+import * as DashboardController from '../Controllers/DashboardController';
+
+const dashboard = Router();
+
+// v1/dashboard
+
+dashboard.get(
+  '/general/stats/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getGeneralStats),
+);
+
+export default dashboard;
