@@ -1,33 +1,12 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: api-epi-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: api_epi_core
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d api_epi_core']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   api-epi-core:
     container_name: api-epi-core
     restart: unless-stopped
     build:
       context: .
       dockerfile: docker/Dockerfile
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/api_epi_core?schema=public
+      - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=${NODE_ENV:-production}
       - ENV=${ENV:-prod}
       - PORT=${PORT:-3000}
@@ -55,6 +34,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-volumes:
-  postgres_data:

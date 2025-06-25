@@ -58,8 +58,8 @@ API Core para Sistema de Gestão de EPIs com módulo completo de usuários.
 
 - Node.js 20+
 - npm
-- Docker e Docker Compose (recomendado)
-- PostgreSQL ou MySQL
+- Docker (para deploy)
+- MySQL (banco de dados externo)
 
 ### Instalação
 
@@ -100,21 +100,22 @@ npm run code:fix        # Corrigir problemas automaticamente
 
 ## 🐳 Deploy com Docker
 
-### Deploy Completo (Recomendado)
+### Deploy da API (conectando a MySQL externo)
 
 ```bash
 # Configurar environment
 cp .env.example .env
-# Edite o .env conforme necessário
+# Edite o .env com sua conexão MySQL
+# DATABASE_URL="mysql://user:password@host:3306/database"
 
-# Deploy completo com PostgreSQL
+# Build e deploy da API
 docker-compose up --build -d
 
 # Verificar logs
 docker-compose logs -f api-epi-core
 ```
 
-### Deploy Apenas da API (usando BD externo)
+### Deploy Manual
 
 ```bash
 # Build da imagem
@@ -124,7 +125,7 @@ docker build -f docker/Dockerfile -t api-epi-core:latest .
 docker run -d \
   --name api-epi-core \
   -p 3000:3000 \
-  -e DATABASE_URL="sua-connection-string" \
+  -e DATABASE_URL="mysql://user:password@host:3306/database" \
   -e NODE_ENV=production \
   -e ENV=prod \
   -e JWT_SECRET="seu-jwt-secret" \
@@ -133,15 +134,13 @@ docker run -d \
 
 ## 🔧 Desenvolvimento Local
 
-### Com Docker
+### Configuração
 
 ```bash
-# Subir apenas o banco de dados
-docker-compose up postgres -d
-
 # Configurar .env para desenvolvimento
 cp .env.example .env
-# Ajustar DATABASE_URL para: postgresql://postgres:postgres123@localhost:5432/api_epi_core?schema=public
+# Ajustar DATABASE_URL para seu MySQL local:
+# DATABASE_URL="mysql://user:password@localhost:3306/database_name"
 
 # Executar migrations e seed
 npx prisma migrate dev
@@ -151,14 +150,15 @@ npx tsx prisma/seed.ts
 npm run dev
 ```
 
-### Sem Docker
+### Banco de Dados MySQL
 
 ```bash
-# Instalar PostgreSQL localmente
-# Criar database api_epi_core
+# Conectar ao seu MySQL existente
+# Criar database se necessário
+# CREATE DATABASE api_epi_core;
 
 # Configurar .env
-DATABASE_URL="postgresql://user:password@localhost:5432/api_epi_core?schema=public"
+DATABASE_URL="mysql://user:password@localhost:3306/api_epi_core"
 
 # Executar migrations e seed
 npx prisma migrate dev
@@ -168,37 +168,32 @@ npx tsx prisma/seed.ts
 npm run dev
 ```
 
-## 🔑 Sistema de Usuários
+## 📊 Banco de Dados MySQL
 
-A API inclui um módulo completo de gerenciamento de usuários com:
+### Configuração do MySQL
 
-### Funcionalidades
+```sql
+-- Criar database (se necessário)
+CREATE DATABASE api_epi_core CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-- ✅ Autenticação JWT
-- ✅ Criação e gerenciamento de usuários
-- ✅ Sistema de roles e permissões
-- ✅ Conexão de usuários com empresas
-- ✅ Usuário master com acesso total
-- ✅ Middleware de autorização
-- ✅ Documentação Swagger completa
+-- Criar usuário (se necessário)
+CREATE USER 'api_user'@'%' IDENTIFIED BY 'senha_segura';
+GRANT ALL PRIVILEGES ON api_epi_core.* TO 'api_user'@'%';
+FLUSH PRIVILEGES;
+```
 
-### Rotas Disponíveis
+### Connection String Examples
 
-- `POST /auth/login` - Login de usuário
-- `GET /users` - Listar todos os usuários (admin)
-- `GET /users/:id` - Buscar usuário por ID
-- `POST /users` - Criar novo usuário
-- `PUT /users/:id/password` - Alterar senha
-- `PUT /users/:id/status` - Alterar status (ativo/inativo)
-- `DELETE /users/:id` - Remover usuário
-- `POST /users/:id/company` - Conectar usuário à empresa
-- `GET /users/company/:companyId` - Usuários de uma empresa
-- `POST /users/admin` - Criar usuário admin
+```bash
+# MySQL local
+DATABASE_URL="mysql://root:password@localhost:3306/api_epi_core"
 
-📖 **Documentação completa**:
-[CONTRATO_API_USUARIOS.md](./CONTRATO_API_USUARIOS.md)
+# MySQL remoto
+DATABASE_URL="mysql://user:password@mysql-server.com:3306/api_epi_core"
 
-## 📊 Banco de Dados
+# MySQL com SSL
+DATABASE_URL="mysql://user:password@mysql-server.com:3306/api_epi_core?sslmode=require"
+```
 
 ### Migrations
 
