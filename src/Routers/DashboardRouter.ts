@@ -24,9 +24,16 @@ dashboard.get(
 
 dashboard.get(
   '/delivery-by-month/:companyId',
-  // verifyToken,
-  // verifyPermission(['dashboard:read']),
+  verifyToken,
+  verifyPermission(['dashboard:read']),
   RequestHandler(DashboardController.getEpiDeliveryByMonth),
+);
+
+dashboard.get(
+  '/low-stock/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getLowStockEpis),
 );
 
 export default dashboard;

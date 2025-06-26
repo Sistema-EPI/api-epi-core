@@ -61,3 +61,22 @@ export async function getEpiDeliveryByMonth(req: Request, res: Response, next: N
     next(err);
   }
 }
+
+export async function getLowStockEpis(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const lowStockEpis = await dashboardService.getLowStockEpis(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'EPIs com estoque baixo recuperados com sucesso',
+      data: lowStockEpis,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getLowStockEpis:', err);
+    next(err);
+  }
+}

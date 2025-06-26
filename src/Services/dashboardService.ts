@@ -18,6 +18,13 @@ interface EpiDeliveryByMonth {
   [key: string]: number;
 }
 
+interface LowStockEpi {
+  nome: string;
+  quantidadeAtual: number;
+  quantidadeMinima: number;
+  percentualEstoque: number;
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -185,6 +192,94 @@ export class DashboardService {
       return resultado;
     } catch (error) {
       console.error('Erro ao buscar entregas de EPIs por mês:', error);
+      throw error;
+    }
+  }
+
+  async getLowStockEpis(companyId: string): Promise<LowStockEpi[]> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      // Buscar EPIs com estoque baixo ou próximo ao mínimo
+      // Consideramos "baixo" quando está até 20% acima do mínimo
+      const episBaixoEstoque = await prisma.epi.findMany({
+        where: {
+          idEmpresa: companyId,
+          status: true,
+          OR: [
+            // Estoque igual ou abaixo do mínimo
+            {
+              quantidade: {
+                lte: prisma.epi.fields.quantidadeMinima,
+              },
+            },
+            // Estoque até 20% acima do mínimo (usando raw query para cálculo)
+          ],
+        },
+        select: {
+          nomeEpi: true,
+          quantidade: true,
+          quantidadeMinima: true,
+        },
+      });
+
+      // Buscar todos os EPIs e filtrar manualmente para ter mais controle
+      const todosEpis = await prisma.epi.findMany({
+        where: {
+          idEmpresa: companyId,
+          status: true,
+        },
+        select: {
+          nomeEpi: true,
+          quantidade: true,
+          quantidadeMinima: true,
+        },
+      });
+
+      // Filtrar EPIs com estoque baixo (até 20% acima do mínimo)
+      const episFiltrados = todosEpis.filter(epi => {
+        const limiteAlerta = epi.quantidadeMinima * 1.2; // 20% acima do mínimo
+        return epi.quantidade <= limiteAlerta;
+      });
+
+      // Agrupar por nome do EPI e somar quantidades
+      const episAgrupados = new Map<string, { quantidade: number; minimo: number }>();
+
+      episFiltrados.forEach(epi => {
+        if (episAgrupados.has(epi.nomeEpi)) {
+          const existing = episAgrupados.get(epi.nomeEpi)!;
+          episAgrupados.set(epi.nomeEpi, {
+            quantidade: existing.quantidade + epi.quantidade,
+            minimo: Math.max(existing.minimo, epi.quantidadeMinima), // Pega o maior mínimo
+          });
+        } else {
+          episAgrupados.set(epi.nomeEpi, {
+            quantidade: epi.quantidade,
+            minimo: epi.quantidadeMinima,
+          });
+        }
+      });
+
+      // Converter para array e calcular percentual
+      const resultado: LowStockEpi[] = Array.from(episAgrupados.entries()).map(([nome, dados]) => {
+        const percentualEstoque = dados.minimo > 0 ? (dados.quantidade / dados.minimo) * 100 : 0;
+
+        return {
+          nome,
+          quantidadeAtual: dados.quantidade,
+          quantidadeMinima: dados.minimo,
+          percentualEstoque: Math.round(percentualEstoque * 100) / 100, // 2 casas decimais
+        };
+      });
+
+      // Ordenar por criticidade (menor percentual primeiro)
+      return resultado.sort((a, b) => a.percentualEstoque - b.percentualEstoque);
+    } catch (error) {
+      console.error('Erro ao buscar EPIs com estoque baixo:', error);
       throw error;
     }
   }
