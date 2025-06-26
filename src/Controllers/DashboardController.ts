@@ -104,3 +104,22 @@ export async function getEpisDistributionByMonthAndType(
     next(err);
   }
 }
+
+export async function getCostsByEpiType(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const costsByEpiType = await dashboardService.getCostsByEpiType(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'Custos por tipo de EPI recuperados com sucesso',
+      data: costsByEpiType,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getCostsByEpiType:', err);
+    next(err);
+  }
+}

@@ -31,6 +31,10 @@ interface EpisDistributionByMonthAndType {
   };
 }
 
+interface CostsByEpiType {
+  [tipoEpi: string]: number;
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -374,6 +378,58 @@ export class DashboardService {
       return resultado;
     } catch (error) {
       console.error('Erro ao buscar distribuição de EPIs por mês e tipo:', error);
+      throw error;
+    }
+  }
+
+  async getCostsByEpiType(companyId: string): Promise<CostsByEpiType> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      // Buscar todos os EPIs da empresa com preços definidos
+      const episComPreco = await prisma.epi.findMany({
+        where: {
+          idEmpresa: companyId,
+          status: true,
+          preco: {
+            not: null,
+          },
+        },
+        select: {
+          nomeEpi: true,
+          quantidade: true,
+          preco: true,
+        },
+      });
+
+      // Agrupar por tipo de EPI e calcular custo total
+      const custosAgrupados = new Map<string, number>();
+
+      episComPreco.forEach(epi => {
+        const tipoEpi = epi.nomeEpi;
+        const custoTotal = Number(epi.preco) * epi.quantidade;
+
+        if (custosAgrupados.has(tipoEpi)) {
+          const custoExistente = custosAgrupados.get(tipoEpi)!;
+          custosAgrupados.set(tipoEpi, custoExistente + custoTotal);
+        } else {
+          custosAgrupados.set(tipoEpi, custoTotal);
+        }
+      });
+
+      // Converter Map para objeto e formatar valores
+      const resultado: CostsByEpiType = {};
+      custosAgrupados.forEach((custo, tipoEpi) => {
+        resultado[tipoEpi] = Number(custo.toFixed(2));
+      });
+
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao buscar custos por tipo de EPI:', error);
       throw error;
     }
   }

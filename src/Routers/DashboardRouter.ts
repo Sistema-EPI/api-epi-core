@@ -43,4 +43,11 @@ dashboard.get(
   RequestHandler(DashboardController.getEpisDistributionByMonthAndType),
 );
 
+dashboard.get(
+  '/costs-by-type/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getCostsByEpiType),
+);
+
 export default dashboard;
