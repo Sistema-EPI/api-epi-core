@@ -23,5 +23,5 @@ jobs:
 
       - name: Build and push
         run: |
-          docker build -t ghcr.io/sistema-epi/api-epi-core:latest .
+          docker build -t ghcr.io/sistema-epi/api-epi-core:latest -f docker/Dockerfile .
           docker push ghcr.io/sistema-epi/api-epi-core:latest
