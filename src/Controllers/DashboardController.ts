@@ -80,3 +80,27 @@ export async function getLowStockEpis(req: Request, res: Response, next: NextFun
     next(err);
   }
 }
+
+export async function getEpisDistributionByMonthAndType(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const distributionByMonthAndType =
+      await dashboardService.getEpisDistributionByMonthAndType(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'Distribuição de EPIs por mês e tipo recuperada com sucesso',
+      data: distributionByMonthAndType,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getEpisDistributionByMonthAndType:', err);
+    next(err);
+  }
+}

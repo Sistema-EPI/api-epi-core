@@ -36,4 +36,11 @@ dashboard.get(
   RequestHandler(DashboardController.getLowStockEpis),
 );
 
+dashboard.get(
+  '/epis-distribution/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getEpisDistributionByMonthAndType),
+);
+
 export default dashboard;

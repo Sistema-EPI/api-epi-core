@@ -25,6 +25,12 @@ interface LowStockEpi {
   percentualEstoque: number;
 }
 
+interface EpisDistributionByMonthAndType {
+  [mes: string]: {
+    [tipoEpi: string]: number;
+  };
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -280,6 +286,94 @@ export class DashboardService {
       return resultado.sort((a, b) => a.percentualEstoque - b.percentualEstoque);
     } catch (error) {
       console.error('Erro ao buscar EPIs com estoque baixo:', error);
+      throw error;
+    }
+  }
+
+  async getEpisDistributionByMonthAndType(
+    companyId: string,
+  ): Promise<EpisDistributionByMonthAndType> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      const months = [
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro',
+      ];
+
+      // Buscar entregas dos últimos 12 meses
+      const dataInicio = new Date();
+      dataInicio.setMonth(dataInicio.getMonth() - 11);
+      dataInicio.setDate(1);
+      dataInicio.setHours(0, 0, 0, 0);
+
+      // Buscar todos os processos entregues no período com seus EPIs
+      const processosEntregues = await prisma.process.findMany({
+        where: {
+          idEmpresa: companyId,
+          statusEntrega: true,
+          dataEntrega: {
+            gte: dataInicio,
+          },
+        },
+        include: {
+          processEpis: {
+            include: {
+              epi: {
+                select: {
+                  nomeEpi: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Inicializar objeto com todos os meses
+      const resultado: EpisDistributionByMonthAndType = {};
+      months.forEach(mes => {
+        resultado[mes] = {};
+      });
+
+      // Processar cada entrega
+      processosEntregues.forEach(processo => {
+        if (processo.dataEntrega) {
+          const mes = processo.dataEntrega.getMonth();
+          const nomeMes = months[mes];
+
+          // Para cada EPI no processo
+          processo.processEpis.forEach(processEpi => {
+            const tipoEpi = processEpi.epi.nomeEpi;
+            const quantidade = processEpi.quantidade;
+
+            // Inicializar o tipo de EPI no mês se não existir
+            if (!resultado[nomeMes][tipoEpi]) {
+              resultado[nomeMes][tipoEpi] = 0;
+            }
+
+            // Somar a quantidade entregue
+            resultado[nomeMes][tipoEpi] += quantidade;
+          });
+        }
+      });
+
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao buscar distribuição de EPIs por mês e tipo:', error);
       throw error;
     }
   }
