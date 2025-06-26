@@ -1,14 +1,12 @@
+version: '3.8'
+
 services:
   api-epi-core:
+    image: ghcr.io/sistema-epi/api-epi-core:latest
     deploy:
       replicas: 3
       restart_policy:
         condition: on-failure
-    container_name: api-epi-core
-    restart: unless-stopped
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=${NODE_ENV}
@@ -21,7 +19,5 @@ services:
       - API_KEY=${API_KEY}
       - API_TOKEN=${API_TOKEN}
       - LOG_LEVEL=${LOG_LEVEL}
-    # ports:
-    #   - '${PORT:-3000}:${PORT:-3000}'
     volumes:
       - ./logs:/usr/src/app/logs
