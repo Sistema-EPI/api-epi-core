@@ -42,3 +42,22 @@ export async function getEpisByCategory(req: Request, res: Response, next: NextF
     next(err);
   }
 }
+
+export async function getEpiDeliveryByMonth(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const deliveryByMonth = await dashboardService.getEpiDeliveryByMonth(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'Entregas de EPIs por mês recuperadas com sucesso',
+      data: deliveryByMonth,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getEpiDeliveryByMonth:', err);
+    next(err);
+  }
+}

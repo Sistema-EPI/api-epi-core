@@ -22,4 +22,11 @@ dashboard.get(
   RequestHandler(DashboardController.getEpisByCategory),
 );
 
+dashboard.get(
+  '/delivery-by-month/:companyId',
+  // verifyToken,
+  // verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getEpiDeliveryByMonth),
+);
+
 export default dashboard;

@@ -14,6 +14,10 @@ interface EpisByCategory {
   [key: string]: number;
 }
 
+interface EpiDeliveryByMonth {
+  [key: string]: number;
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -109,6 +113,78 @@ export class DashboardService {
       return resultado;
     } catch (error) {
       console.error('Erro ao buscar EPIs por categoria:', error);
+      throw error;
+    }
+  }
+
+  async getEpiDeliveryByMonth(companyId: string): Promise<EpiDeliveryByMonth> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      // Array com nomes dos meses em português
+      const months = [
+        'janeiro',
+        'fevereiro',
+        'março',
+        'abril',
+        'maio',
+        'junho',
+        'julho',
+        'agosto',
+        'setembro',
+        'outubro',
+        'novembro',
+        'dezembro',
+      ];
+
+      // Buscar entregas dos últimos 12 meses
+      const dataInicio = new Date();
+      dataInicio.setMonth(dataInicio.getMonth() - 11);
+      dataInicio.setDate(1);
+      dataInicio.setHours(0, 0, 0, 0);
+
+      // Buscar todos os processos entregues no período
+      const processosEntregues = await prisma.process.findMany({
+        where: {
+          idEmpresa: companyId,
+          statusEntrega: true,
+          dataEntrega: {
+            gte: dataInicio,
+          },
+        },
+        include: {
+          processEpis: true,
+        },
+      });
+
+      // Inicializar objeto com todos os meses zerados
+      const resultado: EpiDeliveryByMonth = {};
+      months.forEach(mes => {
+        resultado[mes] = 0;
+      });
+
+      // Agrupar entregas por mês
+      processosEntregues.forEach(processo => {
+        if (processo.dataEntrega) {
+          const mes = processo.dataEntrega.getMonth();
+          const nomeMes = months[mes];
+
+          // Somar quantidade de EPIs entregues neste processo
+          const quantidadeEpis = processo.processEpis.reduce((total, processEpi) => {
+            return total + processEpi.quantidade;
+          }, 0);
+
+          resultado[nomeMes] += quantidadeEpis;
+        }
+      });
+
+      return resultado;
+    } catch (error) {
+      console.error('Erro ao buscar entregas de EPIs por mês:', error);
       throw error;
     }
   }
