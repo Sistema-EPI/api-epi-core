@@ -29,13 +29,19 @@ npx prisma generate
 
 if [ "$ENV" = "prod" ]; then
     echo "🚀 Ambiente de PRODUÇÃO"
-
+    
+    echo "🔄 Gerando cliente Prisma..."
+    npx prisma generate
+    
     echo "📦 Aplicando migrations..."
     npx prisma migrate deploy
-
+    
+    echo "✅ Verificando status das migrations..."
+    npx prisma migrate status
+    
     echo "🌱 Executando seed..."
-    npx tsx prisma/seed.ts
-
+    npx tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando (pode ser que já tenha dados)"
+    
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js
 
