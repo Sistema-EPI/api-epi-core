@@ -28,7 +28,11 @@ RUN if [ -f "docker/entrypoint.sh" ]; then \
         chmod +x entrypoint.sh; \
     fi
 
-# Build da aplicação (sem gerar cliente Prisma ainda)
+# Gerar cliente Prisma (necessário antes do build)
+
+RUN npx prisma generate
+
+# Build da aplicação
 RUN npm run build
 
 # Instalar tsx globalmente (necessário para seed após prune)

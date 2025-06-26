@@ -166,7 +166,7 @@ export class CompanyService {
       nomeFantasia: company.nomeFantasia,
       cnpj: company.cnpj,
       statusEmpresa: company.statusEmpresa,
-      apiKey
+      apiKey,
     };
   }
 

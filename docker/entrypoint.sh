@@ -23,10 +23,6 @@ fi
 echo "🔧 Ambiente: $ENV"
 echo "🗄️  Database URL: ${DATABASE_URL%%@*}@***"
 
-# Gera o cliente Prisma (garantindo que está atualizado)
-echo "🔄 Gerando cliente Prisma..."
-npx prisma generate
-
 if [ "$ENV" = "prod" ]; then
     echo "🚀 Ambiente de PRODUÇÃO"
 

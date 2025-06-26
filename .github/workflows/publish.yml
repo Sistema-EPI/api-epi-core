@@ -1,0 +1,27 @@
+name: Publish Docker image to GHCR
+
+on:
+  push:
+    branches: [development]
+
+jobs:
+  build-and-push:
+    permissions:
+      packages: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          docker build -t ghcr.io/sistema-epi/api-epi-core:latest .
+          docker push ghcr.io/sistema-epi/api-epi-core:latest
