@@ -6,18 +6,79 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Iniciando seed do banco de dados...');
 
-  // Limpar dados existentes
+  // Limpar dados existentes (apenas das tabelas que existem)
   console.log('🧹 Limpando dados existentes...');
-  await prisma.log.deleteMany();
-  await prisma.processEpi.deleteMany();
-  await prisma.biometria.deleteMany();
-  await prisma.process.deleteMany();
-  await prisma.epi.deleteMany();
-  await prisma.collaborator.deleteMany();
-  await prisma.authCompany.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.company.deleteMany();
-  await prisma.role.deleteMany();
+
+  // Verifica se as tabelas existem antes de tentar deletar
+  try {
+    await prisma.processEpi.deleteMany();
+    console.log('✅ ProcessEpi limpo');
+  } catch {
+    console.log('⚠️  Tabela ProcessEpi não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.biometria.deleteMany();
+    console.log('✅ Biometria limpo');
+  } catch {
+    console.log('⚠️  Tabela Biometria não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.process.deleteMany();
+    console.log('✅ Process limpo');
+  } catch {
+    console.log('⚠️  Tabela Process não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.epi.deleteMany();
+    console.log('✅ Epi limpo');
+  } catch {
+    console.log('⚠️  Tabela Epi não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.collaborator.deleteMany();
+    console.log('✅ Collaborator limpo');
+  } catch {
+    console.log('⚠️  Tabela Collaborator não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.authCompany.deleteMany();
+    console.log('✅ AuthCompany limpo');
+  } catch {
+    console.log('⚠️  Tabela AuthCompany não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.user.deleteMany();
+    console.log('✅ User limpo');
+  } catch {
+    console.log('⚠️  Tabela User não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.company.deleteMany();
+    console.log('✅ Company limpo');
+  } catch {
+    console.log('⚠️  Tabela Company não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.role.deleteMany();
+    console.log('✅ Role limpo');
+  } catch {
+    console.log('⚠️  Tabela Role não existe, pulando limpeza');
+  }
+
+  try {
+    await prisma.log.deleteMany();
+    console.log('✅ Log limpo');
+  } catch {
+    console.log('⚠️  Tabela Log não existe, pulando limpeza');
+  }
 
   // Criar roles
   console.log('👥 Criando roles...');

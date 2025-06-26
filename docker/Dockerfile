@@ -28,16 +28,11 @@ RUN if [ -f "docker/entrypoint.sh" ]; then \
         chmod +x entrypoint.sh; \
     fi
 
-RUN if [ -f "docker/wait-for-it.sh" ]; then \
-        cp docker/wait-for-it.sh ./wait-for-it.sh && \
-        chmod +x wait-for-it.sh; \
-    fi
-
-# Gerar cliente Prisma
-RUN npx prisma generate
-
-# Build da aplicação
+# Build da aplicação (sem gerar cliente Prisma ainda)
 RUN npm run build
+
+# Instalar tsx globalmente (necessário para seed após prune)
+RUN npm install -g tsx
 
 # Remover devDependencies para reduzir o tamanho da imagem
 RUN npm prune --production

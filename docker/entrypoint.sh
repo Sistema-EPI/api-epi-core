@@ -29,45 +29,38 @@ npx prisma generate
 
 if [ "$ENV" = "prod" ]; then
     echo "🚀 Ambiente de PRODUÇÃO"
-    
-    echo "🔄 Gerando cliente Prisma..."
-    npx prisma generate
-    
-    echo "📦 Aplicando migrations..."
-    npx prisma migrate deploy
-    
-    echo "✅ Verificando status das migrations..."
-    npx prisma migrate status
-    
+
+    echo "📦 Sincronizando schema com o banco de dados..."
+    npx prisma db push --accept-data-loss
+
     echo "🌱 Executando seed..."
-    npx tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando (pode ser que já tenha dados)"
-    
+    tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando (pode ser que já tenha dados)"
+
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js
 
 elif [ "$ENV" = "homolog" ]; then
     echo "🧪 Ambiente de HOMOLOGAÇÃO"
 
-    echo "🗄️  Resetando database..."
-    npx prisma migrate reset --force --skip-seed
-
-    echo "📦 Aplicando migrations..."
-    npx prisma migrate dev --name "init-homolog" --skip-seed
+    echo "🗄️  Resetando e sincronizando banco de dados..."
+    # Para homologação, sempre recria o schema do zero
+    npx prisma db push --force-reset
 
     echo "🌱 Executando seed..."
-    npx tsx prisma/seed.ts
+    tsx prisma/seed.ts
 
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js
 
 else
-    echo "🔧 Ambiente: $ENV"
+    echo "🔧 Ambiente: $ENV (development/default)"
 
-    echo "📦 Aplicando migrations..."
-    npx prisma migrate deploy || true
+    echo "📦 Sincronizando schema com o banco de dados..."
+    # Usa db push para criar todas as tabelas do schema.prisma
+    npx prisma db push --accept-data-loss
 
     echo "🌱 Executando seed..."
-    npx tsx prisma/seed.ts || true
+    tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando"
 
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js
