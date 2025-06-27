@@ -40,7 +40,7 @@ async function main() {
         permissao: { create: true, read: true, update: true, delete: false },
       },
       {
-        cargo: 'técnico',
+        cargo: 'estoque',
         permissao: { create: false, read: true, update: true, delete: false },
       },
       {
