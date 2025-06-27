@@ -61,6 +61,11 @@ apiV1Router.use('/process', ProcessRouter);
 apiV1Router.use('/dashboard', DashboardRouter);
 apiV1Router.use('/financial-reports', FinancialReportRouter);
 
+// Rota de health check para containers e orquestradores
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 setupSwagger(app);
 
 app.use(ErrorMiddleware);
