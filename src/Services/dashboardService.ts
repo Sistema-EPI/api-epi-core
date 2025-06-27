@@ -28,16 +28,23 @@ interface LowStockEpi {
 
 interface EpisDistributionByMonthAndType {
   [mes: string]: {
-    [tipoEpi: string]: number;
+    [tipoEpi: string]: {
+      quantidade: number;
+      ca: string;
+    };
   };
 }
 
 interface CostsByEpiType {
-  [tipoEpi: string]: number;
+  [tipoEpi: string]: {
+    custo: number;
+    ca: string;
+  };
 }
 
 interface MostUsedEpi {
   nomeEpi: string;
+  ca: string;
   quantidadeEntregue: number;
 }
 
@@ -326,6 +333,7 @@ export class DashboardService {
               epi: {
                 select: {
                   nomeEpi: true,
+                  ca: true,
                 },
               },
             },
@@ -348,15 +356,19 @@ export class DashboardService {
           // Para cada EPI no processo
           processo.processEpis.forEach(processEpi => {
             const tipoEpi = processEpi.epi.nomeEpi;
+            const ca = processEpi.epi.ca;
             const quantidade = processEpi.quantidade;
 
             // Inicializar o tipo de EPI no mês se não existir
             if (!resultado[nomeMes][tipoEpi]) {
-              resultado[nomeMes][tipoEpi] = 0;
+              resultado[nomeMes][tipoEpi] = {
+                quantidade: 0,
+                ca: ca,
+              };
             }
 
             // Somar a quantidade entregue
-            resultado[nomeMes][tipoEpi] += quantidade;
+            resultado[nomeMes][tipoEpi].quantidade += quantidade;
           });
         }
       });
@@ -387,30 +399,41 @@ export class DashboardService {
         },
         select: {
           nomeEpi: true,
+          ca: true,
           quantidade: true,
           preco: true,
         },
       });
 
       // Agrupar por tipo de EPI e calcular custo total
-      const custosAgrupados = new Map<string, number>();
+      const custosAgrupados = new Map<string, { custo: number; ca: string }>();
 
       episComPreco.forEach(epi => {
         const tipoEpi = epi.nomeEpi;
+        const ca = epi.ca;
         const custoTotal = Number(epi.preco) * epi.quantidade;
 
         if (custosAgrupados.has(tipoEpi)) {
-          const custoExistente = custosAgrupados.get(tipoEpi)!;
-          custosAgrupados.set(tipoEpi, custoExistente + custoTotal);
+          const dadosExistentes = custosAgrupados.get(tipoEpi)!;
+          custosAgrupados.set(tipoEpi, {
+            custo: dadosExistentes.custo + custoTotal,
+            ca: ca, // Mantém o CA (assume que EPIs do mesmo tipo têm o mesmo CA)
+          });
         } else {
-          custosAgrupados.set(tipoEpi, custoTotal);
+          custosAgrupados.set(tipoEpi, {
+            custo: custoTotal,
+            ca: ca,
+          });
         }
       });
 
       // Converter Map para objeto e formatar valores
       const resultado: CostsByEpiType = {};
-      custosAgrupados.forEach((custo, tipoEpi) => {
-        resultado[tipoEpi] = Number(custo.toFixed(2));
+      custosAgrupados.forEach((dados, tipoEpi) => {
+        resultado[tipoEpi] = {
+          custo: Number(dados.custo.toFixed(2)),
+          ca: dados.ca,
+        };
       });
 
       return resultado;
@@ -449,6 +472,7 @@ export class DashboardService {
               epi: {
                 select: {
                   nomeEpi: true,
+                  ca: true,
                 },
               },
             },
@@ -457,27 +481,35 @@ export class DashboardService {
       });
 
       // Agrupar EPIs por nome e contar quantidades entregues
-      const episAgrupados = new Map<string, number>();
+      const episAgrupados = new Map<string, { quantidade: number; ca: string }>();
 
       processosEntregues.forEach(processo => {
         processo.processEpis.forEach(processEpi => {
           const nomeEpi = processEpi.epi.nomeEpi;
+          const ca = processEpi.epi.ca;
           const quantidade = processEpi.quantidade;
 
           if (episAgrupados.has(nomeEpi)) {
-            const quantidadeExistente = episAgrupados.get(nomeEpi)!;
-            episAgrupados.set(nomeEpi, quantidadeExistente + quantidade);
+            const dadosExistentes = episAgrupados.get(nomeEpi)!;
+            episAgrupados.set(nomeEpi, {
+              quantidade: dadosExistentes.quantidade + quantidade,
+              ca: ca, // Mantém o CA (assume que EPIs do mesmo nome têm o mesmo CA)
+            });
           } else {
-            episAgrupados.set(nomeEpi, quantidade);
+            episAgrupados.set(nomeEpi, {
+              quantidade: quantidade,
+              ca: ca,
+            });
           }
         });
       });
 
       // Converter Map para array e ordenar por quantidade (decrescente)
       const episOrdenados: MostUsedEpi[] = Array.from(episAgrupados.entries())
-        .map(([nomeEpi, quantidadeEntregue]) => ({
+        .map(([nomeEpi, dados]) => ({
           nomeEpi,
-          quantidadeEntregue,
+          ca: dados.ca,
+          quantidadeEntregue: dados.quantidade,
         }))
         .sort((a, b) => b.quantidadeEntregue - a.quantidadeEntregue);
 
