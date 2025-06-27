@@ -8,6 +8,8 @@ import {
   ProcessEpiType,
 } from '../Schemas/ProcessSchema';
 import HttpError from '../Helpers/HttpError';
+import logger from '../Helpers/Logger';
+import { EpiData, PrismaTransaction } from '../types/common';
 
 const prisma = new PrismaClient();
 
@@ -39,7 +41,7 @@ export class ProcessService {
     }
 
     for (const epiRequest of epis) {
-      const epiDB = episData.find(e => e.idEpi === epiRequest.idEpi);
+      const epiDB = episData.find((e: EpiData) => e.idEpi === epiRequest.idEpi);
       if (!epiDB) continue;
 
       if (epiDB.quantidade < epiRequest.quantidade) {

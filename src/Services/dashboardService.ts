@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import HttpError from '../Helpers/HttpError';
+import { EpiGrouped, EpiWithStock, ProcessWithEpis, ProcessEpiItem } from '../types/common';
 
 const prisma = new PrismaClient();
 
@@ -123,7 +124,7 @@ export class DashboardService {
 
       const resultado: EpisByCategory = {};
 
-      episAgrupados.forEach(epi => {
+      episAgrupados.forEach((epi: EpiGrouped) => {
         resultado[epi.nomeEpi] = epi._sum.quantidade || 0;
       });
 
@@ -185,15 +186,18 @@ export class DashboardService {
       });
 
       // Agrupar entregas por mês
-      processosEntregues.forEach(processo => {
+      processosEntregues.forEach((processo: ProcessWithEpis) => {
         if (processo.dataEntrega) {
           const mes = processo.dataEntrega.getMonth();
           const nomeMes = months[mes];
 
           // Somar quantidade de EPIs entregues neste processo
-          const quantidadeEpis = processo.processEpis.reduce((total, processEpi) => {
-            return total + processEpi.quantidade;
-          }, 0);
+          const quantidadeEpis = processo.processEpis.reduce(
+            (total: number, processEpi: ProcessEpiItem) => {
+              return total + processEpi.quantidade;
+            },
+            0,
+          );
 
           resultado[nomeMes] += quantidadeEpis;
         }
@@ -251,7 +255,7 @@ export class DashboardService {
       });
 
       // Filtrar EPIs com estoque baixo (até 20% acima do mínimo)
-      const episFiltrados = todosEpis.filter(epi => {
+      const episFiltrados = todosEpis.filter((epi: EpiWithStock) => {
         const limiteAlerta = epi.quantidadeMinima * 1.2; // 20% acima do mínimo
         return epi.quantidade <= limiteAlerta;
       });
@@ -259,7 +263,7 @@ export class DashboardService {
       // Agrupar por nome do EPI e somar quantidades
       const episAgrupados = new Map<string, { quantidade: number; minimo: number }>();
 
-      episFiltrados.forEach(epi => {
+      episFiltrados.forEach((epi: EpiWithStock) => {
         if (episAgrupados.has(epi.nomeEpi)) {
           const existing = episAgrupados.get(epi.nomeEpi)!;
           episAgrupados.set(epi.nomeEpi, {

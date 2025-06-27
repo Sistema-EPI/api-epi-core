@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import HttpError from '../Helpers/HttpError';
 import logger from '../Helpers/Logger';
 import { generateAndSetApiKey } from '../Helpers/GenerateApiKey';
+import { CompanyWithCounts, AuthCompanyWithUser } from '../types/common';
 
 const prisma = new PrismaClient();
 
@@ -58,7 +59,7 @@ export class CompanyService {
       }),
     ]);
 
-    const formattedData = data.map(company => ({
+    const formattedData = data.map((company: CompanyWithCounts) => ({
       ...company,
       totalColaboradores: company._count.colaboradores,
       totalEpis: company._count.epis,
@@ -121,7 +122,7 @@ export class CompanyService {
 
     return {
       ...existingCompany,
-      usuarios: existingCompany.authCompanies.map(auth => ({
+      usuarios: existingCompany.authCompanies.map((auth: AuthCompanyWithUser) => ({
         id: auth.user.idUser,
         email: auth.user.email,
         cargo: auth.cargo,
@@ -208,12 +209,15 @@ export class CompanyService {
       data: dataToUpdate,
     });
 
-    const changes: Record<string, { before: any; after: any }> = {};
+    const changes: Record<string, { before: unknown; after: unknown }> = {};
     for (const key in dataToUpdate) {
-      if ((existingCompany as any)[key] !== (updatedCompany as any)[key]) {
+      if (
+        (existingCompany as Record<string, unknown>)[key] !==
+        (updatedCompany as Record<string, unknown>)[key]
+      ) {
         changes[key] = {
-          before: (existingCompany as any)[key],
-          after: (updatedCompany as any)[key],
+          before: (existingCompany as Record<string, unknown>)[key],
+          after: (updatedCompany as Record<string, unknown>)[key],
         };
       }
     }
