@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { verifyToken } from '../Helpers/Jwt';
-import { verifyPermission } from '../Middlewares/auth';
+import { verifyToken, verifyPermission } from '../Middlewares/auth';
 import RequestHandler from '../Helpers/RequestHandler';
 import * as DashboardController from '../Controllers/DashboardController';
 

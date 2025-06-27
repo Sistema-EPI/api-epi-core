@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { verifyToken as jwtVerifyToken } from '../Helpers/Jwt';
+import { validateJwtToken } from '../Helpers/Jwt';
 import HttpError from '../Helpers/HttpError';
 
 const prisma = new PrismaClient();
@@ -42,7 +42,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
       return;
     }
 
-    const decoded = jwtVerifyToken(token);
+    const decoded = validateJwtToken(token);
     const user = await getUserById(decoded.userId);
 
     if (!user || !user.statusUser) {
@@ -138,7 +138,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
 
-    const decoded = jwtVerifyToken(token);
+    const decoded = validateJwtToken(token);
     const user = await getUserById(decoded.userId);
 
     if (!user || !user.statusUser) {

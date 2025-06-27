@@ -9,6 +9,6 @@ export function generateToken(payload: object, expiresIn: string = env.JWT_EXPIR
   return jwt.sign(payload, JWT_SECRET, { expiresIn });
 }
 
-export function verifyToken(token: string): any {
-  return jwt.verify(token, JWT_SECRET);
+export function validateJwtToken(token: string): { userId: string; [key: string]: unknown } {
+  return jwt.verify(token, JWT_SECRET) as { userId: string; [key: string]: unknown };
 }
