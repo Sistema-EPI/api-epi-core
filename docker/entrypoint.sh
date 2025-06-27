@@ -30,7 +30,7 @@ if [ "$ENV" = "prod" ]; then
     npx prisma db push --accept-data-loss
 
     echo "🌱 Executando seed..."
-    tsx prisma/seed.ts || echo "⚠️  Seed falhou, mas continuando (pode ser que já tenha dados)"
+    tsx prisma/seed-prd.ts || echo "⚠️  Seed falhou, mas continuando (pode ser que já tenha dados)"
 
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js
@@ -43,7 +43,7 @@ elif [ "$ENV" = "homolog" ]; then
     npx prisma db push --force-reset
 
     echo "🌱 Executando seed..."
-    tsx prisma/seed.ts
+    tsx prisma/seed-prd.ts
 
     echo "✅ Iniciando aplicação..."
     exec node dist/server.js

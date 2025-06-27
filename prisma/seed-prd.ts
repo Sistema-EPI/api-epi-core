@@ -3,25 +3,34 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // 1. Cadastrar empresas
-  const empresa1 = await prisma.company.create({
+  // IDs fixos para ambiente de produção
+  const empresaId = '6d49d965-7dfa-4bb1-826d-6bf38cbae097';
+  const userId = 'eec364b6-5a61-4265-86cc-2311fca6074f';
+
+  // 1. Criar empresa Barcelos Engenharia de Segurança
+  const empresa = await prisma.company.create({
     data: {
-      idEmpresa: 'empresa-1',
+      idEmpresa: empresaId,
       nomeFantasia: 'Barcelos Engenharia',
       razaoSocial: 'Barcelos Engenharia de Segurança LTDA',
       cnpj: '98765432000188',
+      apiKey: 'barcelos_api_key_2025',
       uf: 'SP',
       cep: '01001000',
       logradouro: 'Rua Central, 456',
       email: 'contato@barcelos.com.br',
       telefone: '11988888888',
-      statusEmpresa: 'ATIVO',
+      statusEmpresa: true,
     },
   });
 
-  // 2. Cadastrar cargos e permissões
+  // 2. Criar roles (igual seed.ts)
   await prisma.role.createMany({
     data: [
+      {
+        cargo: 'master',
+        permissao: { create: true, read: true, update: true, delete: true },
+      },
       {
         cargo: 'admin',
         permissao: { create: true, read: true, update: true, delete: true },
@@ -42,33 +51,32 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 3. Cadastrar usuários
-  const user1 = await prisma.user.create({
+  // 3. Criar usuário Adriano Barcelos
+  const user = await prisma.user.create({
     data: {
-      idUser: 'user-1',
+      idUser: userId,
+      name: 'Adriano Barcelos',
       email: 'admin@barcelosengenharia.com',
-      senha: '$2a$10$mX0Qg4UxrN.TJLARVGxZQOWvY1e/i6FA5hsqLFtEEOcdUfFUH6i22', // "senha123" hasheada
+      senha: '$2b$10$QMYztL9C5YMuYDvl17iAP.dSUtCRB/uLerl58bQgT.NGQeG96Fl2W', // "Barcelos1"
       statusUser: true,
     },
   });
 
-  // 4. Vincular usuários às empresas com cargos
-  await prisma.authCompany.createMany({
-    data: [
-      {
-        idUser: user1.idUser,
-        idEmpresa: empresa1.idEmpresa,
-        cargo: 'admin',
-      },
-    ],
+  // 4. Vincular usuário à empresa como master
+  await prisma.authCompany.create({
+    data: {
+      idUser: user.idUser,
+      idEmpresa: empresa.idEmpresa,
+      cargo: 'master',
+    },
   });
 
-  console.log('Seed realizado com sucesso!');
+  console.log('Seed PRD realizado com sucesso!');
 }
 
 main()
   .catch(e => {
-    console.error('Erro ao rodar o seed:', e);
+    console.error('Erro ao rodar o seed PRD:', e);
     process.exit(1);
   })
   .finally(async () => {
