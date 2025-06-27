@@ -17,6 +17,7 @@ import BiometriaRouter from './Routers/BiometriaRouter';
 import CARouter from './Routers/CARouter';
 import ProcessRouter from './Routers/ProcessRouter';
 import DashboardRouter from './Routers/DashboardRouter';
+import FinancialReportRouter from './Routers/FinancialReportRouter';
 
 import { ErrorMiddleware } from './Helpers/RequestHandler';
 
@@ -58,6 +59,7 @@ apiV1Router.use('/user', UserRouter);
 apiV1Router.use('/consulta-epi', CARouter);
 apiV1Router.use('/process', ProcessRouter);
 apiV1Router.use('/dashboard', DashboardRouter);
+apiV1Router.use('/financial-reports', FinancialReportRouter);
 
 setupSwagger(app);
 

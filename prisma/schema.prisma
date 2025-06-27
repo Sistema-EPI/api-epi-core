@@ -67,6 +67,7 @@ model Epi {
   empresa     Company      @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   processEpis ProcessEpi[]
   logs        Log[]
+  movements   EpiMovement[]
 
   @@map("epi")
 }
@@ -88,6 +89,7 @@ model Process {
   colaborador Collaborator      @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
   processEpis ProcessEpi[]
   logs        Log[]
+  movements   EpiMovement[]
 
   @@map("process")
 }
@@ -119,6 +121,24 @@ model Biometria {
   @@map("biometria")
 }
 
+model EpiMovement {
+  idMovimentacao String   @id @default(uuid()) @map("id_movimentacao") @db.VarChar(36)
+  idEpi          String   @map("id_epi") @db.VarChar(36)
+  idUser         String?  @map("id_user") @db.VarChar(36)
+  idProcesso     String   @map("id_processo") @db.VarChar(36)
+  quantidade     Int
+  valorUnitario  Decimal  @map("valor_unitario") @db.Decimal(10, 2)
+  tipoMovimento  String   @map("tipo_movimento") @db.VarChar(20) @default("saida")
+  dataMovimento  DateTime @default(now()) @map("data_movimento") @db.DateTime(0)
+  createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  epi      Epi      @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
+  user     User?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull)
+  processo Process  @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
+
+  @@map("epi_movement")
+}
+
 model User {
   idUser        String    @id @default(uuid()) @map("id_user") @db.VarChar(36)
   name          String?   @map("name") @db.VarChar(255)
@@ -132,6 +152,7 @@ model User {
 
   logs          Log[]
   authCompanies AuthCompany[]
+  movements     EpiMovement[]
 
   @@map("user")
 }

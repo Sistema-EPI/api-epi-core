@@ -8,8 +8,7 @@ import {
   ProcessEpiType,
 } from '../Schemas/ProcessSchema';
 import HttpError from '../Helpers/HttpError';
-import logger from '../Helpers/Logger';
-import { EpiData, PrismaTransaction } from '../types/common';
+import { EpiData } from '../types/common';
 
 const prisma = new PrismaClient();
 
@@ -191,7 +190,7 @@ export class ProcessService {
       novaListaEpis = epis;
     }
 
-    const processoAtualizado = await prisma.$transaction(async tx => {
+    const _processoAtualizado = await prisma.$transaction(async tx => {
       const processo = await tx.process.update({
         where: { idProcesso },
         data: dadosProcesso,
@@ -268,7 +267,7 @@ export class ProcessService {
 
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       idEmpresa: id_empresa,
     };
 
@@ -278,8 +277,8 @@ export class ProcessService {
 
     if (dataInicio || dataFim) {
       where.dataAgendada = {};
-      if (dataInicio) where.dataAgendada.gte = dataInicio;
-      if (dataFim) where.dataAgendada.lte = dataFim;
+      if (dataInicio) (where.dataAgendada as Record<string, unknown>).gte = dataInicio;
+      if (dataFim) (where.dataAgendada as Record<string, unknown>).lte = dataFim;
     }
 
     const [processos, total] = await Promise.all([
@@ -328,7 +327,7 @@ export class ProcessService {
 
     const skip = (page - 1) * limit;
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       idColaborador: id_colaborador,
     };
 
@@ -382,12 +381,27 @@ export class ProcessService {
     pdfUrl?: string,
     idEmpresa?: string,
   ) {
-    const where: any = { idProcesso };
+    const where: Record<string, string> = { idProcesso };
     if (idEmpresa) {
       where.idEmpresa = idEmpresa;
     }
 
-    const processo = await prisma.process.findFirst({ where });
+    const processo = await prisma.process.findFirst({
+      where,
+      include: {
+        processEpis: {
+          include: {
+            epi: {
+              select: {
+                idEpi: true,
+                nomeEpi: true,
+                preco: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     if (!processo) {
       throw new HttpError('Processo não encontrado', 404);
@@ -397,13 +411,35 @@ export class ProcessService {
       throw new HttpError('Processo já foi entregue', 400);
     }
 
-    const processoAtualizado = await prisma.process.update({
-      where: { idProcesso },
-      data: {
-        statusEntrega: true,
-        dataEntrega: dataEntrega || new Date(),
-        pdfUrl,
-      },
+    const dataEntregaFinal = dataEntrega || new Date();
+
+    // Usar transação para garantir consistência dos dados
+    await prisma.$transaction(async tx => {
+      // Atualizar o processo
+      await tx.process.update({
+        where: { idProcesso },
+        data: {
+          statusEntrega: true,
+          dataEntrega: dataEntregaFinal,
+          pdfUrl,
+        },
+      });
+
+      // Registrar movimentações de saída para cada EPI entregue
+      for (const processEpi of processo.processEpis) {
+        const valorUnitario = processEpi.epi.preco || 0;
+
+        await tx.epiMovement.create({
+          data: {
+            idEpi: processEpi.idEpi,
+            idProcesso: idProcesso,
+            quantidade: processEpi.quantidade,
+            valorUnitario: valorUnitario,
+            tipoMovimento: 'saida',
+            dataMovimento: dataEntregaFinal,
+          },
+        });
+      }
     });
 
     return await this.getProcessById(idProcesso);
@@ -415,7 +451,7 @@ export class ProcessService {
     observacoes?: string,
     idEmpresa?: string,
   ) {
-    const where: any = { idProcesso };
+    const where: Record<string, string> = { idProcesso };
     if (idEmpresa) {
       where.idEmpresa = idEmpresa;
     }
@@ -468,7 +504,7 @@ export class ProcessService {
 
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (status !== 'todos') {
       where.statusEntrega = status === 'entregues';
@@ -476,8 +512,8 @@ export class ProcessService {
 
     if (dataInicio || dataFim) {
       where.dataAgendada = {};
-      if (dataInicio) where.dataAgendada.gte = dataInicio;
-      if (dataFim) where.dataAgendada.lte = dataFim;
+      if (dataInicio) (where.dataAgendada as Record<string, unknown>).gte = dataInicio;
+      if (dataFim) (where.dataAgendada as Record<string, unknown>).lte = dataFim;
     }
 
     if (search) {

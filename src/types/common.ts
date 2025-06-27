@@ -55,6 +55,25 @@ export interface EpiData {
   quantidade: number;
 }
 
+export interface EpiMovementData {
+  idEpi: string;
+  idUser?: string;
+  idProcesso: string;
+  quantidade: number;
+  valorUnitario: number;
+  tipoMovimento?: string;
+  dataMovimento?: Date;
+}
+
+export interface AnnualEpiCost {
+  epiId: string;
+  nomeEpi: string;
+  ca: string;
+  ano: number;
+  totalGasto: number;
+  quantidadeEntregue: number;
+}
+
 // Tipos para reduzers
 export type ReducerCallback<T, U> = (_accumulator: T, _currentValue: U) => T;
 

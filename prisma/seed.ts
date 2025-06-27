@@ -510,6 +510,46 @@ async function main() {
     });
   }
 
+  // Criar movimentações EPI para processos entregues
+  console.log('💰 Criando movimentações EPI para rastreabilidade financeira...');
+  let totalMovimentacoes = 0;
+
+  for (let empresaIndex = 0; empresaIndex < empresasCriadas.length; empresaIndex++) {
+    const empresa = empresasCriadas[empresaIndex];
+
+    // Buscar processos entregues desta empresa
+    const processosEntregues = await prisma.process.findMany({
+      where: {
+        idEmpresa: empresa.idEmpresa,
+        statusEntrega: true,
+      },
+      include: {
+        processEpis: {
+          include: {
+            epi: true,
+          },
+        },
+      },
+    });
+
+    // Criar movimentações para cada processo entregue
+    for (const processo of processosEntregues) {
+      for (const processEpi of processo.processEpis) {
+        await prisma.epiMovement.create({
+          data: {
+            idEpi: processEpi.idEpi,
+            idProcesso: processo.idProcesso,
+            quantidade: processEpi.quantidade,
+            valorUnitario: processEpi.epi.preco || 0,
+            tipoMovimento: 'saida',
+            dataMovimento: processo.dataEntrega || new Date(),
+          },
+        });
+        totalMovimentacoes++;
+      }
+    }
+  }
+
   console.log('✅ Seed concluído com sucesso!');
   console.log(`📊 Dados criados:`);
   console.log(`   • ${roles.length} roles`);
@@ -519,6 +559,7 @@ async function main() {
   console.log(`   • ${episCriados.length} EPIs`);
   console.log(`   • ${processosCriados.length} processos`);
   console.log(`   • ${empresasCriadas.length} biometrias`);
+  console.log(`   • ${totalMovimentacoes} movimentações EPI`);
 }
 
 main()
