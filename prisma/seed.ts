@@ -365,8 +365,8 @@ async function main() {
       data: {
         idEmpresa: empresa.idEmpresa,
         idColaborador: colaboradoresEmpresa[0].idColaborador,
-        dataAgendada: new Date('2024-01-10'),
-        dataEntrega: new Date('2024-01-10T09:30:00'),
+        dataAgendada: new Date('2025-01-10'),
+        dataEntrega: new Date('2025-06-10T09:30:00'),
         statusEntrega: true,
         observacoes: 'Entrega realizada conforme agendamento',
       },
@@ -394,8 +394,8 @@ async function main() {
       data: {
         idEmpresa: empresa.idEmpresa,
         idColaborador: colaboradoresEmpresa[1].idColaborador,
-        dataAgendada: new Date('2024-01-15'),
-        dataEntrega: new Date('2024-01-15T14:20:00'),
+        dataAgendada: new Date('2025-01-15'),
+        dataEntrega: new Date('2025-06-15T14:20:00'),
         statusEntrega: true,
         observacoes: 'Colaborador recebeu todos os EPIs',
       },
@@ -435,9 +435,10 @@ async function main() {
       data: {
         idEmpresa: empresa.idEmpresa,
         idColaborador: colaboradoresEmpresa[0].idColaborador,
-        dataAgendada: new Date('2024-01-20'),
-        statusEntrega: false,
-        dataDevolucao: new Date('2024-01-25T16:00:00'),
+        dataAgendada: new Date('2025-01-20'),
+        dataEntrega: new Date('2025-06-15T14:20:00'),
+        statusEntrega: true,
+        dataDevolucao: new Date('2025-01-25T16:00:00'),
         observacoes: 'EPIs devolvidos - substituição necessária',
       },
     });
@@ -459,7 +460,37 @@ async function main() {
       },
     });
 
-    processosCriados.push(processo1, processo2, processo3, processo4);
+    // Processo 5 - Entregue 2024
+    const processo5 = await prisma.process.create({
+      data: {
+        idEmpresa: empresa.idEmpresa,
+        idColaborador: colaboradoresEmpresa[0].idColaborador,
+        dataAgendada: new Date('2024-01-20'),
+        dataEntrega: new Date('2024-06-15T14:20:00'),
+        statusEntrega: true,
+        dataDevolucao: new Date('2024-01-25T16:00:00'),
+        observacoes: 'EPIs devolvidos - substituição necessária',
+      },
+    });
+
+    // Adicionar EPIs ao processo 5
+    await prisma.processEpi.create({
+      data: {
+        idProcesso: processo5.idProcesso,
+        idEpi: episEmpresa[0].idEpi,
+        quantidade: 1,
+      },
+    });
+
+    await prisma.processEpi.create({
+      data: {
+        idProcesso: processo5.idProcesso,
+        idEpi: episEmpresa[1].idEpi,
+        quantidade: 1,
+      },
+    });
+
+    processosCriados.push(processo1, processo2, processo3, processo4, processo5);
   }
 
   // Criar biometrias (1 por empresa)

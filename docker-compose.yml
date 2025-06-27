@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api-epi-core:
     image: ghcr.io/sistema-epi/api-epi-core:latest

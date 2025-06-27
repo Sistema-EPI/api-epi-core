@@ -49,4 +49,11 @@ dashboard.get(
   RequestHandler(DashboardController.getCostsByEpiType),
 );
 
+dashboard.get(
+  '/most-used-epi/:companyId',
+  verifyToken,
+  verifyPermission(['dashboard:read']),
+  RequestHandler(DashboardController.getMostUsedEpis),
+);
+
 export default dashboard;

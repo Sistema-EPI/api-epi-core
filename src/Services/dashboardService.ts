@@ -36,6 +36,11 @@ interface CostsByEpiType {
   [tipoEpi: string]: number;
 }
 
+interface MostUsedEpi {
+  nomeEpi: string;
+  quantidadeEntregue: number;
+}
+
 export class DashboardService {
   async getGeneralStats(companyId: string): Promise<DashboardStats> {
     try {
@@ -217,29 +222,6 @@ export class DashboardService {
       });
 
       if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
-
-      // Buscar EPIs com estoque baixo ou próximo ao mínimo
-      // Consideramos "baixo" quando está até 20% acima do mínimo
-      const episBaixoEstoque = await prisma.epi.findMany({
-        where: {
-          idEmpresa: companyId,
-          status: true,
-          OR: [
-            // Estoque igual ou abaixo do mínimo
-            {
-              quantidade: {
-                lte: prisma.epi.fields.quantidadeMinima,
-              },
-            },
-            // Estoque até 20% acima do mínimo (usando raw query para cálculo)
-          ],
-        },
-        select: {
-          nomeEpi: true,
-          quantidade: true,
-          quantidadeMinima: true,
-        },
-      });
 
       // Buscar todos os EPIs e filtrar manualmente para ter mais controle
       const todosEpis = await prisma.epi.findMany({
@@ -434,6 +416,75 @@ export class DashboardService {
       return resultado;
     } catch (error) {
       console.error('Erro ao buscar custos por tipo de EPI:', error);
+      throw error;
+    }
+  }
+
+  async getMostUsedEpis(companyId: string): Promise<MostUsedEpi[]> {
+    try {
+      const empresa = await prisma.company.findUnique({
+        where: { idEmpresa: companyId },
+      });
+
+      if (!empresa) throw HttpError.NotFound('Empresa não encontrada');
+
+      // Definir o ano atual para filtrar apenas dados do ano corrente
+      const anoAtual = new Date().getFullYear();
+      const dataInicio = new Date(anoAtual, 0, 1, 0, 0, 0, 0); // 1º de janeiro do ano atual
+      const dataFim = new Date(anoAtual, 11, 31, 23, 59, 59, 999); // 31 de dezembro do ano atual
+
+      // Buscar todos os processos entregues no ano atual com seus EPIs
+      const processosEntregues = await prisma.process.findMany({
+        where: {
+          idEmpresa: companyId,
+          statusEntrega: true,
+          dataEntrega: {
+            gte: dataInicio,
+            lte: dataFim,
+          },
+        },
+        include: {
+          processEpis: {
+            include: {
+              epi: {
+                select: {
+                  nomeEpi: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Agrupar EPIs por nome e contar quantidades entregues
+      const episAgrupados = new Map<string, number>();
+
+      processosEntregues.forEach(processo => {
+        processo.processEpis.forEach(processEpi => {
+          const nomeEpi = processEpi.epi.nomeEpi;
+          const quantidade = processEpi.quantidade;
+
+          if (episAgrupados.has(nomeEpi)) {
+            const quantidadeExistente = episAgrupados.get(nomeEpi)!;
+            episAgrupados.set(nomeEpi, quantidadeExistente + quantidade);
+          } else {
+            episAgrupados.set(nomeEpi, quantidade);
+          }
+        });
+      });
+
+      // Converter Map para array e ordenar por quantidade (decrescente)
+      const episOrdenados: MostUsedEpi[] = Array.from(episAgrupados.entries())
+        .map(([nomeEpi, quantidadeEntregue]) => ({
+          nomeEpi,
+          quantidadeEntregue,
+        }))
+        .sort((a, b) => b.quantidadeEntregue - a.quantidadeEntregue);
+
+      // Retornar apenas os top 5
+      return episOrdenados.slice(0, 5);
+    } catch (error) {
+      console.error('Erro ao buscar EPIs mais utilizados:', error);
       throw error;
     }
   }

@@ -123,3 +123,22 @@ export async function getCostsByEpiType(req: Request, res: Response, next: NextF
     next(err);
   }
 }
+
+export async function getMostUsedEpis(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { params } = GetDashboardSchema.parse(req);
+    const companyId = params.companyId;
+
+    const mostUsedEpis = await dashboardService.getMostUsedEpis(companyId);
+
+    const response = HttpResponse.Ok({
+      message: 'Top 5 EPIs mais utilizados recuperados com sucesso',
+      data: mostUsedEpis,
+    });
+
+    return res.status(response.statusCode).json(response.payload);
+  } catch (err) {
+    console.error('Error in getMostUsedEpis:', err);
+    next(err);
+  }
+}
