@@ -27,6 +27,7 @@ model Company {
   epis          Epi[]
   processos     Process[]
   authCompanies AuthCompany[]
+  logs          Log[]
 
   @@map("company")
 }
@@ -43,7 +44,6 @@ model Collaborator {
   empresa    Company     @relation("EmpresaColaboradores", fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   processos  Process[]
   biometrias Biometria[]
-  logs       Log[]
 
   @@map("collaborator")
 }
@@ -66,7 +66,6 @@ model Epi {
 
   empresa     Company      @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   processEpis ProcessEpi[]
-  logs        Log[]
   movements   EpiMovement[]
 
   @@map("epi")
@@ -88,7 +87,6 @@ model Process {
   empresa     Company           @relation(fields: [idEmpresa], references: [idEmpresa], onDelete: Cascade)
   colaborador Collaborator      @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
   processEpis ProcessEpi[]
-  logs        Log[]
   movements   EpiMovement[]
 
   @@map("process")
@@ -158,21 +156,23 @@ model User {
 }
 
 model Log {
-  idLog         String    @id @default(uuid()) @map("id_log") @db.VarChar(36)
-  idUser        String?   @map("id_user") @db.VarChar(36)
-  idColaborador String?   @map("id_colaborador") @db.VarChar(36)
-  idProcesso    String?   @map("id_processo") @db.VarChar(36)
-  idEpi         String?   @map("id_epi") @db.VarChar(36)
-  body          Json
-  tipo          String    @db.VarChar(20)
-  timestamp     DateTime? @db.Timestamp(0)
+  idLog        String   @id @default(uuid()) @map("id_log") @db.VarChar(36)
+  tipo         String   @map("tipo") @db.VarChar(100)
+  body         Json     @map("body")
+  entityType   String   @map("entity_type") @db.VarChar(50)
+  entityId     String   @map("entity_id") @db.VarChar(36)
+  companyId    String   @map("company_id") @db.VarChar(36)
+  userId       String?  @map("user_id") @db.VarChar(36)
+  timestamp    DateTime @default(now()) @map("timestamp")
 
-  usuario     User?         @relation(fields: [idUser], references: [idUser], onDelete: Cascade, map: "log_id_user_fkey")
-  colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
-  processo    Process?      @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
-  epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [idEmpresa])
+  user    User?   @relation(fields: [userId], references: [idUser], onDelete: SetNull)
 
   @@map("log")
+  @@index([entityType, entityId])
+  @@index([companyId, timestamp])
+  @@index([tipo])
+  @@index([userId])
 }
 
 model AuthCompany {
