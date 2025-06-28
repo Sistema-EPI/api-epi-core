@@ -1,21 +1,20 @@
 import { PrismaClient } from '@prisma/client';
+import { TimezoneHelper } from './TimezoneHelper';
+import { CreateLog } from '../interfaces/createLog';
+import {
+  EpiLogData,
+  EpiCreateLogBody,
+  EpiUpdateLogBody,
+  EpiDeleteLogBody,
+} from '../interfaces/EpiLogTypes';
 
 const prisma = new PrismaClient();
-
-export interface CreateLogData {
-  body: any;
-  tipo: string;
-  companyId: string;
-  entityType: string;
-  entityId: string;
-  userId?: string;
-}
 
 export class LogHelper {
   /**
    * Estrutura Genérica do Log no Sistema
    */
-  static async createLog(data: CreateLogData): Promise<void> {
+  static async createLog(data: CreateLog): Promise<void> {
     try {
       await prisma.log.create({
         data: {
@@ -25,6 +24,7 @@ export class LogHelper {
           companyId: data.companyId,
           userId: data.userId || null,
           body: data.body,
+          timestamp: TimezoneHelper.getBrazilTimestamp(),
         },
       });
     } catch (error) {
@@ -39,25 +39,27 @@ export class LogHelper {
   static async logEpiCreate(
     epiId: string,
     companyId: string,
-    epiData: any,
+    epiData: EpiLogData,
     userId?: string,
   ): Promise<void> {
+    const logBody: EpiCreateLogBody = {
+      ca: epiData.ca,
+      nomeEpi: epiData.nomeEpi,
+      quantidade: epiData.quantidade,
+      quantidadeMinima: epiData.quantidadeMinima,
+      preco: epiData.preco,
+      validade: epiData.validade,
+      descricao: epiData.descricao,
+      createdAt: TimezoneHelper.getBrazilTimestampString(),
+    };
+
     await this.createLog({
       tipo: 'EPI_CREATE',
       entityType: 'EPI',
       entityId: epiId,
       companyId,
       userId,
-      body: {
-        ca: epiData.ca,
-        nomeEpi: epiData.nomeEpi,
-        quantidade: epiData.quantidade,
-        quantidadeMinima: epiData.quantidadeMinima,
-        preco: epiData.preco,
-        validade: epiData.validade,
-        descricao: epiData.descricao,
-        createdAt: new Date().toISOString(),
-      },
+      body: logBody,
     });
   }
 
@@ -67,23 +69,34 @@ export class LogHelper {
   static async logEpiUpdate(
     epiId: string,
     companyId: string,
-    oldData: any,
-    newData: any,
+    oldData: EpiLogData,
+    newData: EpiLogData,
     userId?: string,
   ): Promise<void> {
     // Identifica campos alterados
     const changedFields: string[] = [];
-    const changes: any = {};
+    const changes: Record<string, { old: unknown; new: unknown }> = {};
 
     Object.keys(newData).forEach(key => {
-      if (oldData[key] !== newData[key]) {
+      if (
+        (oldData as unknown as Record<string, unknown>)[key] !==
+        (newData as unknown as Record<string, unknown>)[key]
+      ) {
         changedFields.push(key);
         changes[key] = {
-          old: oldData[key],
-          new: newData[key],
+          old: (oldData as unknown as Record<string, unknown>)[key],
+          new: (newData as unknown as Record<string, unknown>)[key],
         };
       }
     });
+
+    const logBody: EpiUpdateLogBody = {
+      ca: oldData.ca,
+      nomeEpi: oldData.nomeEpi,
+      changedFields,
+      changes,
+      updatedAt: TimezoneHelper.getBrazilTimestampString(),
+    };
 
     await this.createLog({
       tipo: 'EPI_UPDATE',
@@ -91,13 +104,7 @@ export class LogHelper {
       entityId: epiId,
       companyId,
       userId,
-      body: {
-        ca: oldData.ca,
-        nomeEpi: oldData.nomeEpi,
-        changedFields,
-        changes,
-        updatedAt: new Date().toISOString(),
-      },
+      body: logBody,
     });
   }
 
@@ -107,23 +114,25 @@ export class LogHelper {
   static async logEpiDelete(
     epiId: string,
     companyId: string,
-    epiData: any,
+    epiData: EpiLogData,
     userId?: string,
   ): Promise<void> {
+    const logBody: EpiDeleteLogBody = {
+      ca: epiData.ca,
+      nomeEpi: epiData.nomeEpi,
+      quantidade: epiData.quantidade,
+      quantidadeMinima: epiData.quantidadeMinima,
+      preco: epiData.preco,
+      deletedAt: TimezoneHelper.getBrazilTimestampString(),
+    };
+
     await this.createLog({
       tipo: 'EPI_DELETE',
       entityType: 'EPI',
       entityId: epiId,
       companyId,
       userId,
-      body: {
-        ca: epiData.ca,
-        nomeEpi: epiData.nomeEpi,
-        quantidade: epiData.quantidade,
-        quantidadeMinima: epiData.quantidadeMinima,
-        preco: epiData.preco,
-        deletedAt: new Date().toISOString(),
-      },
+      body: logBody,
     });
   }
 }

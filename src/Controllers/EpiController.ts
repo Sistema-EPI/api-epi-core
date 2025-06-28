@@ -29,6 +29,16 @@ interface AuthRequest extends Request {
   };
 }
 
+// Interface para dados do EPI
+interface EpiData {
+  [key: string]: unknown;
+  idEpi?: string;
+  ca?: string;
+  nomeEpi?: string;
+  quantidade?: number;
+  idEmpresa?: string;
+}
+
 const companyService = new CompanyService();
 
 export async function getAllEpis(req: Request, res: Response, next: NextFunction) {
@@ -215,12 +225,12 @@ export async function updateEpi(req: AuthRequest, res: Response, next: NextFunct
       req.user?.idUser, // userId do token JWT
     );
 
-    const changes: Record<string, { before: any; after: any }> = {};
+    const changes: Record<string, { before: unknown; after: unknown }> = {};
     for (const key in dataToUpdate) {
-      if ((existingEpi as any)[key] !== (updatedEpi as any)[key]) {
+      if ((existingEpi as EpiData)[key] !== (updatedEpi as EpiData)[key]) {
         changes[key] = {
-          before: (existingEpi as any)[key],
-          after: (updatedEpi as any)[key],
+          before: (existingEpi as EpiData)[key],
+          after: (updatedEpi as EpiData)[key],
         };
       }
     }
