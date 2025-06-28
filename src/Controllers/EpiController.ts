@@ -15,29 +15,7 @@ import { CompanyService } from '../Services/companyService';
 import { parseDate } from '../Helpers/DateHelper';
 import { formatEpiForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
 import { LogHelper } from '../Helpers/LogHelper';
-
-// Interface para request autenticado
-interface AuthRequest extends Request {
-  user?: {
-    idUser: string;
-    email: string;
-    name?: string;
-  };
-  company?: {
-    idEmpresa: string;
-    nomeFantasia: string;
-  };
-}
-
-// Interface para dados do EPI
-interface EpiData {
-  [key: string]: unknown;
-  idEpi?: string;
-  ca?: string;
-  nomeEpi?: string;
-  quantidade?: number;
-  idEmpresa?: string;
-}
+import { AuthRequest, EpiData } from '../interfaces';
 
 const companyService = new CompanyService();
 

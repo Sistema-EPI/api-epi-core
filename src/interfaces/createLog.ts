@@ -1,5 +1,7 @@
+import { InputJsonValue } from '@prisma/client/runtime/library';
+
 export interface CreateLog {
-  body: any;
+  body: InputJsonValue;
   tipo: string;
   companyId: string;
   entityType: string;

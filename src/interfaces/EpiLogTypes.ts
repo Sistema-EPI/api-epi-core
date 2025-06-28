@@ -23,6 +23,7 @@ export interface EpiUpdateLogData extends EpiLogData {
 }
 
 export interface LogBodyBase {
+  [key: string]: unknown;
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string;

@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 import { TimezoneHelper } from './TimezoneHelper';
-import { CreateLog } from '../interfaces/createLog';
 import {
+  CreateLog,
   EpiLogData,
   EpiCreateLogBody,
   EpiUpdateLogBody,
   EpiDeleteLogBody,
-} from '../interfaces/EpiLogTypes';
+} from '../interfaces';
 
 const prisma = new PrismaClient();
 
@@ -59,7 +60,7 @@ export class LogHelper {
       entityId: epiId,
       companyId,
       userId,
-      body: logBody,
+      body: logBody as InputJsonValue,
     });
   }
 
@@ -104,7 +105,7 @@ export class LogHelper {
       entityId: epiId,
       companyId,
       userId,
-      body: logBody,
+      body: logBody as InputJsonValue,
     });
   }
 
@@ -132,7 +133,7 @@ export class LogHelper {
       entityId: epiId,
       companyId,
       userId,
-      body: logBody,
+      body: logBody as InputJsonValue,
     });
   }
 }
