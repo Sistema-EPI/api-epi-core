@@ -14,6 +14,7 @@ import { EpiService } from '../Services/epiService';
 import { CompanyService } from '../Services/companyService';
 import { parseDate } from '../Helpers/DateHelper';
 import { formatEpiForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
+import { EpiLogService } from '../Services/Logs/epiLogService';
 
 const companyService = new CompanyService();
 
@@ -127,6 +128,9 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
 
     const epi = await EpiService.createEpi(epiData);
 
+    // Criar log de criação do EPI
+    await EpiLogService.logEpiCreated(epi.idEpi, epi);
+
     logger.info(`Novo EPI criado (ID: ${epi.idEpi}, CA: ${epi.ca})`);
 
     const response = HttpResponse.Created({
@@ -184,6 +188,9 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
 
     const updatedEpi = await EpiService.updateEpi(id, dataToUpdate);
 
+    // Criar log de atualização do EPI
+    await EpiLogService.logEpiUpdated(id, existingEpi, updatedEpi);
+
     const changes: Record<string, { before: any; after: any }> = {};
     for (const key in dataToUpdate) {
       if ((existingEpi as any)[key] !== (updatedEpi as any)[key]) {
@@ -223,6 +230,9 @@ export async function deleteEpi(req: Request, res: Response, next: NextFunction)
     if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
     const deletedEpi = await EpiService.deleteEpi(id);
+
+    // Criar log de exclusão do EPI
+    await EpiLogService.logEpiDeleted(id, existingEpi);
 
     logger.info(`EPI removido com sucesso (ID: ${id}, CA: ${existingEpi.ca})`);
 

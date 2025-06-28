@@ -16,6 +16,7 @@ import UserRouter from './Routers/UserRouter';
 import BiometriaRouter from './Routers/BiometriaRouter';
 import CARouter from './Routers/CARouter';
 import ProcessRouter from './Routers/ProcessRouter';
+import LogRouter from './Routers/Logs/EpiLogRouter';
 import DashboardRouter from './Routers/DashboardRouter';
 import FinancialReportRouter from './Routers/FinancialReportRouter';
 
@@ -58,6 +59,7 @@ apiV1Router.use('/biometria', BiometriaRouter);
 apiV1Router.use('/user', UserRouter);
 apiV1Router.use('/consulta-epi', CARouter);
 apiV1Router.use('/process', ProcessRouter);
+apiV1Router.use('/logs', LogRouter);
 apiV1Router.use('/dashboard', DashboardRouter);
 apiV1Router.use('/financial-reports', FinancialReportRouter);
 
