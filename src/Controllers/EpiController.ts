@@ -14,6 +14,8 @@ import { EpiService } from '../Services/epiService';
 import { CompanyService } from '../Services/companyService';
 import { parseDate } from '../Helpers/DateHelper';
 import { formatEpiForFrontend, formatListForFrontend } from '../Helpers/EntityFormatter';
+import { LogHelper } from '../Helpers/LogHelper';
+import { AuthRequest, EpiData } from '../interfaces';
 
 const companyService = new CompanyService();
 
@@ -100,7 +102,7 @@ export async function getEpisByEmpresa(req: Request, res: Response, next: NextFu
   }
 }
 
-export async function createEpi(req: Request, res: Response, next: NextFunction) {
+export async function createEpi(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const body = CreateEpiSchema.parse(req.body);
 
@@ -127,6 +129,14 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
 
     const epi = await EpiService.createEpi(epiData);
 
+    // Criar log da criação do EPI
+    await LogHelper.logEpiCreate(
+      epi.idEpi,
+      epi.idEmpresa,
+      epi,
+      req.user?.idUser, // userId do token JWT
+    );
+
     logger.info(`Novo EPI criado (ID: ${epi.idEpi}, CA: ${epi.ca})`);
 
     const response = HttpResponse.Created({
@@ -141,7 +151,7 @@ export async function createEpi(req: Request, res: Response, next: NextFunction)
   }
 }
 
-export async function updateEpi(req: Request, res: Response, next: NextFunction) {
+export async function updateEpi(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { body, params } = UpdateEpiSchema.parse(req);
     const id = params.id;
@@ -184,12 +194,21 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
 
     const updatedEpi = await EpiService.updateEpi(id, dataToUpdate);
 
-    const changes: Record<string, { before: any; after: any }> = {};
+    // Criar log da atualização do EPI
+    await LogHelper.logEpiUpdate(
+      id,
+      updatedEpi.idEmpresa,
+      existingEpi,
+      updatedEpi,
+      req.user?.idUser, // userId do token JWT
+    );
+
+    const changes: Record<string, { before: unknown; after: unknown }> = {};
     for (const key in dataToUpdate) {
-      if ((existingEpi as any)[key] !== (updatedEpi as any)[key]) {
+      if ((existingEpi as EpiData)[key] !== (updatedEpi as EpiData)[key]) {
         changes[key] = {
-          before: (existingEpi as any)[key],
-          after: (updatedEpi as any)[key],
+          before: (existingEpi as EpiData)[key],
+          after: (updatedEpi as EpiData)[key],
         };
       }
     }
@@ -214,7 +233,7 @@ export async function updateEpi(req: Request, res: Response, next: NextFunction)
   }
 }
 
-export async function deleteEpi(req: Request, res: Response, next: NextFunction) {
+export async function deleteEpi(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { params } = DeleteEpiSchema.parse(req);
     const id = params.id;
@@ -223,6 +242,14 @@ export async function deleteEpi(req: Request, res: Response, next: NextFunction)
     if (!existingEpi) throw new HttpError('EPI não encontrado', 404);
 
     const deletedEpi = await EpiService.deleteEpi(id);
+
+    // Criar log da exclusão do EPI
+    await LogHelper.logEpiDelete(
+      id,
+      existingEpi.idEmpresa,
+      existingEpi,
+      req.user?.idUser, // userId do token JWT
+    );
 
     logger.info(`EPI removido com sucesso (ID: ${id}, CA: ${existingEpi.ca})`);
 
