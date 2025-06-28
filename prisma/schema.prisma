@@ -133,7 +133,7 @@ model EpiMovement {
   createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(0)
 
   epi      Epi      @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
-  user     User?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull)
+  user     User?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull, map: "epi_movement_id_user_fkey")
   processo Process  @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
 
   @@map("epi_movement")
@@ -167,7 +167,7 @@ model Log {
   tipo          String    @db.VarChar(20)
   timestamp     DateTime? @db.Timestamp(0)
 
-  usuario     User?         @relation(fields: [idUser], references: [idUser], onDelete: Cascade)
+  usuario     User?         @relation(fields: [idUser], references: [idUser], onDelete: Cascade, map: "log_id_user_fkey")
   colaborador Collaborator? @relation(fields: [idColaborador], references: [idColaborador], onDelete: Cascade)
   processo    Process?      @relation(fields: [idProcesso], references: [idProcesso], onDelete: Cascade)
   epi         Epi?          @relation(fields: [idEpi], references: [idEpi], onDelete: Cascade)
